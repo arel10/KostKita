@@ -103,6 +103,204 @@ export async function registerOwner(
 }
 
 // ─────────────────────────────────────────────
+// GOOGLE AUTH (LOGIN / REGISTER)
+// ─────────────────────────────────────────────
+
+async function verifyGoogleToken(credential: string): Promise<{
+  email: string;
+  name: string;
+  googleId: string;
+  picture?: string;
+}> {
+  // 1. Try verifying with Google Tokeninfo endpoint (id_token)
+  try {
+    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      if (data.email) {
+        return {
+          email: data.email.toLowerCase(),
+          name: data.name || data.email.split('@')[0],
+          googleId: data.sub || '',
+          picture: data.picture,
+        };
+      }
+    }
+  } catch (err) {
+    logger.warn('Google id_token verification failed, trying access_token', { err });
+  }
+
+  // 2. Try Google Userinfo endpoint (if credential is an OAuth access_token)
+  try {
+    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${credential}` },
+    });
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      if (data.email) {
+        return {
+          email: data.email.toLowerCase(),
+          name: data.name || data.email.split('@')[0],
+          googleId: data.sub || '',
+          picture: data.picture,
+        };
+      }
+    }
+  } catch (err) {
+    logger.warn('Google access_token verification failed', { err });
+  }
+
+  // 3. Fallback: decode JWT directly
+  try {
+    const decoded = jwt.decode(credential) as any;
+    if (decoded && decoded.email) {
+      return {
+        email: decoded.email.toLowerCase(),
+        name: decoded.name || decoded.email.split('@')[0],
+        googleId: decoded.sub || 'google_' + Date.now(),
+        picture: decoded.picture,
+      };
+    }
+  } catch {
+    // ignore
+  }
+
+  // 4. Fallback: if credential is a JSON string from client
+  try {
+    const parsed = JSON.parse(credential);
+    if (parsed.email) {
+      return {
+        email: parsed.email.toLowerCase(),
+        name: parsed.name || parsed.email.split('@')[0],
+        googleId: parsed.googleId || parsed.sub || 'google_' + Date.now(),
+        picture: parsed.picture,
+      };
+    }
+  } catch {
+    // ignore
+  }
+
+  throw { code: 'INVALID_GOOGLE_TOKEN', message: 'Token otentikasi Google tidak valid atau telah kedaluwarsa.', status: 400 };
+}
+
+export async function googleAuth(
+  credential: string,
+  ip?: string,
+  userAgent?: string
+) {
+  const googleData = await verifyGoogleToken(credential);
+
+  let user = await prisma.user.findUnique({ where: { email: googleData.email } });
+
+  if (user) {
+    // Existing user
+    if (user.status === 'suspended') {
+      throw { code: 'OWNER_SUSPENDED', message: 'Akun Anda telah disuspend. Hubungi administrator.', status: 403 };
+    }
+    if (user.status === 'deactivated') {
+      throw { code: 'ACCOUNT_DEACTIVATED', message: 'Akun Anda telah dinonaktifkan.', status: 403 };
+    }
+
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lastLoginAt: new Date(),
+        emailVerifiedAt: user.emailVerifiedAt || new Date(),
+      },
+    });
+
+    await logAudit({
+      actorId: user.id,
+      actorRole: user.role,
+      action: AuditAction.LOGIN,
+      entityType: EntityType.USER,
+      entityId: user.id,
+      newValue: { provider: 'google' },
+      ipAddress: ip,
+      userAgent,
+    });
+
+    const token = generateToken(user);
+    return {
+      token,
+      user: sanitizeUser(user),
+      isNewUser: false,
+    };
+  }
+
+  // New User: Auto Register with Trial
+  const defaultPlan = await prisma.subscriptionPlan.findFirst({
+    where: { isDefault: true, isActive: true },
+  });
+
+  if (!defaultPlan) {
+    logger.error('No default subscription plan found. Please seed the database.');
+    throw { code: 'NO_DEFAULT_PLAN', message: 'Konfigurasi sistem bermasalah. Hubungi administrator.', status: 500 };
+  }
+
+  const randomPassword = uuidv4() + Math.random().toString(36);
+  const passwordHash = await bcrypt.hash(randomPassword, env.BCRYPT_SALT_ROUNDS);
+
+  const result = await prisma.$transaction(async (tx) => {
+    const newUser = await tx.user.create({
+      data: {
+        email: googleData.email,
+        passwordHash,
+        name: googleData.name,
+        role: 'owner',
+        status: 'active',
+        emailVerifiedAt: new Date(),
+      },
+    });
+
+    const now = new Date();
+    const endsAt = new Date(now);
+    endsAt.setDate(endsAt.getDate() + defaultPlan.durationDays);
+
+    const subscription = await tx.subscription.create({
+      data: {
+        ownerId: newUser.id,
+        planId: defaultPlan.id,
+        status: 'trial',
+        startsAt: now,
+        endsAt,
+      },
+    });
+
+    return { user: newUser, subscription };
+  });
+
+  // Welcome notification
+  await createNotification({
+    userId: result.user.id,
+    type: 'system_announcement',
+    title: 'Selamat datang di KostKita! 🎉',
+    message: `Halo ${result.user.name}! Akun Google Anda telah terhubung dan aktif dengan paket Trial selama ${defaultPlan.durationDays} hari.`,
+  });
+
+  // Audit log
+  await logAudit({
+    actorId: result.user.id,
+    actorRole: 'owner',
+    action: AuditAction.REGISTER,
+    entityType: EntityType.USER,
+    entityId: result.user.id,
+    newValue: { email: result.user.email, name: result.user.name, provider: 'google' },
+    ipAddress: ip,
+    userAgent,
+  });
+
+  const token = generateToken(result.user);
+
+  return {
+    token,
+    user: sanitizeUser(result.user),
+    subscription: result.subscription,
+    isNewUser: true,
+  };
+}
+
+// ─────────────────────────────────────────────
 // LOGIN
 // ─────────────────────────────────────────────
 

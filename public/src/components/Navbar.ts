@@ -1,3 +1,5 @@
+import { OWNER_ROUTES } from '../services/config';
+
 export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'): string {
   return `
     <header class="sticky top-0 left-0 right-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-surface-container-high/60 shadow-sm transition-all">
@@ -15,11 +17,10 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
           </a>
 
           <nav class="hidden md:flex items-center gap-6 ml-2">
-            <a href="#/search" class="text-sm font-medium transition-colors ${
-              activePage === 'search'
-                ? 'text-primary font-bold border-b-2 border-primary py-1'
-                : 'text-on-surface-variant hover:text-primary'
-            }">
+            <a href="#/search" class="text-sm font-medium transition-colors ${activePage === 'search'
+      ? 'text-primary font-bold border-b-2 border-primary py-1'
+      : 'text-on-surface-variant hover:text-primary'
+    }">
               Cari Kost
             </a>
             <a href="#/search?city=Padang" class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">
@@ -39,11 +40,11 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-3">
-          <a href="/owner/login" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container-low transition-colors">
+          <a href="${OWNER_ROUTES.login}" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container-low transition-colors">
             <span class="material-symbols-outlined text-[18px]">lock</span>
             <span>Masuk Pemilik Kost</span>
           </a>
-          <a href="/owner/register" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-container shadow-sm hover:shadow transition-all">
+          <a href="${OWNER_ROUTES.register}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-container shadow-sm hover:shadow transition-all">
             <span class="material-symbols-outlined text-[18px]">add_business</span>
             <span>Daftar Kelola Kost</span>
           </a>
@@ -62,7 +63,8 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
         <a href="#/search?city=Depok" class="px-3 py-2 rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container-low">Kost Depok UI</a>
         <a href="#/search?city=Jakarta" class="px-3 py-2 rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container-low">Kost Jakarta Selatan</a>
         <hr class="border-surface-container my-1"/>
-        <a href="/owner/login" class="px-3 py-2 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container-low">Masuk Pemilik Kost</a>
+        <a href="${OWNER_ROUTES.login}" class="px-3 py-2 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container-low">Masuk Pemilik Kost</a>
+        <a href="${OWNER_ROUTES.register}" class="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-primary text-center">Daftar Kelola Kost</a>
       </div>
     </header>
   `;

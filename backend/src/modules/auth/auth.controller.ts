@@ -35,6 +35,28 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
+export const googleAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { ip, userAgent } = getClientInfo(req);
+    const { credential } = req.body;
+    if (!credential) {
+      sendError(res, 'MISSING_CREDENTIAL', 'Google credential wajib dikirimkan.', 400);
+      return;
+    }
+    const result = await authService.googleAuth(credential, ip, userAgent);
+    sendSuccess(res, result, {
+      statusCode: result.isNewUser ? 201 : 200,
+      message: result.isNewUser ? 'Pendaftaran dengan Google berhasil!' : 'Login dengan Google berhasil!',
+    });
+  } catch (err: any) {
+    if (err.code) {
+      sendError(res, err.code, err.message, err.status ?? 400);
+    } else {
+      next(err);
+    }
+  }
+};
+
 export const me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await authService.getMe(req.user!.sub);

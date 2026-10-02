@@ -1,3 +1,5 @@
+import { OWNER_ROUTES } from '../services/config';
+
 export function renderFooter(): string {
   return `
     <footer class="bg-surface-container-low text-on-surface border-t border-surface-container-high/60 mt-auto">
@@ -50,9 +52,9 @@ export function renderFooter(): string {
           <div class="space-y-3">
             <h4 class="text-sm font-bold text-on-surface tracking-wider uppercase">Pemilik Kost</h4>
             <ul class="space-y-2 text-sm text-on-surface-variant">
-              <li><a href="/owner/register" class="hover:text-primary transition-colors">Daftarkan Kost Gratis</a></li>
-              <li><a href="/owner/login" class="hover:text-primary transition-colors">Dashboard Pemilik</a></li>
-              <li><a href="/owner/plans" class="hover:text-primary transition-colors">Paket Subscription</a></li>
+              <li><a href="${OWNER_ROUTES.register}" class="hover:text-primary transition-colors">Daftarkan Kost Gratis</a></li>
+              <li><a href="${OWNER_ROUTES.login}" class="hover:text-primary transition-colors">Dashboard Pemilik</a></li>
+              <li><a href="${OWNER_ROUTES.plans}" class="hover:text-primary transition-colors">Paket Subscription</a></li>
               <li><a href="#/search" class="hover:text-primary transition-colors">Panduan Listing</a></li>
             </ul>
           </div>

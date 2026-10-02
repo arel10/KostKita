@@ -5,7 +5,12 @@ const passwordSchema = z
   .min(8, 'Password minimal 8 karakter')
   .max(100, 'Password terlalu panjang');
 
-const phoneSchema = z.string().regex(/^[0-9]{9,15}$/, 'Nomor telepon tidak valid').optional();
+const phoneSchema = z
+  .string()
+  .trim()
+  .optional()
+  .transform((val) => (val === '' ? undefined : val))
+  .pipe(z.string().regex(/^[0-9]{9,15}$/, 'Nomor telepon tidak valid').optional());
 
 export const registerSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter').max(100, 'Nama terlalu panjang'),

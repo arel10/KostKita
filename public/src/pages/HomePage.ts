@@ -1,4 +1,5 @@
 import { fetchProperties, formatRupiah } from '../services/api';
+import { OWNER_ROUTES } from '../services/config';
 import { PropertyListItem } from '../types';
 
 export async function renderHomePage(): Promise<string> {
@@ -376,13 +377,13 @@ export async function renderHomePage(): Promise<string> {
             </p>
             <div class="flex flex-wrap items-center gap-4">
               <a 
-                href="/owner/register" 
+                href="${OWNER_ROUTES.register}" 
                 class="px-6 py-3 rounded-xl bg-white text-primary font-bold text-sm hover:bg-surface-container-low transition-colors shadow-md"
               >
                 Mulai Trial Gratis 30 Hari
               </a>
               <a 
-                href="/owner/login" 
+                href="${OWNER_ROUTES.login}" 
                 class="px-6 py-3 rounded-xl bg-primary/40 hover:bg-primary/60 border border-white/30 text-white font-semibold text-sm transition-colors"
               >
                 Masuk ke Dashboard

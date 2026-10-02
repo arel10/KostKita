@@ -47,12 +47,19 @@ export const errorHandler = (
     return;
   }
 
+  // CORS error
+  if (err.message === 'Not allowed by CORS') {
+    sendError(res, 'CORS_ERROR', 'Origin tidak diizinkan oleh CORS policy.', 403);
+    return;
+  }
+
   // Default internal error
   sendError(
     res,
     'INTERNAL_SERVER_ERROR',
     'Terjadi kesalahan pada server. Silakan coba lagi.',
-    500
+    500,
+    process.env.NODE_ENV === 'development' ? { message: err.message, stack: err.stack } : undefined
   );
 };
 
