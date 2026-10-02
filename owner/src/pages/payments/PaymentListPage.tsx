@@ -91,7 +91,7 @@ export const PaymentListPage: React.FC = () => {
     setSelectedStayId(stayId);
     const found = activeStays.find((s) => s.stayId === stayId);
     if (found) {
-      setAmount(found.rentAmount);
+      setAmount(found.rentAmount || '');
     }
   };
 

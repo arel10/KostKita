@@ -13,8 +13,10 @@ export const createPropertySchema = z.object({
   postalCode: z.string().max(10).optional(),
   latitude: z.number().min(-90).max(90).optional(),
   longitude: z.number().min(-180).max(180).optional(),
+  priceStart: z.number().min(0).optional(),
   facilities: z.array(z.string()).optional(),
   rules: z.array(z.string()).optional(),
+  photos: z.array(z.string()).optional(),
 });
 
 export const updatePropertySchema = createPropertySchema.partial();

@@ -39,3 +39,8 @@ export const endStay = handle(async (req, res) => {
   await tenantService.endStay(req.user!.sub, req.params.id, req.params.stayId, req.body, req.ip, req.headers['user-agent']);
   sendSuccess(res, null, { message: 'Check-out berhasil.' });
 });
+
+export const remove = handle(async (req, res) => {
+  await tenantService.deleteTenant(req.user!.sub, req.params.id, req.ip, req.headers['user-agent']);
+  sendSuccess(res, null, { message: 'Data penghuni berhasil dihapus.' });
+});

@@ -34,8 +34,8 @@ export const App: React.FC = () => {
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/properties" element={<PropertyListPage />} />
-              <Route path="/properties/new" element={<PropertyFormPage />} />
-              <Route path="/properties/:id/edit" element={<PropertyFormPage />} />
+              <Route path="/properties/new" element={<PropertyListPage initialOpenModal={true} />} />
+              <Route path="/properties/:id/edit" element={<PropertyListPage />} />
               <Route path="/properties/:id" element={<PropertyDetailPage />} />
               <Route path="/rooms" element={<RoomListPage />} />
               <Route path="/tenants" element={<TenantListPage />} />

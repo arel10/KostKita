@@ -9,6 +9,7 @@ interface HeaderProps {
   onSelectProperty?: (id: string) => void;
   dashboardReport?: DashboardReport | null;
   unreadCount?: number;
+  onToggleMobileSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,12 +18,12 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectProperty,
   dashboardReport,
   unreadCount = 0,
+  onToggleMobileSidebar,
 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const selectedProp = properties.find((p) => p.id === selectedPropertyId);
   const sub = dashboardReport?.subscription;
 
   const handleLogout = () => {
@@ -31,15 +32,24 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white/95 backdrop-blur-md z-40 flex items-center justify-between px-6 border-b border-slate-100 shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
-      {/* Left items: Search or property indicator */}
-      <div className="flex items-center gap-4">
+    <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-white/95 backdrop-blur-md z-30 flex items-center justify-between px-3 sm:px-6 border-b border-slate-100 shadow-[0_1px_4px_rgba(0,0,0,0.03)] transition-all">
+      {/* Left items: Mobile Hamburger + Search or Property Selector */}
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <button
+          type="button"
+          onClick={onToggleMobileSidebar}
+          className="lg:hidden p-2 text-slate-600 hover:text-primary hover:bg-slate-100 rounded-xl transition-colors shrink-0"
+          aria-label="Buka Menu Navigasi"
+        >
+          <span className="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+
         {properties.length > 0 && onSelectProperty && (
-          <div className="relative">
+          <div className="relative shrink-0 max-w-[140px] xs:max-w-[180px] sm:max-w-xs">
             <select
               value={selectedPropertyId || ''}
               onChange={(e) => onSelectProperty(e.target.value)}
-              className="appearance-none bg-surface-container-low hover:bg-surface-container text-on-surface font-semibold text-xs py-2 pl-3 pr-8 rounded-xl border border-slate-200/80 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              className="w-full truncate appearance-none bg-surface-container-low hover:bg-surface-container text-on-surface font-semibold text-xs py-2 pl-2.5 sm:pl-3 pr-7 sm:pr-8 rounded-xl border border-slate-200/80 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             >
               <option value="">Semua Properti Kost ({properties.length})</option>
               {properties.map((p) => (
@@ -54,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         )}
 
-        <div className="hidden md:flex items-center bg-slate-50 border border-slate-200/60 px-3 py-1.5 rounded-xl gap-2 w-64 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white transition-all">
+        <div className="hidden md:flex items-center bg-slate-50 border border-slate-200/60 px-3 py-1.5 rounded-xl gap-2 w-48 lg:w-64 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white transition-all">
           <span className="material-symbols-outlined text-slate-400 text-[18px]">search</span>
           <input
             type="text"
@@ -70,22 +80,22 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right items: Subscription badge, Notification, Profile */}
-      <div className="flex items-center gap-4">
-        {/* Subscription status badge */}
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        {/* Subscription status badge (hide on very small mobile to prevent header wrapping) */}
         {sub ? (
           <Link
             to="/subscription"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors"
           >
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span>
-              Paket {sub.planName} • {sub.daysLeft} Hari Tersisa
+            <span className="truncate max-w-[160px]">
+              Paket {sub.planName} • {sub.daysLeft} Hari Lagi
             </span>
           </Link>
         ) : (
           <Link
             to="/subscription"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 transition-colors"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span>Langganan Aktif</span>
@@ -108,7 +118,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-slate-100 transition-colors"
+            className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition-colors"
+            aria-expanded={dropdownOpen}
           >
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs shadow-sm">
               {user?.name?.charAt(0).toUpperCase() || 'O'}

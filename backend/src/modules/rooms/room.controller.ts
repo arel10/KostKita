@@ -11,12 +11,18 @@ const handle = (fn: (req: Request, res: Response, next: NextFunction) => Promise
   };
 
 export const list = handle(async (req, res) => {
-  const result = await roomService.listRooms(req.user!.sub, req.params.propertyId, req.query as any);
+  const propertyId = req.params.propertyId || (req.query.propertyId as string | undefined);
+  const result = await roomService.listRooms(req.user!.sub, propertyId, req.query as any);
   sendSuccess(res, result.data, { meta: result.meta });
 });
 
 export const create = handle(async (req, res) => {
-  const result = await roomService.createRoom(req.user!.sub, req.params.propertyId, req.body, req.ip, req.headers['user-agent']);
+  const propertyId = req.params.propertyId || req.body.propertyId;
+  if (!propertyId) {
+    sendError(res, 'MISSING_PROPERTY_ID', 'ID Properti wajib disertakan.', 400);
+    return;
+  }
+  const result = await roomService.createRoom(req.user!.sub, propertyId, req.body, req.ip, req.headers['user-agent']);
   sendSuccess(res, result, { statusCode: 201 });
 });
 

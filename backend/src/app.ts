@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { env } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
 
@@ -22,7 +23,10 @@ export function createApp() {
   const app = express();
 
   // ── Security ───────────────────────────────
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
+  app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
   app.use(cors({
     origin: (origin, callback) => {
       if (
@@ -71,6 +75,7 @@ export function createApp() {
 
   app.use(`${API_PREFIX}/auth`, authRouter);
   app.use(`${API_PREFIX}/properties`, propertyRouter);
+  app.use(`${API_PREFIX}/rooms`, roomRouter);
   app.use(`${API_PREFIX}/properties/:propertyId/rooms`, roomRouter);
   app.use(`${API_PREFIX}/tenants`, tenantRouter);
   app.use(`${API_PREFIX}/payments`, paymentRouter);

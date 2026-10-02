@@ -1,5 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import prisma from '../../config/database';
 import { cloudinary } from '../../config/storage';
+import { env } from '../../config/env';
 import { generatePropertySlug } from '../../utils/slug';
 import { logAudit } from '../../utils/audit';
 import { getActiveSubscription, checkPropertyLimit } from '../../utils/subscription';
@@ -111,6 +114,7 @@ export async function createProperty(
         postalCode: input.postalCode,
         latitude: input.latitude,
         longitude: input.longitude,
+        priceStart: input.priceStart !== undefined ? input.priceStart : undefined,
         status: 'draft',
       },
     });
@@ -124,6 +128,17 @@ export async function createProperty(
     if (input.rules?.length) {
       await tx.propertyRule.createMany({
         data: input.rules.map((r) => ({ propertyId: prop.id, rule: r })),
+      });
+    }
+
+    if (input.photos?.length) {
+      await tx.propertyPhoto.createMany({
+        data: input.photos.map((url, idx) => ({
+          propertyId: prop.id,
+          url,
+          order: idx,
+          isPrimary: idx === 0,
+        })),
       });
     }
 
@@ -197,6 +212,7 @@ export async function updateProperty(
         ...(input.postalCode !== undefined && { postalCode: input.postalCode }),
         ...(input.latitude !== undefined && { latitude: input.latitude }),
         ...(input.longitude !== undefined && { longitude: input.longitude }),
+        ...(input.priceStart !== undefined && { priceStart: input.priceStart }),
       },
     });
 
@@ -216,6 +232,21 @@ export async function updateProperty(
       if (input.rules.length > 0) {
         await tx.propertyRule.createMany({
           data: input.rules.map((r) => ({ propertyId, rule: r })),
+        });
+      }
+    }
+
+    // Update photos if provided
+    if (input.photos !== undefined) {
+      await tx.propertyPhoto.deleteMany({ where: { propertyId } });
+      if (input.photos.length > 0) {
+        await tx.propertyPhoto.createMany({
+          data: input.photos.map((url, idx) => ({
+            propertyId,
+            url,
+            order: idx,
+            isPrimary: idx === 0,
+          })),
         });
       }
     }
@@ -254,7 +285,7 @@ export async function publishProperty(
   }
 
   if (property.status === 'active') {
-    throw { code: 'ALREADY_ACTIVE', message: 'Properti sudah aktif.', status: 400 };
+    return property;
   }
 
   if (property.status === 'suspended') {
@@ -390,25 +421,46 @@ export async function uploadPropertyPhotos(
     throw { code: 'TOO_MANY_PHOTOS', message: 'Maksimal 10 foto per properti.', status: 400 };
   }
 
+  const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+
   const uploadedPhotos = await Promise.all(
     files.map(async (file, index) => {
-      const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            folder: `kostkita/properties/${propertyId}`,
-            resource_type: 'image',
-            transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result as { secure_url: string });
-          }
-        ).end(file.buffer);
-      });
+      let photoUrl = '';
+
+      if (hasCloudinary) {
+        try {
+          const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+              {
+                folder: `kostkita/properties/${propertyId}`,
+                resource_type: 'image',
+                transformation: [{ quality: 'auto', fetch_format: 'auto' }],
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result as { secure_url: string });
+              }
+            ).end(file.buffer);
+          });
+          photoUrl = result.secure_url;
+        } catch (cloudErr) {
+          console.warn('Cloudinary upload failed, falling back to local file storage:', cloudErr);
+        }
+      }
+
+      if (!photoUrl) {
+        const uploadDir = path.resolve(process.cwd(), 'uploads/properties', propertyId);
+        fs.mkdirSync(uploadDir, { recursive: true });
+        const ext = path.extname(file.originalname) || (file.mimetype === 'image/png' ? '.png' : file.mimetype === 'image/webp' ? '.webp' : '.jpg');
+        const filename = `${Date.now()}-${index}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, file.buffer);
+        photoUrl = `${env.APP_URL}/uploads/properties/${propertyId}/${filename}`;
+      }
 
       return {
         propertyId,
-        url: result.secure_url,
+        url: photoUrl,
         order: existingCount + index,
         isPrimary: existingCount === 0 && index === 0,
       };

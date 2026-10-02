@@ -9,15 +9,16 @@ import { Tenant, Property, Room } from '../../types';
 export const TenantListPage: React.FC = () => {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
-  const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [propertyFilter, setPropertyFilter] = useState('');
 
-  // Modal: Add Tenant
+  // Modal: Add / Edit Tenant
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [idCardNumber, setIdCardNumber] = useState('');
@@ -37,13 +38,17 @@ export const TenantListPage: React.FC = () => {
   const [endStayNotes, setEndStayNotes] = useState('');
   const [isEndingStay, setIsEndingStay] = useState(false);
 
+  // Dialog: Delete Tenant
+  const [deleteTarget, setDeleteTarget] = useState<Tenant | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const fetchTenants = async () => {
     setIsLoading(true);
     try {
       const [tenantsRes, propsRes, roomsRes] = await Promise.allSettled([
         api.get('/tenants'),
         api.get('/properties'),
-        api.get('/rooms?status=available'),
+        api.get('/rooms'),
       ]);
 
       if (tenantsRes.status === 'fulfilled' && tenantsRes.value.data?.data) {
@@ -53,7 +58,7 @@ export const TenantListPage: React.FC = () => {
         setProperties(propsRes.value.data.data);
       }
       if (roomsRes.status === 'fulfilled' && roomsRes.value.data?.data) {
-        setAvailableRooms(roomsRes.value.data.data);
+        setRooms(roomsRes.value.data.data);
       }
     } catch (e) {
       console.error('Failed to fetch tenants:', e);
@@ -66,61 +71,121 @@ export const TenantListPage: React.FC = () => {
     fetchTenants();
   }, []);
 
-  // Update room list when selectedPropertyId changes in modal
-  const modalRooms = availableRooms.filter(
-    (r) => !selectedPropertyId || r.propertyId === selectedPropertyId
-  );
+  const availableRooms = rooms.filter((r) => r.status === 'available');
+
+  // Rooms available for modal selection (available rooms + currently assigned room if editing)
+  const modalRooms = rooms.filter((r) => {
+    const matchesProp = !selectedPropertyId || r.propertyId === selectedPropertyId;
+    const isCurrent = editingTenant?.stays?.some((s) => s.status === 'active' && s.roomId === r.id);
+    return matchesProp && (r.status === 'available' || isCurrent);
+  });
 
   const handleOpenAddModal = () => {
+    setEditingTenant(null);
+    const initialPropId = properties[0]?.id || '';
+    const initialRooms = rooms.filter((r) => r.propertyId === initialPropId && r.status === 'available');
+    const initialRoom = initialRooms[0] || availableRooms[0];
+
     setName('');
     setPhone('');
     setIdCardNumber('');
     setEmergencyPhone('');
-    setSelectedPropertyId(properties[0]?.id || '');
-    setSelectedRoomId(availableRooms[0]?.id || '');
+    setSelectedPropertyId(initialPropId);
+    setSelectedRoomId(initialRoom?.id || '');
     setStartDate(new Date().toISOString().split('T')[0]);
-    setRentAmount(availableRooms[0]?.price || 1000000);
+    setRentAmount(initialRoom ? initialRoom.price : 1000000);
     setDeposit(0);
     setNotes('');
     setFormError(null);
     setIsAddModalOpen(true);
   };
 
+  const handleOpenEditModal = (t: Tenant) => {
+    const activeStay = t.stays?.find((s) => s.status === 'active') || t.stays?.[0];
+    const currentRoom = activeStay?.room;
+    const currentPropId = currentRoom?.propertyId || (currentRoom as any)?.property?.id || properties[0]?.id || '';
+
+    setEditingTenant(t);
+    setName(t.name || '');
+    setPhone(t.phone || (t as any).whatsapp || '');
+    setIdCardNumber((t as any).idCardNumber || '');
+    setEmergencyPhone((t as any).emergencyPhone || '');
+    setSelectedPropertyId(currentPropId);
+    setSelectedRoomId(currentRoom?.id || '');
+
+    const checkIn = activeStay?.startDate || (activeStay as any)?.checkInDate;
+    if (checkIn) {
+      const d = new Date(checkIn);
+      setStartDate(!isNaN(d.getTime()) ? d.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+    } else {
+      setStartDate(new Date().toISOString().split('T')[0]);
+    }
+
+    setRentAmount(Number(activeStay?.rentAmount || (activeStay as any)?.rentPrice || currentRoom?.price || 1000000));
+    setDeposit(Number(activeStay?.deposit || 0));
+    setNotes(t.notes || '');
+    setFormError(null);
+    setIsAddModalOpen(true);
+  };
+
+  const handlePropertyChange = (propId: string) => {
+    setSelectedPropertyId(propId);
+    const roomsForProp = rooms.filter((r) => {
+      const isCurrent = editingTenant?.stays?.some((s) => s.status === 'active' && s.roomId === r.id);
+      return r.propertyId === propId && (r.status === 'available' || isCurrent);
+    });
+
+    if (roomsForProp.length > 0) {
+      setSelectedRoomId(roomsForProp[0].id);
+      setRentAmount(roomsForProp[0].price);
+    } else {
+      setSelectedRoomId('');
+      setRentAmount('');
+    }
+  };
+
   const handleRoomSelectChange = (roomId: string) => {
     setSelectedRoomId(roomId);
-    const r = availableRooms.find((room) => room.id === roomId);
+    const r = rooms.find((room) => room.id === roomId);
     if (r) {
       setRentAmount(r.price);
     }
   };
 
-  const handleCreateTenant = async (e: React.FormEvent) => {
+  const handleSaveTenant = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone || !selectedRoomId || !startDate || !rentAmount) {
-      setFormError('Mohon isi nama, nomor WhatsApp, pilih kamar, tanggal masuk, dan harga sewa.');
+    if (!name || !phone || !selectedRoomId || !startDate || rentAmount === '') {
+      setFormError('Mohon isi nama, nomor WhatsApp, pilih kamar, tanggal masuk, dan tarif sewa.');
       return;
     }
 
     setIsSubmitting(true);
     setFormError(null);
 
+    const payload = {
+      name,
+      phone,
+      idCardNumber: idCardNumber || undefined,
+      emergencyPhone: emergencyPhone || undefined,
+      notes: notes || undefined,
+      roomId: selectedRoomId,
+      startDate,
+      rentAmount: Number(rentAmount),
+      deposit: deposit ? Number(deposit) : 0,
+    };
+
     try {
-      await api.post('/tenants', {
-        name,
-        phone,
-        idCardNumber: idCardNumber || undefined,
-        emergencyPhone: emergencyPhone || undefined,
-        notes: notes || undefined,
-        roomId: selectedRoomId,
-        startDate,
-        rentAmount: Number(rentAmount),
-        deposit: deposit ? Number(deposit) : 0,
-      });
+      if (editingTenant) {
+        await api.patch(`/tenants/${editingTenant.id}`, payload);
+      } else {
+        await api.post('/tenants', payload);
+      }
 
       setIsAddModalOpen(false);
+      setEditingTenant(null);
       fetchTenants();
     } catch (err: any) {
-      setFormError(err.response?.data?.error?.message || 'Gagal menambahkan penyewa.');
+      setFormError(err.response?.data?.error?.message || 'Gagal menyimpan data penyewa.');
     } finally {
       setIsSubmitting(false);
     }
@@ -143,18 +208,43 @@ export const TenantListPage: React.FC = () => {
     }
   };
 
+  const handleDeleteTenant = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/tenants/${deleteTarget.id}`);
+      setDeleteTarget(null);
+      fetchTenants();
+    } catch (err: any) {
+      alert(err.response?.data?.error?.message || 'Gagal menghapus data penyewa.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const formatDateSafe = (dateVal: any) => {
+    if (!dateVal) return '-';
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return '-';
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
   const filteredTenants = tenants.filter((t) => {
+    const q = (searchQuery || '').toLowerCase();
+    const nameStr = (t.name || '').toLowerCase();
+    const phoneStr = (t.phone || (t as any).whatsapp || '').toLowerCase();
     const matchesSearch =
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      !q ||
+      nameStr.includes(q) ||
+      phoneStr.includes(q) ||
       t.stays?.some(
         (s) =>
-          s.room?.roomNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.room?.property?.name.toLowerCase().includes(searchQuery.toLowerCase())
+          (s.room?.roomNumber || '').toLowerCase().includes(q) ||
+          (s.room?.property?.name || '').toLowerCase().includes(q)
       );
     const matchesProperty =
       !propertyFilter ||
-      t.stays?.some((s) => s.room?.propertyId === propertyFilter);
+      t.stays?.some((s) => s.room?.propertyId === propertyFilter || (s.room as any)?.property?.id === propertyFilter);
     return matchesSearch && matchesProperty;
   });
 
@@ -179,7 +269,7 @@ export const TenantListPage: React.FC = () => {
             Penyewa & Riwayat Sewa
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Kelola data pribadi penyewa, masa sewa, status pembayaran kamar, dan kontak WhatsApp.
+            Kelola data pribadi penyewa, masa sewa, status kamar, dan kontak WhatsApp.
           </p>
         </div>
 
@@ -205,9 +295,9 @@ export const TenantListPage: React.FC = () => {
           <span className="text-[11px] text-slate-500 mt-1 block">Termasuk riwayat lama</span>
         </div>
         <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 shadow-sm">
-          <span className="text-[11px] text-emerald-600 font-bold uppercase block">Kamar Tersedia</span>
+          <span className="text-[11px] text-emerald-600 font-bold uppercase block">Kamar Kosong</span>
           <span className="text-2xl font-extrabold text-emerald-800 mt-0.5 block">{availableRooms.length}</span>
-          <span className="text-[11px] text-emerald-700 mt-1 block">Siap dialokasikan</span>
+          <span className="text-[11px] text-emerald-700 mt-1 block">Siap disewakan</span>
         </div>
         <div className="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 shadow-sm">
           <span className="text-[11px] text-blue-600 font-bold uppercase block">Properti Kost</span>
@@ -278,29 +368,32 @@ export const TenantListPage: React.FC = () => {
                 {filteredTenants.map((t) => {
                   const activeStay = t.stays?.find((s) => s.status === 'active') || t.stays?.[0];
                   const room = activeStay?.room;
+                  const displayPhone = t.phone || (t as any).whatsapp || '';
 
                   return (
                     <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-2xl bg-primary-fixed/50 text-primary font-bold flex items-center justify-center text-sm">
-                            {t.name.charAt(0).toUpperCase()}
+                            {(t.name || 'P').charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <span className="font-bold text-slate-900 text-sm block">
-                              {t.name}
+                              {t.name || 'Tanpa Nama'}
                             </span>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className="text-[11px] text-slate-500">{t.phone}</span>
-                              <a
-                                href={`https://wa.me/${t.phone.replace(/\D/g, '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-emerald-600 hover:text-emerald-700 inline-flex items-center"
-                                title="Chat WhatsApp"
-                              >
-                                <span className="material-symbols-outlined text-[16px]">chat</span>
-                              </a>
+                              <span className="text-[11px] text-slate-500">{displayPhone || '-'}</span>
+                              {displayPhone && (
+                                <a
+                                  href={`https://wa.me/${displayPhone.replace(/\D/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-emerald-600 hover:text-emerald-700 inline-flex items-center"
+                                  title="Chat WhatsApp"
+                                >
+                                  <span className="material-symbols-outlined text-[16px]">chat</span>
+                                </a>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -313,7 +406,7 @@ export const TenantListPage: React.FC = () => {
                               Kamar {room.roomNumber} ({room.type || 'Standar'})
                             </span>
                             <span className="text-[11px] text-slate-400">
-                              {room.property?.name}
+                              {room.property?.name || 'Properti'}
                             </span>
                           </>
                         ) : (
@@ -325,11 +418,11 @@ export const TenantListPage: React.FC = () => {
                         {activeStay ? (
                           <>
                             <span className="font-semibold text-slate-700 block">
-                              Masuk: {new Date(activeStay.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              Masuk: {formatDateSafe(activeStay.startDate || (activeStay as any).checkInDate)}
                             </span>
                             <span className="text-[11px] text-slate-400">
-                              {activeStay.endDate
-                                ? `Keluar: ${new Date(activeStay.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                              {(activeStay.endDate || (activeStay as any).checkOutDate)
+                                ? `Keluar: ${formatDateSafe(activeStay.endDate || (activeStay as any).checkOutDate)}`
                                 : 'Sewa berjalan'}
                             </span>
                           </>
@@ -340,12 +433,12 @@ export const TenantListPage: React.FC = () => {
 
                       <td className="px-6 py-4">
                         <span className="font-extrabold text-slate-900 text-sm block">
-                          {formatRupiah(activeStay?.rentAmount || 0)}
+                          {formatRupiah(Number(activeStay?.rentAmount || (activeStay as any)?.rentPrice || 0))}
                           <span className="text-[10px] text-slate-400 font-normal"> /bln</span>
                         </span>
                         {activeStay?.deposit ? (
                           <span className="text-[11px] text-emerald-700">
-                            Deposit: {formatRupiah(activeStay.deposit)}
+                            Deposit: {formatRupiah(Number(activeStay.deposit))}
                           </span>
                         ) : null}
                       </td>
@@ -362,6 +455,15 @@ export const TenantListPage: React.FC = () => {
 
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleOpenEditModal(t)}
+                            className="px-2.5 py-1 text-[11px] font-bold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors flex items-center gap-1"
+                            title="Edit data & kamar penyewa"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">edit</span>
+                            <span>Edit</span>
+                          </button>
+
                           {activeStay?.status === 'active' && (
                             <button
                               onClick={() =>
@@ -371,12 +473,20 @@ export const TenantListPage: React.FC = () => {
                                   tenantName: t.name,
                                 })
                               }
-                              className="px-2.5 py-1 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                              className="px-2.5 py-1 text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors"
                               title="Checkout / Akhiri masa tinggal"
                             >
                               Akhiri Sewa
                             </button>
                           )}
+
+                          <button
+                            onClick={() => setDeleteTarget(t)}
+                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Hapus Penyewa"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -388,15 +498,22 @@ export const TenantListPage: React.FC = () => {
         </div>
       )}
 
-      {/* Modal Add Tenant */}
+      {/* Modal Add / Edit Tenant */}
       <Modal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        title="Pendaftaran Penyewa Baru"
-        description="Masukkan identitas penghuni dan alokasikan kamar kost."
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingTenant(null);
+        }}
+        title={editingTenant ? 'Edit Data Penyewa' : 'Pendaftaran Penyewa Baru'}
+        description={
+          editingTenant
+            ? `Perbarui data penghuni dan kamar untuk "${editingTenant.name}".`
+            : 'Masukkan identitas penghuni dan alokasikan unit kamar kost.'
+        }
         maxWidth="xl"
       >
-        <form onSubmit={handleCreateTenant} className="space-y-4">
+        <form onSubmit={handleSaveTenant} className="space-y-4">
           {formError && (
             <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200">
               {formError}
@@ -471,7 +588,7 @@ export const TenantListPage: React.FC = () => {
                 </label>
                 <select
                   value={selectedPropertyId}
-                  onChange={(e) => setSelectedPropertyId(e.target.value)}
+                  onChange={(e) => handlePropertyChange(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none font-semibold text-slate-800"
                 >
                   {properties.map((p) => (
@@ -484,7 +601,7 @@ export const TenantListPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Pilih Kamar Kosong *
+                  Pilih Kamar *
                 </label>
                 <select
                   value={selectedRoomId}
@@ -495,10 +612,16 @@ export const TenantListPage: React.FC = () => {
                   <option value="">-- Pilih Kamar --</option>
                   {modalRooms.map((r) => (
                     <option key={r.id} value={r.id}>
-                      Kamar {r.roomNumber} - {formatRupiah(r.price)} ({r.type})
+                      Kamar {r.roomNumber} - {formatRupiah(r.price)} ({r.type || 'Standar'})
+                      {r.status === 'occupied' ? ' [Kamar Saat Ini]' : ''}
                     </option>
                   ))}
                 </select>
+                {modalRooms.length === 0 && (
+                  <p className="text-[10px] text-amber-600 mt-1">
+                    Tidak ada kamar kosong di properti ini.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -560,7 +683,10 @@ export const TenantListPage: React.FC = () => {
           <div className="flex items-center justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(false)}
+              onClick={() => {
+                setIsAddModalOpen(false);
+                setEditingTenant(null);
+              }}
               className="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
             >
               Batal
@@ -573,7 +699,7 @@ export const TenantListPage: React.FC = () => {
               {isSubmitting && (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               )}
-              <span>Daftarkan Penghuni</span>
+              <span>{editingTenant ? 'Simpan Perubahan' : 'Daftarkan Penghuni'}</span>
             </button>
           </div>
         </form>
@@ -624,7 +750,7 @@ export const TenantListPage: React.FC = () => {
               type="button"
               disabled={isEndingStay}
               onClick={handleConfirmEndStay}
-              className="px-5 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
             >
               {isEndingStay && (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -634,6 +760,18 @@ export const TenantListPage: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Confirm Delete Tenant Dialog */}
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="Hapus Data Penyewa"
+        message={`Apakah Anda yakin ingin menghapus data penyewa "${deleteTarget?.name}"? Jika penyewa sedang aktif, kamarnya akan otomatis kembali berstatus Kosong (Available).`}
+        confirmText={isDeleting ? 'Menghapus...' : 'Hapus'}
+        isDangerous
+        isLoading={isDeleting}
+        onConfirm={handleDeleteTenant}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   );
 };

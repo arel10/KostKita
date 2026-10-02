@@ -12,7 +12,8 @@ export interface User {
 export interface PropertyFacility {
   id: string;
   propertyId: string;
-  name: string;
+  name?: string;
+  facilityName?: string;
   icon?: string | null;
   isPopular?: boolean;
 }
@@ -29,7 +30,8 @@ export interface PropertyPhoto {
 export interface PropertyRule {
   id: string;
   propertyId: string;
-  description: string;
+  rule?: string;
+  description?: string;
 }
 
 export interface Property {
@@ -98,9 +100,12 @@ export interface TenantStay {
   id: string;
   tenantId: string;
   roomId: string;
-  startDate: string;
+  startDate?: string;
   endDate?: string | null;
-  rentAmount: number;
+  checkInDate?: string;
+  checkOutDate?: string | null;
+  rentAmount?: number;
+  rentPrice?: number;
   deposit?: number | null;
   status: 'active' | 'ended';
   createdAt: string;
@@ -112,7 +117,8 @@ export interface Tenant {
   id: string;
   ownerId: string;
   name: string;
-  phone: string;
+  phone?: string | null;
+  whatsapp?: string | null;
   idCardNumber?: string | null;
   emergencyPhone?: string | null;
   address?: string | null;

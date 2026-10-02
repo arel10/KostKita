@@ -12,6 +12,7 @@ router.get('/', validate(tenantQuerySchema, 'query'), tenantController.list);
 router.post('/', validate(createTenantSchema), tenantController.create);
 router.get('/:id', tenantController.getById);
 router.patch('/:id', validate(updateTenantSchema), tenantController.update);
+router.delete('/:id', tenantController.remove);
 router.post('/:id/stays', validate(createStaySchema), tenantController.addStay);
 router.patch('/:id/stays/:stayId/end', validate(endStaySchema), tenantController.endStay);
 

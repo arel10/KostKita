@@ -10,6 +10,7 @@ export const DashboardLayout: React.FC = () => {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
   const [dashboardReport, setDashboardReport] = useState<DashboardReport | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   const fetchGlobalData = async () => {
     try {
@@ -41,21 +42,26 @@ export const DashboardLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-surface font-sans text-on-surface flex">
-      {/* Sidebar fixed left */}
-      <Sidebar unreadNotificationCount={unreadCount} />
+      {/* Sidebar (Responsive drawer on mobile, fixed column on desktop) */}
+      <Sidebar
+        unreadNotificationCount={unreadCount}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+      />
 
-      {/* Main container offset by sidebar width (w-64 = 16rem = 256px) */}
-      <div className="pl-64 flex-1 flex flex-col min-w-0">
+      {/* Main container: only pl-64 on desktop (lg:), pl-0 on mobile */}
+      <div className="lg:pl-64 flex-1 flex flex-col min-w-0 min-h-screen">
         <Header
           properties={properties}
           selectedPropertyId={selectedPropertyId}
           onSelectProperty={setSelectedPropertyId}
           dashboardReport={dashboardReport}
           unreadCount={unreadCount}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         />
 
-        {/* Main Content Area */}
-        <main className="pt-16 p-6 lg:p-8 flex-1">
+        {/* Main Content Area: Safe top padding (pt-20 sm:pt-22 lg:pt-24) to ensure content is NEVER clipped by header */}
+        <main className="pt-20 sm:pt-22 lg:pt-24 px-4 sm:px-6 lg:px-8 pb-16 flex-1 min-w-0">
           <Outlet context={{ properties, selectedPropertyId, refreshGlobal: fetchGlobalData }} />
         </main>
       </div>

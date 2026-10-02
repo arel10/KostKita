@@ -1,5 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import prisma from '../../config/database';
 import { cloudinary } from '../../config/storage';
+import { env } from '../../config/env';
 import { logAudit } from '../../utils/audit';
 import { getActiveSubscription, checkRoomLimit } from '../../utils/subscription';
 import { AuditAction, EntityType } from '../../types/constants';
@@ -12,19 +15,27 @@ import { CreateRoomInput, UpdateRoomInput } from './room.schema';
 
 export async function listRooms(
   ownerId: string,
-  propertyId: string,
-  query: { page?: number; perPage?: number; status?: string }
+  propertyId?: string,
+  query?: { page?: number; perPage?: number; status?: string; search?: string }
 ) {
-  // Verify property ownership
-  const property = await prisma.property.findFirst({ where: { id: propertyId, ownerId } });
-  if (!property) throw { code: 'NOT_FOUND', message: 'Properti tidak ditemukan.', status: 404 };
+  // Verify property ownership if propertyId is provided
+  if (propertyId) {
+    const property = await prisma.property.findFirst({ where: { id: propertyId, ownerId } });
+    if (!property) throw { code: 'NOT_FOUND', message: 'Properti tidak ditemukan.', status: 404 };
+  }
 
-  const { page, perPage, skip } = getPaginationParams(query);
+  const { page, perPage, skip } = getPaginationParams(query || {});
 
   const where = {
-    propertyId,
     ownerId,
-    ...(query.status && { status: query.status as any }),
+    ...(propertyId && { propertyId }),
+    ...(query?.status && { status: query.status as any }),
+    ...(query?.search && {
+      OR: [
+        { roomNumber: { contains: query.search, mode: 'insensitive' as const } },
+        { name: { contains: query.search, mode: 'insensitive' as const } },
+      ],
+    }),
   };
 
   const [total, rooms] = await Promise.all([
@@ -34,6 +45,7 @@ export async function listRooms(
       include: {
         photos: { where: { isPrimary: true }, take: 1 },
         facilities: true,
+        property: { select: { id: true, name: true, city: true } },
         _count: { select: { stays: { where: { status: 'active' } } } },
       },
       orderBy: { roomNumber: 'asc' },
@@ -85,7 +97,7 @@ export async function createRoom(
         type: input.type,
         price: input.price,
         description: input.description,
-        status: 'available',
+        status: (input.status as any) || 'available',
       },
     });
 
@@ -107,12 +119,13 @@ export async function createRoom(
 // GET BY ID
 // ─────────────────────────────────────────────
 
-export async function getRoomById(ownerId: string, propertyId: string, roomId: string) {
+export async function getRoomById(ownerId: string, propertyId: string | undefined, roomId: string) {
   const room = await prisma.room.findFirst({
-    where: { id: roomId, propertyId, ownerId },
+    where: { id: roomId, ownerId, ...(propertyId && { propertyId }) },
     include: {
       photos: { orderBy: { order: 'asc' } },
       facilities: true,
+      property: { select: { id: true, name: true, city: true } },
       stays: {
         where: { status: 'active' },
         include: { tenant: { select: { id: true, name: true, whatsapp: true } } },
@@ -130,13 +143,15 @@ export async function getRoomById(ownerId: string, propertyId: string, roomId: s
 
 export async function updateRoom(
   ownerId: string,
-  propertyId: string,
+  propertyId: string | undefined,
   roomId: string,
   input: UpdateRoomInput,
   ip?: string,
   userAgent?: string
 ) {
-  const existing = await prisma.room.findFirst({ where: { id: roomId, propertyId, ownerId } });
+  const existing = await prisma.room.findFirst({
+    where: { id: roomId, ownerId, ...(propertyId && { propertyId }) },
+  });
   if (!existing) throw { code: 'NOT_FOUND', message: 'Kamar tidak ditemukan.', status: 404 };
 
   const room = await prisma.$transaction(async (tx) => {
@@ -147,6 +162,7 @@ export async function updateRoom(
         ...(input.name !== undefined && { name: input.name }),
         ...(input.type !== undefined && { type: input.type }),
         ...(input.price !== undefined && { price: input.price }),
+        ...(input.status !== undefined && { status: input.status as any }),
         ...(input.description !== undefined && { description: input.description }),
       },
     });
@@ -172,8 +188,10 @@ export async function updateRoom(
 // DELETE
 // ─────────────────────────────────────────────
 
-export async function deleteRoom(ownerId: string, propertyId: string, roomId: string, ip?: string, userAgent?: string) {
-  const room = await prisma.room.findFirst({ where: { id: roomId, propertyId, ownerId } });
+export async function deleteRoom(ownerId: string, propertyId: string | undefined, roomId: string, ip?: string, userAgent?: string) {
+  const room = await prisma.room.findFirst({
+    where: { id: roomId, ownerId, ...(propertyId && { propertyId }) },
+  });
   if (!room) throw { code: 'NOT_FOUND', message: 'Kamar tidak ditemukan.', status: 404 };
 
   if (room.status === 'occupied') {
@@ -189,22 +207,49 @@ export async function deleteRoom(ownerId: string, propertyId: string, roomId: st
 // PHOTO UPLOAD
 // ─────────────────────────────────────────────
 
-export async function uploadRoomPhotos(ownerId: string, propertyId: string, roomId: string, files: Express.Multer.File[]) {
-  const room = await prisma.room.findFirst({ where: { id: roomId, propertyId, ownerId } });
+export async function uploadRoomPhotos(ownerId: string, propertyId: string | undefined, roomId: string, files: Express.Multer.File[]) {
+  const room = await prisma.room.findFirst({
+    where: { id: roomId, ownerId, ...(propertyId && { propertyId }) },
+  });
   if (!room) throw { code: 'NOT_FOUND', message: 'Kamar tidak ditemukan.', status: 404 };
 
   const existingCount = await prisma.roomPhoto.count({ where: { roomId } });
   if (existingCount + files.length > 10) throw { code: 'TOO_MANY_PHOTOS', message: 'Maksimal 10 foto per kamar.', status: 400 };
 
+  const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+
   const uploadedPhotos = await Promise.all(
     files.map(async (file, index) => {
-      const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-        cloudinary.uploader.upload_stream({ folder: `kostkita/rooms/${roomId}`, resource_type: 'image', transformation: [{ quality: 'auto' }] }, (error, result) => {
-          if (error) reject(error);
-          else resolve(result as { secure_url: string });
-        }).end(file.buffer);
-      });
-      return { roomId, url: result.secure_url, order: existingCount + index, isPrimary: existingCount === 0 && index === 0 };
+      let photoUrl = '';
+
+      if (hasCloudinary) {
+        try {
+          const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+              { folder: `kostkita/rooms/${roomId}`, resource_type: 'image', transformation: [{ quality: 'auto' }] },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result as { secure_url: string });
+              }
+            ).end(file.buffer);
+          });
+          photoUrl = result.secure_url;
+        } catch (cloudErr) {
+          console.warn('Cloudinary upload failed for room, fallback to local storage:', cloudErr);
+        }
+      }
+
+      if (!photoUrl) {
+        const uploadDir = path.resolve(process.cwd(), 'uploads/rooms', roomId);
+        fs.mkdirSync(uploadDir, { recursive: true });
+        const ext = path.extname(file.originalname) || (file.mimetype === 'image/png' ? '.png' : file.mimetype === 'image/webp' ? '.webp' : '.jpg');
+        const filename = `${Date.now()}-${index}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, file.buffer);
+        photoUrl = `${env.APP_URL}/uploads/rooms/${roomId}/${filename}`;
+      }
+
+      return { roomId, url: photoUrl, order: existingCount + index, isPrimary: existingCount === 0 && index === 0 };
     })
   );
 

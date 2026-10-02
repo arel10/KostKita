@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import { Badge } from '../../components/ui/Badge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
+import { PropertyFormModal } from '../../components/properties/PropertyFormModal';
 import api from '../../lib/api';
 import { Property } from '../../types';
 
-export const PropertyListPage: React.FC = () => {
+interface PropertyListPageProps {
+  initialOpenModal?: boolean;
+}
+
+export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenModal = false }) => {
   const context = useOutletContext<{ refreshGlobal: () => void }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { id: routeEditId } = useParams<{ id: string }>();
+
+  const isNewRoute = initialOpenModal || location.pathname.endsWith('/new');
+  const [isModalOpen, setIsModalOpen] = useState(isNewRoute || Boolean(routeEditId));
+  const [modalPropertyId, setModalPropertyId] = useState<string | null>(routeEditId || null);
+
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,6 +28,16 @@ export const PropertyListPage: React.FC = () => {
   
   const [deleteTarget, setDeleteTarget] = useState<Property | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (initialOpenModal || location.pathname.endsWith('/new')) {
+      setIsModalOpen(true);
+      setModalPropertyId(null);
+    } else if (routeEditId) {
+      setIsModalOpen(true);
+      setModalPropertyId(routeEditId);
+    }
+  }, [initialOpenModal, location.pathname, routeEditId]);
 
   const fetchProperties = async () => {
     setIsLoading(true);
@@ -80,6 +103,20 @@ export const PropertyListPage: React.FC = () => {
     }).format(val);
   };
 
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setModalPropertyId(null);
+    if (location.pathname.endsWith('/new') || routeEditId) {
+      navigate('/properties', { replace: true });
+    }
+  };
+
+  const handleModalSuccess = () => {
+    handleModalClose();
+    fetchProperties();
+    context?.refreshGlobal?.();
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Header and Add Button */}
@@ -102,13 +139,17 @@ export const PropertyListPage: React.FC = () => {
           </p>
         </div>
 
-        <Link
-          to="/properties/new"
-          className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start lg:self-auto"
+        <button
+          type="button"
+          onClick={() => {
+            setModalPropertyId(null);
+            setIsModalOpen(true);
+          }}
+          className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start lg:self-auto cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">add_business</span>
           <span>+ Tambah Properti Baru</span>
-        </Link>
+        </button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -157,7 +198,10 @@ export const PropertyListPage: React.FC = () => {
               : 'Anda belum mendaftarkan properti kost. Mulai tambahkan kost Anda sekarang!'
           }
           actionText={searchQuery ? undefined : 'Tambah Properti Sekarang'}
-          onAction={searchQuery ? undefined : () => window.location.href = '/properties/new'}
+          onAction={searchQuery ? undefined : () => {
+            setModalPropertyId(null);
+            setIsModalOpen(true);
+          }}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -250,13 +294,17 @@ export const PropertyListPage: React.FC = () => {
                   </button>
 
                   <div className="flex items-center gap-1">
-                    <Link
-                      to={`/properties/${p.id}/edit`}
-                      className="p-2 text-slate-500 hover:text-primary hover:bg-slate-100 rounded-xl transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModalPropertyId(p.id);
+                        setIsModalOpen(true);
+                      }}
+                      className="p-2 text-slate-500 hover:text-primary hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
                       title="Edit Properti"
                     >
                       <span className="material-symbols-outlined text-[18px]">edit</span>
-                    </Link>
+                    </button>
                     <Link
                       to={`/properties/${p.id}`}
                       className="px-3 py-1.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1 shadow-sm"
@@ -278,6 +326,14 @@ export const PropertyListPage: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* Property Form Modal (New & Edit) */}
+      <PropertyFormModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        propertyId={modalPropertyId}
+        onSuccess={handleModalSuccess}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

@@ -10,7 +10,7 @@ import { DashboardReport, Property, TenantPayment } from '../../types';
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const context = useOutletContext<{ properties: Property[]; refreshGlobal: () => void }>();
-  
+
   const [report, setReport] = useState<DashboardReport | null>(null);
   const [recentPayments, setRecentPayments] = useState<TenantPayment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,11 +57,11 @@ export const DashboardPage: React.FC = () => {
   const sub = report?.subscription;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-12">
       {/* Top Greeting & Action Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold text-primary bg-primary-fixed/40 px-2.5 py-0.5 rounded-full">
               Pusat Kendali Juragan
             </span>
@@ -73,30 +73,30 @@ export const DashboardPage: React.FC = () => {
           <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
             Selamat Datang, {user?.name || 'Juragan'} 👋
           </h1>
-          <p className="text-xs lg:text-sm text-slate-500 mt-1">
+          <p className="text-xs lg:text-sm text-slate-500 mt-0.5 sm:mt-1">
             Berikut ringkasan performa okupansi dan keuangan properti kost Anda hari ini.
           </p>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
           <Link
             to="/properties/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-[0.99]"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-[0.99] whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-[18px]">add_business</span>
             <span>+ Properti Baru</span>
           </Link>
           <Link
             to="/tenants"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-xl border border-slate-200/80 shadow-sm transition-all"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-xl border border-slate-200/80 shadow-sm transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-[18px] text-primary">person_add</span>
             <span>+ Penghuni</span>
           </Link>
           <Link
             to="/payments"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition-all"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition-all whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-[18px] text-emerald-600">payments</span>
             <span>Catat Bayar</span>
@@ -106,13 +106,13 @@ export const DashboardPage: React.FC = () => {
 
       {/* Subscription Alert Card if expiring or active */}
       {sub && (
-        <div className="bg-gradient-to-r from-emerald-900 via-primary-container to-teal-900 text-white rounded-3xl p-6 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-emerald-900 via-primary-container to-teal-900 text-white rounded-3xl p-5 sm:p-6 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative z-10 flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 text-emerald-300">
               <span className="material-symbols-outlined text-[28px]">verified</span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs uppercase tracking-wider font-extrabold text-emerald-300">
                   Langganan Aktif
                 </span>
@@ -120,10 +120,10 @@ export const DashboardPage: React.FC = () => {
                   Paket {sub.planName}
                 </span>
               </div>
-              <h3 className="text-lg font-bold mt-0.5">
+              <h3 className="text-base sm:text-lg font-bold mt-0.5">
                 Masa Aktif: Tersisa {sub.daysLeft} Hari Lagi
               </h3>
-              <p className="text-xs text-emerald-100/80 mt-1 max-w-xl">
+              <p className="text-xs text-emerald-100/80 mt-1 max-w-xl leading-relaxed">
                 Nikmati fitur listing publikasi Google Maps discovery, pengingat WhatsApp tagihan, dan laporan multi-cabang tanpa batasan.
               </p>
             </div>
@@ -132,7 +132,7 @@ export const DashboardPage: React.FC = () => {
           <div className="relative z-10 flex items-center gap-3 shrink-0">
             <Link
               to="/subscription"
-              className="px-5 py-2.5 bg-white hover:bg-emerald-50 text-primary text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
+              className="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-emerald-50 text-primary text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5"
             >
               <span>Upgrade / Perpanjang</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -178,12 +178,12 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Two Column Layout: Properti Terdaftar & Transaksi Terbaru */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         {/* Left Column: Properti Portofolio (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Daftar Properti Kost</h2>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Daftar Properti Kost</h2>
               <p className="text-xs text-slate-500">Portofolio bangunan dan status listing publik</p>
             </div>
             <Link
@@ -197,7 +197,10 @@ export const DashboardPage: React.FC = () => {
 
           <div className="space-y-3">
             {properties.slice(0, 3).map((p) => {
-              const primaryPhoto = p.photos?.find((ph) => ph.isPrimary)?.url || p.photos?.[0]?.url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500';
+              const primaryPhoto =
+                p.photos?.find((ph) => ph.isPrimary)?.url ||
+                p.photos?.[0]?.url ||
+                'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500';
               const totalRooms = p.rooms?.length || p._count?.rooms || 0;
               const occupiedRooms = p.rooms?.filter((r) => r.status === 'occupied').length || 0;
 
@@ -209,10 +212,10 @@ export const DashboardPage: React.FC = () => {
                   <img
                     src={primaryPhoto}
                     alt={p.name}
-                    className="w-full sm:w-28 h-24 rounded-xl object-cover shrink-0"
+                    className="w-full sm:w-28 h-36 sm:h-24 rounded-xl object-cover shrink-0"
                   />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-1 min-w-0 w-full">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <Badge
                         variant={p.status === 'active' ? 'success' : 'neutral'}
                         size="sm"
@@ -231,7 +234,7 @@ export const DashboardPage: React.FC = () => {
                     <p className="text-xs text-slate-500 truncate mt-0.5">
                       📍 {p.address}, {p.city}
                     </p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-slate-600">
+                    <div className="flex items-center gap-3 sm:gap-4 mt-2 text-xs text-slate-600 flex-wrap">
                       <span>🚪 {totalRooms} Kamar Total</span>
                       <span>👥 {occupiedRooms} Terisi</span>
                       <span className="font-semibold text-primary">
@@ -242,7 +245,7 @@ export const DashboardPage: React.FC = () => {
                   <div className="shrink-0 flex sm:flex-col gap-2 w-full sm:w-auto">
                     <Link
                       to={`/properties/${p.id}`}
-                      className="flex-1 sm:flex-none px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg text-center border border-slate-200/60"
+                      className="w-full sm:w-auto px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg text-center border border-slate-200/60"
                     >
                       Detail & Kamar
                     </Link>
@@ -270,7 +273,7 @@ export const DashboardPage: React.FC = () => {
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Pembayaran Sewa</h2>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">Pembayaran Sewa</h2>
               <p className="text-xs text-slate-500">Aktivitas pelunasan & tagihan</p>
             </div>
             <Link
@@ -286,12 +289,12 @@ export const DashboardPage: React.FC = () => {
             {recentPayments.map((pay) => {
               const tenantName = pay.tenantStay?.tenant?.name || 'Penyewa';
               const roomNumber = pay.tenantStay?.room?.roomNumber || '-';
-              const tenantPhone = pay.tenantStay?.tenant?.phone;
+              const tenantPhone = pay.tenantStay?.tenant?.phone || (pay.tenantStay?.tenant as any)?.whatsapp;
 
               return (
                 <div key={pay.id} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-bold text-slate-800 truncate">{tenantName}</span>
                       <span className="text-[11px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                         Kamar {roomNumber}

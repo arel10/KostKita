@@ -3,9 +3,16 @@ import { z } from 'zod';
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal harus YYYY-MM-DD');
 
 export const createTenantSchema = z.object({
-  name: z.string().min(2).max(100),
-  whatsapp: z.string().regex(/^[0-9]{9,15}$/).optional(),
+  name: z.string().min(2, 'Nama minimal 2 karakter').max(100),
+  whatsapp: z.string().optional(),
+  phone: z.string().optional(),
   notes: z.string().max(500).optional(),
+  roomId: z.string().uuid().optional(),
+  startDate: z.string().optional(),
+  checkInDate: z.string().optional(),
+  rentAmount: z.number().optional(),
+  rentPrice: z.number().optional(),
+  deposit: z.number().optional(),
 });
 
 export const updateTenantSchema = createTenantSchema.partial();
