@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>KostKita - Platform Manajemen &amp; Sewa Kost Modern</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-error-container": "#93000a", "on-primary-container": "#8dd2bf", "surface-variant": "#d3e4fe", "background": "#f8f9ff", "primary-container": "#0d5c4d", "tertiary-fixed-dim": "#3de273", "error": "#ba1a1a", "surface-container": "#e5eeff", "on-error": "#ffffff", "surface-container-low": "#eff4ff", "on-primary": "#ffffff", "on-primary-fixed-variant": "#005143", "surface": "#f8f9ff", "outline-variant": "#bfc9c4", "secondary-fixed-dim": "#ffb77d", "on-primary-fixed": "#00201a", "inverse-surface": "#213145", "surface-dim": "#cbdbf5", "error-container": "#ffdad6", "surface-tint": "#21695a", "on-surface": "#0b1c30", "on-tertiary-fixed-variant": "#005322", "on-tertiary-container": "#3be172", "on-surface-variant": "#3f4945", "secondary": "#904d00", "secondary-container": "#fe932c", "tertiary": "#00451b", "on-secondary": "#ffffff", "tertiary-container": "#005f28", "on-secondary-container": "#663500", "tertiary-fixed": "#66ff8e", "inverse-on-surface": "#eaf1ff", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#002109", "surface-container-highest": "#d3e4fe", "on-background": "#0b1c30", "on-secondary-fixed": "#2f1500", "primary": "#004337", "inverse-primary": "#8fd4c1", "on-tertiary": "#ffffff", "secondary-fixed": "#ffdcc3", "surface-bright": "#f8f9ff", "primary-fixed-dim": "#8fd4c1", "on-secondary-fixed-variant": "#6e3900", "surface-container-high": "#dce9ff", "primary-fixed": "#aaf0dc", "outline": "#6f7975" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2rem", "space-lg": "1.5rem", "margin-sm": "1rem", "space-md": "1rem", "margin": "1.5rem", "gutter-sm": "1rem", "gutter-lg": "2rem", "space-sm": "0.5rem", "margin-lg": "3rem", "gutter": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "currency-stat": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "currency-stat": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }] } } } }</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(15,23,42,0.05)]"><div class="h-20 max-w-[1360px] mx-auto px-margin md:px-margin-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="cari-kost" href="#"><img alt="KostKita Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"/><span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">KostKita</span></a><nav class="hidden lg:flex items-center gap-space-lg ml-space-md" data-active-classes="text-primary font-bold"><a aria-current="page" class="transition-colors text-primary font-bold" data-path="cari-kost" href="#">Cari Kost</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="lokasi-populer" href="#">Lokasi Populer</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="fitur-unggulan" href="#">Fitur Unggulan</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="tentang-kami" href="#">Tentang Kami</a></nav></div><div class="flex items-center gap-space-sm sm:gap-space-md"><a class="font-label-md text-label-md px-space-md py-space-sm rounded-lg text-primary hover:bg-surface-container-low transition-colors" data-path="owner-dashboard" href="#">Masuk Pemilik Kost</a><a class="font-label-md text-label-md px-space-md py-space-sm rounded-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary transition-colors shadow-sm" data-path="daftar-kelola-kost" href="#">Daftar Kelola Kost</a></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]"><div class="flex flex-col w-full">
+<!-- HERO SECTION WITH INTEGRATED SEARCH -->
+<section class="relative w-full overflow-hidden bg-gradient-to-b from-surface-container-low via-surface to-background pb-space-xl">
+<!-- Ambient organic gradient accents -->
+<div class="absolute -top-32 right-[-10%] w-[500px] h-[500px] rounded-full bg-primary-fixed/30 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 left-[-15%] w-[420px] h-[420px] rounded-full bg-surface-variant/40 blur-3xl pointer-events-none"></div>
+<div class="max-w-[1360px] mx-auto px-margin md:px-margin-lg pt-space-xl lg:pt-28 pb-space-lg relative z-10">
+<div class="flex flex-col items-center text-center max-w-4xl mx-auto mb-space-lg">
+<!-- Live Verified Tracker Pill -->
+<div class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container-lowest shadow-sm mb-space-md">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary tracking-wide">4.820+ Properti Kost Aktif di 18 Kota Besar</span>
+</div>
+<h1 class="font-display-hero text-display-hero-mobile md:text-display-hero text-on-surface tracking-tight mb-space-sm">
+          Temukan Kost Nyaman <br class="hidden sm:inline"/>
+<span class="text-primary relative inline-block">
+            yang Pas untukmu.
+            <svg class="absolute -bottom-2 left-0 w-full h-3 text-secondary-container/60" fill="none" preserveaspectratio="none" viewbox="0 0 200 12">
+<path d="M2 9C58 3 142 3 198 9" stroke="currentColor" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-space-lg">
+          Cari ribuan pilihan kost terverifikasi di berbagai kota Indonesia tanpa perlu login atau biaya pendaftaran.
+        </p>
+<!-- Trust Mini Badges -->
+<div class="flex flex-wrap items-center justify-center gap-space-sm mb-space-xl">
+<div class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-high/80 text-on-surface font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
+<span>Informasi Terverifikasi</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-high/80 text-on-surface font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">money_off</span>
+<span>Tanpa Biaya Admin</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-md py-1 rounded-full bg-surface-container-high/80 text-on-surface font-label-sm text-label-sm shadow-sm">
+<span class="material-symbols-outlined text-[#25D366] text-[18px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>Hubungi Langsung via WhatsApp</span>
+</div>
+</div>
+</div>
+<!-- MAIN BESPOKE SEARCH DOCK -->
+<div class="w-full max-w-5xl mx-auto bg-surface-container-lowest rounded-xl shadow-xl p-space-md md:p-space-lg">
+<form class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-center" onsubmit="event.preventDefault();">
+<!-- City / Campus Search Input -->
+<div class="md:col-span-5 relative flex items-center">
+<div class="absolute left-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</div>
+<input class="w-full h-12 pl-11 pr-4 rounded-lg bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-all" id="search-location" placeholder="Kota, kampus, atau area (cth: UI Depok, Pogung, Tebet)" type="text"/>
+</div>
+<!-- GPS Location Quick Trigger -->
+<div class="md:col-span-3">
+<button class="w-full h-12 px-space-sm flex items-center justify-center gap-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors" id="btn-gps" type="button">
+<span class="material-symbols-outlined text-primary text-[20px]">near_me</span>
+<span class="truncate">Gunakan Lokasi Saya</span>
+</button>
+</div>
+<!-- Price Range Filter Select -->
+<div class="md:col-span-2 relative">
+<div class="relative w-full">
+<select class="w-full h-12 px-3 pr-8 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer">
+<option value="">Semua Harga</option>
+<option value="under-1m">&lt; Rp1.000.000</option>
+<option value="1m-2m">Rp1 Jt - Rp2 Jt</option>
+<option value="2m-3m">Rp2 Jt - Rp3 Jt</option>
+<option value="above-3m">&gt; Rp3.000.000</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-outline text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Prominent Search CTA -->
+<div class="md:col-span-2">
+<button class="w-full h-12 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all" type="submit">
+<span>Cari Kost</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Quick Filter Tags -->
+<div class="flex flex-wrap items-center gap-2 mt-space-md pt-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="text-outline">Paling Dicari:</span>
+<a class="px-2.5 py-1 rounded bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface" href="#">Dekat UGM Yogya</a>
+<a class="px-2.5 py-1 rounded bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface" href="#">Kukusan UI</a>
+<a class="px-2.5 py-1 rounded bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface" href="#">Kost Putri Padang</a>
+<a class="px-2.5 py-1 rounded bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface" href="#">AC Jakarta Selatan</a>
+</div>
+</div>
+</div>
+</section>
+<!-- POPULAR LOCATIONS SECTION (BENTO GRID WITH METRICS) -->
+<section class="w-full max-w-[1360px] mx-auto px-margin md:px-margin-lg py-space-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-space-lg gap-space-sm">
+<div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-primary uppercase tracking-widest mb-1">
+<span class="w-2.5 h-0.5 bg-primary rounded-full"></span>
+<span>Eksplorasi Area Strategis</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">
+          Lokasi Populer Favorit Anak Kost
+        </h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+        Pilihan kawasan terdekat dari pusat perkantoran dan kampus unggulan dengan akses transportasi lengkap.
+      </p>
+</div>
+<!-- Asymmetrical Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-space-md">
+<!-- 1. Jakarta Selatan (Large Feature Card) -->
+<a class="group relative lg:col-span-6 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 min-h-[300px] flex flex-col justify-end p-space-lg" href="#">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Modern high-density urban street and lifestyle area in Jakarta Selatan Indonesia featuring sleek apartments, cozy cafes, and lush tropical trees under clear warm sunset lighting with emerald and slate accents" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDHD2IUVD6ni1m2WEudMmwAsay-bJY14RJMu8IQm2_ATNgPPj-0dzBMDPduJX-UWsnZv3E4qqvQPI0lbImrRXrikcFbsljDBhRvzEKhFWB_9CUnoupLkYa_6oQH_CZqqeuCxxg2sCzhhGI2nbYXMpA-msi6Nca1Dp0LZurNo3JobjeoGsai3buy4pnXRaEz9ATByTiIpwMT6S7CGtp96VV_qTBYVl_UEDKSZKckBEamfgl7Al96e_n0')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/50 to-transparent"></div>
+<div class="relative z-10 flex flex-col justify-end">
+<div class="flex items-center justify-between gap-2 mb-2">
+<span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+              Area Paling Ramai
+            </span>
+<span class="font-label-sm text-label-sm text-inverse-on-surface bg-inverse-surface/60 backdrop-blur-md px-2.5 py-0.5 rounded-full">
+              Mulai Rp1.800.000/bln
+            </span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-inverse-on-surface group-hover:text-primary-fixed transition-colors">
+            Jakarta Selatan
+          </h3>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/80 flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">domain</span>
+<span>1.240 kost aktif • Dekat SCBD, Kuningan &amp; Tebet</span>
+</p>
+</div>
+</a>
+<!-- 2. Pogung UGM Yogya -->
+<a class="group relative lg:col-span-6 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 min-h-[300px] flex flex-col justify-end p-space-lg" href="#">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Peaceful student neighborhood in Pogung Yogyakarta near UGM campus with cozy residential alleys, lush gardens, student cafes, and bicycle paths in soft morning tropical sun" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKJVmfnFlH4MwyLdPeSfoVmLFrLa9Mc1adLkGiIE9VzGbHeFxJkwgI6AXeXWj_CyRoM_6YV6-OfmO3KIZBBz7C81puJZeR4CyMUJrh77FHR-l9J2GKOay5orjDqKW7kt8kiQOhiXh7yCtsRiarMmBvLsPhiYkTtw8eXXylP_XMEcMFCa2x2HHhrCYUZzrNAOlyZTyiFebzs0GL0QNSBNDIfy16hyIB1enFk0ZiSKmUuD9horPnRd4V')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/50 to-transparent"></div>
+<div class="relative z-10 flex flex-col justify-end">
+<div class="flex items-center justify-between gap-2 mb-2">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">
+              Sentra Kampus UGM
+            </span>
+<span class="font-label-sm text-label-sm text-inverse-on-surface bg-inverse-surface/60 backdrop-blur-md px-2.5 py-0.5 rounded-full">
+              Mulai Rp700.000/bln
+            </span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-inverse-on-surface group-hover:text-primary-fixed transition-colors">
+            Pogung UGM Yogya
+          </h3>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/80 flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">school</span>
+<span>1.150 kost aktif • 5 Menit ke Gerbang Utama UGM</span>
+</p>
+</div>
+</a>
+<!-- 3. Kukusan UI Depok -->
+<a class="group relative lg:col-span-4 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 min-h-[240px] flex flex-col justify-end p-space-md" href="#">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Quiet green residential path in Kukusan Depok near Universitas Indonesia campus with modern student boardings, paved alleys, and surrounding shady trees" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_A4ulG1Xs5Pmv32nVKqh4ahn9jvFoWubmlbAkk5t32UiCCtvI3wKj2NhKhV3Z4r0G1H2RjZzpDC7JlAqZBACdhj-3StUdvsaeNPrad7gwGUnDWAWaeb8m2dH0wAvyopMkk1E5MT3odvXwyTO0q9Yd6mVFMvpiEkN3rEp4e-KWqXSmeLxLgL5xAKTz4mcA9dkfbUwUAwVckf816gNIT9L9cBbI4raIuJ3VWzqAKQ2hUFZBGSI1jjWl')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/60 to-transparent"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between gap-1 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high/90 text-on-surface font-label-sm text-label-sm">Akses UI Kelapa Dua</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-inverse-on-surface group-hover:text-primary-fixed transition-colors">
+            Kukusan UI Depok
+          </h3>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/80 mt-1">680 kost • Mulai Rp900.000/bln</p>
+</div>
+</a>
+<!-- 4. Dago Bandung -->
+<a class="group relative lg:col-span-4 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 min-h-[240px] flex flex-col justify-end p-space-md" href="#">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Scenic hill urban landscape of Dago Bandung with modern architectural villas and student housing nestled among tropical pine trees under mild cool daylight" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCY3JQ3n3hPgiZBaf7UM8xrMf3XXTSy3qw8AT22S_GwvEx60uG_x6iNyJhq0n9T-cYuZRrbxYs-qiWYZV2hNexwT-lNkhCyjgYmPSmKTUFzsiE6_F_tXoP0SUQD0D8IUA8wqqmTJf79XimnQnaOYLYHDuLJDbl7ORalZCpbW6l9UUxYleP24l729YUBwtzSEMzYSfFkLK7vwnpfAp7W5ZYbs4-NsSxiRHngW5quYjdyWr3etoRZNd52')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/60 to-transparent"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between gap-1 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high/90 text-on-surface font-label-sm text-label-sm">Dekat ITB &amp; UNPAD</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-inverse-on-surface group-hover:text-primary-fixed transition-colors">
+            Dago Bandung
+          </h3>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/80 mt-1">890 kost • Mulai Rp1.200.000/bln</p>
+</div>
+</a>
+<!-- 5. Kuranji Padang -->
+<a class="group relative lg:col-span-4 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 min-h-[240px] flex flex-col justify-end p-space-md" href="#">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Warm welcoming residential suburb in Kuranji Padang West Sumatra with clean modern homestays, palm trees, and bright blue sky" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCydBrXOsY74Isjyyil6uTbKM9bG5L6sldAisP-7995gskdBqQHH3XmMCLDU0R16bOWSRTPYblAzN-ab-flvzKyNCg74Y-gin8xM8H5kw017UL2uYXZ1WYcovwiAb1e6kdKzdaW46arScftaCGmtiL9JNSSwXEU8bLMKuXzSq-Pc9PvXBuxZO78vQbo4n2hzd9qtULnn3DiDygzhBdrrwaHlJVLNCmj_k5Lmi7h-_y3LHR7nmo8AbTJ')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/60 to-transparent"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between gap-1 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high/90 text-on-surface font-label-sm text-label-sm">Dekat Unand &amp; RS</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-inverse-on-surface group-hover:text-primary-fixed transition-colors">
+            Kuranji Padang
+          </h3>
+<p class="font-body-sm text-body-sm text-inverse-on-surface/80 mt-1">320 kost • Mulai Rp650.000/bln</p>
+</div>
+</a>
+</div>
+</section>
+<!-- FEATURED PROPERTIES (GRID 4 CARDS) -->
+<section class="w-full bg-surface-container-low/60 py-space-xl">
+<div class="max-w-[1360px] mx-auto px-margin md:px-margin-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-space-lg gap-space-sm">
+<div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[16px]">stars</span>
+<span>Rekomendasi Unggulan KostKita</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">
+            Kamar Pilihan Siap Huni Minggu Ini
+          </h2>
+</div>
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors" href="#">
+<span>Lihat 4.000+ Kost Lainnya</span>
+<span class="material-symbols-outlined text-[18px]">east</span>
+</a>
+</div>
+<!-- Grid Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+<!-- Property 1: Kost Melati Residence (Kuranji, Padang) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Interior of a clean bright minimalist kost bedroom in Padang Indonesia with Queen sized bed, crisp white linen, wooden study desk, AC unit, and natural daylight from window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYQY0Zjb1aiHs-3gFa2f1K1lHYQSRcUzQqlR-78ZxhOjP70p6bplBQhFyZURNV1EqefW2XQiO22HKHwSKDsX5it3X7zVfqdw1sfd4MhLQ56-euGuxVqKcXFaImlGYkedDFf7m6OZ9yGBstc1zXgT1Hz5_hQfWPlW_riv-15w6xw7MaEnRV8fbymBN7D9hZGLR_VWi_bpArGKnCmf6l1WGwS4Dv72-z-KPMNIM5t16FMMgecYU2R_Ky"/>
+<!-- Badges overlay -->
+<div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+<span class="px-2 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">verified</span> Terverifikasi
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-semibold">
+                Campur
+              </span>
+</div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<div class="absolute bottom-2 left-3 bg-error-container text-on-error-container px-2 py-0.5 rounded font-label-sm text-label-sm font-bold">
+              Sisa 2 Kamar
+            </div>
+</div>
+<div class="p-space-md flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm mb-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="truncate">Kuranji, Kota Padang</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                Kost Melati Residence
+              </h3>
+<!-- Amenities list -->
+<div class="flex flex-wrap gap-1.5 my-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="px-2 py-0.5 bg-surface-container-low rounded">AC</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">K. Mandi Dlm</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">WiFi</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Kasur Queen</span>
+</div>
+</div>
+<div class="pt-space-sm mt-space-sm bg-surface-container-low/40 -mx-space-md px-space-md -mb-space-md pb-space-md">
+<div class="flex items-baseline justify-between mb-space-xs">
+<div>
+<span class="font-currency-stat text-currency-stat text-primary font-bold">Rp850.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ bln</span>
+</div>
+</div>
+<a class="w-full mt-2 h-10 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-colors" href="https://wa.me/628123456789?text=Halo%20Admin%20KostKita,%20saya%20tertarik%20dengan%20Kost%20Melati%20Residence%20Padang" target="_blank">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>Chat Pemilik</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Property 2: Griya Mahasiswa Pogung (Yogya) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Cozy aesthetic student studio bedroom in Sleman Yogyakarta with high ceilings, warm desk study lamp, fast WiFi router, and view towards tropical courtyard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7fE61riC_0MUtiq7AktqcTQs9fFZwdMw1cAv1T7jhMaCCS5ejE6Wqy3xenJ6ZnxkanvJVGHpAxYfubMUj7kD3quWOX-up_Eiz7jqHaXrifNi-Sj0ETIjNOl7iufn3QxM5KCv8vMTkj6QTywitrVQvWEfC2u7bBMFSuaDkwmu9JP7_K3pYwVLIy1jyhYhNle7QoaBs9yYn7vQbkVrN5dblCl4k8lXxSsZoE5Oo3aSlWYPuOZmf84UU"/>
+<div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span> Populer
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-semibold">
+                Khusus Putra
+              </span>
+</div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<div class="absolute bottom-2 left-3 bg-error-container text-on-error-container px-2 py-0.5 rounded font-label-sm text-label-sm font-bold">
+              Sisa 1 Kamar Terakhir
+            </div>
+</div>
+<div class="p-space-md flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm mb-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="truncate">Sleman, DI Yogyakarta</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                Griya Mahasiswa Pogung
+              </h3>
+<div class="flex flex-wrap gap-1.5 my-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="px-2 py-0.5 bg-surface-container-low rounded">AC</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">WiFi Cepat</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Parkir Mobil</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Dapur Bersama</span>
+</div>
+</div>
+<div class="pt-space-sm mt-space-sm bg-surface-container-low/40 -mx-space-md px-space-md -mb-space-md pb-space-md">
+<div class="flex items-baseline justify-between mb-space-xs">
+<div>
+<span class="font-currency-stat text-currency-stat text-primary font-bold">Rp1.100.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ bln</span>
+</div>
+</div>
+<a class="w-full mt-2 h-10 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-colors" href="https://wa.me/628123456789?text=Halo%20Admin%20KostKita,%20saya%20tertarik%20dengan%20Griya%20Mahasiswa%20Pogung%20Yogya" target="_blank">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>Chat Pemilik</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Property 3: Singgah Modern Tebet (Jakarta Selatan) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Upscale boutique co-living room in Tebet South Jakarta with floor-to-ceiling glass, smart LED lighting, ensuite modern bathroom with water heater and sleek workstation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC6u_5TcmKUueisXF19IL_vOexuhwOTnD7PohOPCvDOIvVuOUca3mNxMOGNR1Slbb4R3CoUfdgaWcFWeDxNcMWxTXVbI1Q4KOB153k68za9Uxj9otJ0xWZK32G9w4-b8rUhxBM22j6Q2boNOrt78GC9HOdpOB1juihA1BpfbpKbyi9_HmSbYlHw15YtX914GimvOZLZW65GFTsqXHD0Cb4QjOyqCtSItPEllEYEfwRXk6rwsnEUgx8"/>
+<div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">shield</span> Superhost
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-semibold">
+                Campur
+              </span>
+</div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<div class="absolute bottom-2 left-3 bg-surface-container-lowest/90 text-on-surface px-2 py-0.5 rounded font-label-sm text-label-sm font-bold shadow-sm">
+              Sisa 4 Kamar
+            </div>
+</div>
+<div class="p-space-md flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm mb-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="truncate">Tebet, Jakarta Selatan</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                Singgah Modern Tebet
+              </h3>
+<div class="flex flex-wrap gap-1.5 my-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Fully Furnished</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Water Heater</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Security 24 Jam</span>
+</div>
+</div>
+<div class="pt-space-sm mt-space-sm bg-surface-container-low/40 -mx-space-md px-space-md -mb-space-md pb-space-md">
+<div class="flex items-baseline justify-between mb-space-xs">
+<div>
+<span class="font-currency-stat text-currency-stat text-primary font-bold">Rp2.350.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ bln</span>
+</div>
+</div>
+<a class="w-full mt-2 h-10 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-colors" href="https://wa.me/628123456789?text=Halo%20Admin%20KostKita,%20saya%20tertarik%20dengan%20Singgah%20Modern%20Tebet%20Jakarta" target="_blank">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>Chat Pemilik</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Property 4: Paviliun Asri Dago (Bandung) -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+<div class="relative w-full aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Charming Scandinavian style room in Dago Bandung with private small balcony facing green hillside trees, light wood accents, comfortable single bed, and study chair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtuX6vClisZEbytS69FatV9a5IK1pvLojG8zQoEofPrfHtSNrv0WELhtCvCapJeyq63JAcGIOfrl6pDXED09LG6e63HFPBoLVuaPexV-294ClZh3l62gi9TELWxEc-jKJA6N6_WOYWo86Khd9KVElTQyk7KNro1maWC6X2-bp4E_zf8kbFbwCRLUOsQdch40ne6CkRLHbHpwNFnW-fVePaz4OSxCOCOCUQx-Ow1Yk134s6aIOye3lo"/>
+<div class="absolute top-3 left-3 flex flex-col gap-1 items-start">
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">new_releases</span> Baru
+              </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-semibold">
+                Khusus Putri
+              </span>
+</div>
+<button class="absolute top-3 right-3 w-8 h-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</button>
+<div class="absolute bottom-2 left-3 bg-surface-container-lowest/90 text-primary px-2 py-0.5 rounded font-label-sm text-label-sm font-bold shadow-sm">
+              Tersedia
+            </div>
+</div>
+<div class="p-space-md flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm mb-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="truncate">Coblong, Kota Bandung</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold group-hover:text-primary transition-colors line-clamp-1">
+                Paviliun Asri Dago
+              </h3>
+<div class="flex flex-wrap gap-1.5 my-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Balkon Pribadi</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">WiFi</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Parkir Motor</span>
+<span class="px-2 py-0.5 bg-surface-container-low rounded">Dapur</span>
+</div>
+</div>
+<div class="pt-space-sm mt-space-sm bg-surface-container-low/40 -mx-space-md px-space-md -mb-space-md pb-space-md">
+<div class="flex items-baseline justify-between mb-space-xs">
+<div>
+<span class="font-currency-stat text-currency-stat text-primary font-bold">Rp1.600.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ bln</span>
+</div>
+</div>
+<a class="w-full mt-2 h-10 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-on-primary font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-colors" href="https://wa.me/628123456789?text=Halo%20Admin%20KostKita,%20saya%20tertarik%20dengan%20Paviliun%20Asri%20Dago%20Bandung" target="_blank">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span>Chat Pemilik</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- WHY KOSTKITA SECTION (VALUE PROPOSITIONS) -->
+<section class="w-full max-w-[1360px] mx-auto px-margin md:px-margin-lg py-space-xl">
+<div class="text-center max-w-2xl mx-auto mb-space-xl">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest block mb-1">Keunggulan Ekosistem</span>
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-2">
+        Mengapa Mencari Kost di KostKita Lebih Nyaman?
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Kami merancang proses pencarian hunian sewa yang transparan, bebas repot, dan menjunjung keadilan bagi kedua belah pihak.
+      </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Value Prop 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center text-primary mb-space-md group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+          Langsung WhatsApp Pemilik
+        </div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Tanpa perantara agen tersembunyi. Kamu bisa langsung menghubungi Juragan Kost via WhatsApp untuk tanya ketersediaan, jadwalkan survei, atau negosiasi.
+        </p>
+<div class="mt-space-md flex items-center gap-1 text-primary font-label-sm text-label-sm font-semibold">
+<span>100% Transparan</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<!-- Value Prop 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center text-primary mb-space-md group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+          Data Kamar Selalu Akurat
+        </div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Kamar terintegrasi langsung dengan software manajemen pemilik. Status kamar kosong, fasilitas foto, dan nominal harga diperbarui secara real-time.
+        </p>
+<div class="mt-space-md flex items-center gap-1 text-primary font-label-sm text-label-sm font-semibold">
+<span>Bebas Kamar Fiktif</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<!-- Value Prop 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="w-14 h-14 rounded-xl bg-surface-container-low flex items-center justify-center text-primary mb-space-md group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">price_check</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+          Gratis 100% untuk Penyewa
+        </div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Pencari kost tidak pernah dipungut biaya pendaftaran akun, admin booking, maupun komisi survei. Semua informasi terbuka tanpa paywall.
+        </p>
+<div class="mt-space-md flex items-center gap-1 text-primary font-label-sm text-label-sm font-semibold">
+<span>Hemat Anggaran Pindah</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA SECTION FOR KOST OWNERS (JURAGAN KOST SAAS) -->
+<section class="w-full max-w-[1360px] mx-auto px-margin md:px-margin-lg pb-space-xl">
+<div class="relative rounded-2xl overflow-hidden bg-primary text-on-primary shadow-2xl p-space-lg md:p-space-xl">
+<!-- Decorative Backdrop circles -->
+<div class="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-primary-container opacity-40 blur-2xl pointer-events-none"></div>
+<div class="absolute top-0 right-1/4 w-64 h-64 rounded-full bg-tertiary-fixed-dim opacity-10 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<!-- Text & Bullet Points -->
+<div class="lg:col-span-7">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-on-primary/10 backdrop-blur-md text-primary-fixed font-label-sm text-label-sm mb-space-md">
+<span class="material-symbols-outlined text-[16px]">business_center</span>
+<span>Khusus Pemilik &amp; Pengelola Kost</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-primary mb-space-md tracking-tight leading-snug">
+            Punya Usaha Kost? Maksimalkan Okupansi &amp; Kelola Otomatis dengan KostKita SaaS
+          </h2>
+<p class="font-body-lg text-body-lg text-on-primary/80 mb-space-lg max-w-xl">
+            Tinggalkan pencatatan manual di buku kasir. Kendalikan pembayaran sewa, tagihan listrik, hingga kontrak digital dalam satu genggaman.
+          </p>
+<!-- Benefits Checklist -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm mb-space-lg">
+<div class="flex items-center gap-2.5 font-label-md text-label-md text-on-primary">
+<span class="w-5 h-5 rounded-full bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+<span>Pembukuan kas masuk &amp; keluar otomatis</span>
+</div>
+<div class="flex items-center gap-2.5 font-label-md text-label-md text-on-primary">
+<span class="w-5 h-5 rounded-full bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+<span>Kirim tagihan via WhatsApp otomatis</span>
+</div>
+<div class="flex items-center gap-2.5 font-label-md text-label-md text-on-primary">
+<span class="w-5 h-5 rounded-full bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+<span>Kelola penyewa &amp; database KTP digital</span>
+</div>
+<div class="flex items-center gap-2.5 font-label-md text-label-md text-on-primary">
+<span class="w-5 h-5 rounded-full bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+<span>Uji coba gratis 14 hari tanpa kartu kredit</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap items-center gap-space-md">
+<a class="h-12 px-space-lg rounded-lg bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-on-secondary font-label-md text-label-md flex items-center justify-center gap-2 shadow-lg transition-all" href="#">
+<span>Coba Gratis 14 Hari</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="h-12 px-space-lg rounded-lg bg-on-primary/10 hover:bg-on-primary/20 text-on-primary font-label-md text-label-md flex items-center justify-center transition-all backdrop-blur-sm" href="#">
+<span>Lihat Paket Langganan</span>
+</a>
+</div>
+</div>
+<!-- Dashboard UI Miniature Preview / Mockup Metric Card -->
+<div class="lg:col-span-5 relative">
+<div class="bg-surface-container-lowest text-on-surface rounded-xl p-space-md shadow-2xl relative">
+<!-- Simulated Owner Panel Header -->
+<div class="flex items-center justify-between pb-space-sm mb-space-sm bg-surface-container-low -mx-space-md px-space-md -mt-space-md pt-space-sm rounded-t-xl">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></div>
+<span class="font-label-sm text-label-sm text-outline ml-2">Kost Melati Dashboard</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary font-label-sm text-label-sm">Okupansi 92%</span>
+</div>
+<!-- Metric Snapshot Mini Grid -->
+<div class="grid grid-cols-2 gap-space-sm mb-space-md">
+<div class="p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Total Pendapatan</span>
+<span class="font-currency-stat text-currency-stat text-primary font-bold">Rp24.650.000</span>
+<span class="text-tertiary-container font-label-sm text-label-sm flex items-center gap-0.5 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +14.2% bln ini
+                </span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Kamar Terisi</span>
+<span class="font-currency-stat text-currency-stat text-on-surface font-bold">18 / 20</span>
+<span class="text-outline font-label-sm text-label-sm flex items-center gap-0.5 mt-0.5">
+                  2 unit siap disewakan
+                </span>
+</div>
+</div>
+<!-- Mini Simulation Room Tile Grid -->
+<div class="space-y-space-xs mb-space-sm">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider block">Status Penagihan Terkini</span>
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-low text-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="font-semibold text-on-surface">Kamar 102 - Dimas P.</span>
+</div>
+<span class="text-primary font-label-sm text-label-sm">Lunas via Transfer</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-low text-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="font-semibold text-on-surface">Kamar 204 - Sarah K.</span>
+</div>
+<span class="text-secondary font-label-sm text-label-sm">Jatuh Tempo (H-1)</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded bg-surface-container-low text-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-semibold text-on-surface">Kamar 301 - Kosong</span>
+</div>
+<span class="text-primary font-label-sm text-label-sm font-semibold">Tampil di KostKita</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#25D366] text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+<span class="font-body-sm text-body-sm text-on-surface">Auto-reminder WhatsApp dikirim</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">10:00 WIB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CLIENT-SIDE MICRO-INTERACTIONS SCRIPT -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // GPS button simulation
+      const gpsBtn = document.getElementById('btn-gps');
+      const searchInput = document.getElementById('search-location');
+
+      if (gpsBtn && searchInput) {
+        gpsBtn.addEventListener('click', () => {
+          const originalText = gpsBtn.innerHTML;
+          gpsBtn.innerHTML = `
+            <svg class="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Mendeteksi Lokasi...</span>
+          `;
+          
+          setTimeout(() => {
+            searchInput.value = 'Kukusan, Depok (Dekat Kampus UI)';
+            searchInput.classList.add('ring-2', 'ring-primary');
+            gpsBtn.innerHTML = originalText;
+            setTimeout(() => {
+              searchInput.classList.remove('ring-2', 'ring-primary');
+            }, 1200);
+          }, 800);
+        });
+      }
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_4px_rgba(15,23,42,0.03)] mt-space-xl"><div class="max-w-[1360px] mx-auto px-margin md:px-margin-lg py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-space-lg mb-space-xl"><div><div class="flex items-center gap-space-xs mb-space-sm"><img alt="KostKita Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"/><span class="font-headline-sm text-headline-sm text-primary font-bold">KostKita</span></div><p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Platform ekosistem hunian sewa dan manajemen properti kost modern terpercaya di Indonesia.</p></div><div><h4 class="font-label-md text-label-md text-on-surface font-bold mb-space-sm">Penyewa (Anak Kost)</h4><ul class="space-y-space-xs"><li class="font-body-sm text-body-sm text-on-surface-variant">Cari Kost Terdekat</li><li class="font-body-sm text-body-sm text-on-surface-variant">Kost Eksklusif Jakarta</li><li class="font-body-sm text-body-sm text-on-surface-variant">Kost Dekat Kampus</li></ul></div><div><h4 class="font-label-md text-label-md text-on-surface font-bold mb-space-sm">Pemilik (Juragan Kost)</h4><ul class="space-y-space-xs"><li class="font-body-sm text-body-sm text-on-surface-variant">Daftarkan Properti</li><li class="font-body-sm text-body-sm text-on-surface-variant">Sistem Tagihan Otomatis</li><li class="font-body-sm text-body-sm text-on-surface-variant">Laporan Okupansi</li></ul></div><div><h4 class="font-label-md text-label-md text-on-surface font-bold mb-space-sm">Dukungan &amp; Keamanan</h4><ul class="space-y-space-xs"><li class="font-body-sm text-body-sm text-on-surface-variant">Pusat Bantuan WhatsApp</li><li class="font-body-sm text-body-sm text-on-surface-variant">Syarat &amp; Ketentuan</li><li class="font-body-sm text-body-sm text-on-surface-variant">Kebijakan Privasi</li></ul></div></div><div class="pt-space-md flex flex-col md:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-on-surface-variant"><p>© 2025 KostKita Indonesia. Hak Cipta Dilindungi.</p><p class="font-label-sm text-label-sm">Tropical Modernist Proptech Solution</p></div></div></footer></body></html>

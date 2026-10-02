@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><title>Owner Portal - KostKita</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-error-container": "#93000a", "on-primary-container": "#8dd2bf", "surface-variant": "#d3e4fe", "background": "#f8f9ff", "primary-container": "#0d5c4d", "tertiary-fixed-dim": "#3de273", "error": "#ba1a1a", "surface-container": "#e5eeff", "on-error": "#ffffff", "surface-container-low": "#eff4ff", "on-primary": "#ffffff", "on-primary-fixed-variant": "#005143", "surface": "#f8f9ff", "outline-variant": "#bfc9c4", "secondary-fixed-dim": "#ffb77d", "on-primary-fixed": "#00201a", "inverse-surface": "#213145", "surface-dim": "#cbdbf5", "error-container": "#ffdad6", "surface-tint": "#21695a", "on-surface": "#0b1c30", "on-tertiary-fixed-variant": "#005322", "on-tertiary-container": "#3be172", "on-surface-variant": "#3f4945", "secondary": "#904d00", "secondary-container": "#fe932c", "tertiary": "#00451b", "on-secondary": "#ffffff", "tertiary-container": "#005f28", "on-secondary-container": "#663500", "tertiary-fixed": "#66ff8e", "inverse-on-surface": "#eaf1ff", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#002109", "surface-container-highest": "#d3e4fe", "on-background": "#0b1c30", "on-secondary-fixed": "#2f1500", "primary": "#004337", "inverse-primary": "#8fd4c1", "on-tertiary": "#ffffff", "secondary-fixed": "#ffdcc3", "surface-bright": "#f8f9ff", "primary-fixed-dim": "#8fd4c1", "on-secondary-fixed-variant": "#6e3900", "surface-container-high": "#dce9ff", "primary-fixed": "#aaf0dc", "outline": "#6f7975" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2rem", "space-lg": "1.5rem", "margin-sm": "1rem", "space-md": "1rem", "margin": "1.5rem", "gutter-sm": "1rem", "gutter-lg": "2rem", "space-sm": "0.5rem", "margin-lg": "3rem", "gutter": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "currency-stat": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "currency-stat": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }] } } } }</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(15,23,42,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center gap-space-sm"><img alt="KostKita Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary font-bold leading-tight">KostKita</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Juragan Portal</span></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-sm" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span>Dashboard</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-properti" href="#"><span class="material-symbols-outlined text-[20px]">apartment</span>Properti</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-kamar" href="#"><span class="material-symbols-outlined text-[20px]">meeting_room</span>Kamar</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-penyewa" href="#"><span class="material-symbols-outlined text-[20px]">group</span>Penyewa</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-pembayaran" href="#"><span class="material-symbols-outlined text-[20px]">payments</span>Pembayaran</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-laporan" href="#"><span class="material-symbols-outlined text-[20px]">insights</span>Laporan</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-langganan" href="#"><span class="material-symbols-outlined text-[20px]">loyalty</span>Langganan</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-notifikasi" href="#"><span class="material-symbols-outlined text-[20px]">notifications</span>Notifikasi</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-pengaturan" href="#"><span class="material-symbols-outlined text-[20px]">settings</span>Pengaturan</a></nav></div><div class="p-space-sm mb-space-sm"><div class="bg-surface-container-low p-space-sm rounded-lg flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[20px]">support_agent</span><span class="font-label-sm text-label-sm text-on-surface">Bantuan CS</span></div><span class="font-label-sm text-label-sm text-primary font-bold">Online</span></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl z-40 flex items-center justify-between px-gutter shadow-[0_1px_8px_rgba(15,23,42,0.03)]"><div class="flex items-center gap-space-md"><div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs w-64"><span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">Cari kamar, penyewa...</span></div><div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-sm py-1 rounded-lg shadow-sm cursor-pointer"><span class="material-symbols-outlined text-primary text-[18px]">home_work</span><span class="font-label-sm text-label-sm font-semibold text-on-surface">Kost Melati Residence</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div></div><div class="flex items-center gap-space-md"><div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-secondary-fixed text-on-secondary-container font-label-sm text-label-sm font-semibold"><span class="w-2 h-2 rounded-full bg-secondary"></span>Paket Pro - 3 Hari Tersisa</div><button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuAYI_TmZGoiPiaU7QX3whK8YeowGFRf8L6EUUUKxrYcA8zW5MuGyfZMQXdR4V7PKs7rJy7bi1KTP6Bi2raC5abUr_9QE3dTYeB9fUnQFo6-xAp06xcvq6rALWW_cFUJeEIQ4gqtU8Hhy3qhaU_-APkPTI5BIGaRTReab66jtSUYVi_L5uM63WlxOooRzdd5Gk0bs0Cg0lCk7xbojsgj6l5pvuYALi0WYlecfnSPNlwvzWbCYDwiGV"/><div class="hidden sm:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface font-semibold leading-tight">Budi Santoso</span><span class="font-label-sm text-label-sm text-on-surface-variant">Pemilik Properti</span></div></div></div></header><main class="w-full pt-16 px-gutter bg-surface min-h-screen"><div class="flex flex-col w-full pb-16">
+<!-- Top Intro & Breadcrumb Meta -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm mb-1">
+<span>Owner Portal</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-semibold">Langganan &amp; Kuota</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Langganan &amp; Kuota SaaS</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl mt-1">
+        Kelola paket langganan Anda untuk menjaga listing kost tetap aktif di pencarian publik dan kelola penyewa tanpa batasan.
+      </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2 bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md rounded-lg transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+<span>Riwayat Faktur</span>
+</button>
+<a class="inline-flex items-center gap-space-xs px-space-md py-2 bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md rounded-lg transition-all shadow-sm" href="#komparasi-paket">
+<span class="material-symbols-outlined text-[18px]">upgrade</span>
+<span>Lihat Semua Paket</span>
+</a>
+</div>
+</div>
+<!-- Warning Banner: Trial Expiry Alert (Amber / Warm Orange Theme) -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-secondary-fixed to-surface-container-low p-space-lg shadow-sm mb-space-lg">
+<div class="absolute right-0 top-0 translate-x-8 -translate-y-6 w-56 h-56 rounded-full bg-secondary-container/10 pointer-events-none blur-2xl"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<div class="flex flex-col">
+<div class="flex flex-wrap items-center gap-space-xs mb-1">
+<span class="font-headline-sm text-headline-sm text-on-secondary-container font-bold">
+              Masa Uji Coba Gratis (Trial) Aktif
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary font-label-sm text-label-sm font-bold shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary animate-pulse"></span>
+              Tersisa 4 Hari
+            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl leading-relaxed">
+            Paket Trial Anda berakhir pada <span class="font-semibold text-on-surface">28 Oktober 2024</span>. Setelah kedaluwarsa, seluruh listing kost Anda akan otomatis dinonaktifkan dari hasil pencarian publik KostKita. Tingkatkan ke Basic atau Pro sekarang untuk mempertahankan visibilitas kamar Anda.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<a class="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-container font-label-md text-label-md font-bold tracking-wide shadow-md transition-all active:scale-[0.98]" href="#komparasi-paket">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+          Upgrade Paket Sekarang
+        </a>
+</div>
+</div>
+</div>
+<!-- Summary & Quota Usage Grid (3 Bento Cards) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-xl">
+<!-- Current Plan Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between mb-space-md">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Paket Berjalan</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-1">Trial Juragan (30 Hari)</span>
+</div>
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+          Aktif (Masa Tenggang)
+        </span>
+</div>
+<div class="space-y-space-xs py-space-sm">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Mulai Berlaku:</span>
+<span class="font-semibold text-on-surface">28 Sep 2024</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Jatuh Tempo:</span>
+<span class="font-bold text-error">28 Okt 2024</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Biaya Perpanjangan:</span>
+<span class="font-semibold text-primary">Mulai Rp99.000 / bln</span>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between bg-surface-container-low/60 -mx-space-lg -mb-space-lg px-space-lg py-space-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Auto-renew: <strong class="text-on-surface">Nonaktif</strong></span>
+<button class="text-primary hover:text-primary-container font-label-sm text-label-sm font-bold inline-flex items-center gap-0.5" type="button">
+          Atur Penagihan
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Quota 1: Properti -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Kuota Properti Kost</span>
+<span class="p-1.5 bg-surface-container-low rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">apartment</span>
+</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl font-bold text-on-surface">2</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant">/ 2 Properti</span>
+</div>
+<p class="font-body-sm text-body-sm text-error font-medium mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">info</span>
+          Kapasitas penuh (100%). Tambah kuota via paket Pro.
+        </p>
+</div>
+<div class="mt-space-md">
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-error h-2 rounded-full w-full"></div>
+</div>
+<div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mt-2">
+<span>Kost Melati (18 Kmr)</span>
+<span>Kost Cempaka (10 Kmr)</span>
+</div>
+</div>
+</div>
+<!-- Quota 2: Kamar -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Kuota Unit Kamar</span>
+<span class="p-1.5 bg-surface-container-low rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">door_front</span>
+</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl font-bold text-on-surface">28</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant">/ 30 Kamar</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+          28 kamar terdaftar di sistem. Tersisa <strong class="text-on-surface">2 slot kamar</strong> lagi.
+        </p>
+</div>
+<div class="mt-space-md">
+<div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mb-1.5">
+<span>Tingkat Pemakaian</span>
+<span class="font-bold text-primary">93%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-primary-container h-2 rounded-full" style="width: 93%;"></div>
+</div>
+<div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant mt-2">
+<span>25 Terisi</span>
+<span>3 Kosong / Siap Jual</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Subscription Plan Selector & Comparison -->
+<div class="flex flex-col mb-space-xl" id="komparasi-paket">
+<div class="text-center max-w-2xl mx-auto mb-space-lg">
+<div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-surface-container-low text-primary font-label-sm text-label-sm font-bold mb-2">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+        Paket Berlangganan Juragan Modern
+      </div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Pilih Investasi Terbaik untuk Bisnis Kost Anda</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+        Semua paket mencakup akses mobile app Android &amp; iOS, manajemen deposit aman, dan backup cloud otomatis.
+      </p>
+<!-- Billing Cycle Toggle -->
+<div class="inline-flex items-center p-1 bg-surface-container rounded-full mt-space-md shadow-inner" id="billingToggleContainer">
+<button class="px-space-md py-1.5 rounded-full font-label-md text-label-md font-semibold transition-all bg-surface-container-lowest text-on-surface shadow-xs" id="btnMonthly" type="button">
+          Tagihan Bulanan
+        </button>
+<button class="px-space-md py-1.5 rounded-full font-label-md text-label-md font-semibold text-on-surface-variant hover:text-on-surface transition-all flex items-center gap-1.5" id="btnYearly" type="button">
+<span>Tagihan Tahunan</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-bold">Hemat 2 Bulan</span>
+</button>
+</div>
+</div>
+<!-- 3 Pricing Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg items-stretch">
+<!-- Basic Plan -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative">
+<div class="flex flex-col">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">Paket Basic</span>
+<span class="material-symbols-outlined text-outline-variant text-[24px]">cottage</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+            Cocok untuk 1 - 2 properti kost skala rintisan dengan manajemen santai.
+          </p>
+<div class="mb-space-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-xl text-headline-xl font-extrabold text-on-surface price-val" data-monthly="Rp99.000" data-yearly="Rp990.000">Rp99.000</span>
+<span class="font-body-md text-body-md text-on-surface-variant period-val">/ bulan</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 billing-note text-secondary font-medium hidden">
+              Ditagih tahunan Rp990.000 (Hemat Rp198.000)
+            </p>
+</div>
+<div class="space-y-space-sm mb-space-lg">
+<div class="font-label-sm text-label-sm font-bold text-on-surface tracking-wide uppercase">Fitur Yang Didapat:</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Maksimal <strong>3 Properti</strong> Kost</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Hingga <strong>25 Kamar</strong> Terdaftar</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Pencatatan Pembayaran Manual &amp; Otomatis</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Kirim Tagihan WhatsApp Manual (1-Klik)</span>
+</div>
+<div class="flex items-start gap-space-xs opacity-40">
+<span class="material-symbols-outlined text-outline text-[18px] shrink-0 mt-0.5">cancel</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">Bot Otomatisasi Reminder WhatsApp</span>
+</div>
+<div class="flex items-start gap-space-xs opacity-40">
+<span class="material-symbols-outlined text-outline text-[18px] shrink-0 mt-0.5">cancel</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through">Prioritas Listing Kost di KostKita</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-bold transition-all text-center" type="button">
+          Pilih Paket Basic
+        </button>
+</div>
+<!-- Pro Plan (Recommended / Most Popular) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-xl flex flex-col justify-between relative transform lg:-translate-y-2 bg-gradient-to-b from-surface-container-lowest to-surface-container-low/30">
+<!-- Floating Recommendation Tag -->
+<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm font-bold px-space-md py-1 rounded-full shadow-md flex items-center gap-1 tracking-wide uppercase">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">star</span>
+          Paling Diminati Juragan
+        </div>
+<div class="flex flex-col mt-2">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Paket Pro</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">Rekomendasi</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+            Solusi penuh untuk juragan dengan target hunian 100% dan penagihan bebas repot.
+          </p>
+<div class="mb-space-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-xl text-headline-xl font-extrabold text-on-surface price-val" data-monthly="Rp199.000" data-yearly="Rp1.990.000">Rp199.000</span>
+<span class="font-body-md text-body-md text-on-surface-variant period-val">/ bulan</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary font-medium mt-1 billing-note hidden">
+              Ditagih tahunan Rp1.990.000 (Hemat Rp398.000)
+            </p>
+</div>
+<div class="space-y-space-sm mb-space-lg">
+<div class="font-label-sm text-label-sm font-bold text-on-surface tracking-wide uppercase">Semua Fitur Basic, Ditambah:</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 font-bold">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Hingga <strong>10 Properti</strong> Kost</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 font-bold">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Kapasitas hingga <strong>100 Kamar</strong></span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 font-bold">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold text-primary">Notifikasi &amp; Tagihan WhatsApp Otomatis ke Penyewa</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 font-bold">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Laporan Keuangan Ekspor Excel &amp; PDF</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5 font-bold">trending_up</span>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold text-secondary">Prioritas Listing di Pencarian Publik KostKita</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5 font-bold">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Multi-akun Operator / Pengelola Kost (3 staf)</span>
+</div>
+</div>
+</div>
+<button class="w-full py-3 px-space-md rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold transition-all text-center shadow-md flex items-center justify-center gap-space-xs" type="button">
+<span>Pilih Paket Pro</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Enterprise Plan -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative">
+<div class="flex flex-col">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">Paket Enterprise</span>
+<span class="material-symbols-outlined text-outline-variant text-[24px]">corporate_fare</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+            Manajemen rantai kost komersial, asrama mahasiswa, atau coliving skala besar.
+          </p>
+<div class="mb-space-lg">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-xl text-headline-xl font-extrabold text-on-surface price-val" data-monthly="Rp399.000" data-yearly="Rp3.990.000">Rp399.000</span>
+<span class="font-body-md text-body-md text-on-surface-variant period-val">/ bulan</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 billing-note text-secondary font-medium hidden">
+              Ditagih tahunan Rp3.990.000 (Hubungi kami untuk penyesuaian)
+            </p>
+</div>
+<div class="space-y-space-sm mb-space-lg">
+<div class="font-label-sm text-label-sm font-bold text-on-surface tracking-wide uppercase">Fitur Skala Besar:</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface"><strong>Multi-cabang</strong> tanpa batas properti</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface"><strong>Unlimited Kamar</strong> &amp; Penyewa</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Dedicated Account Manager &amp; Onboarding Tim</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Integrasi Smart Lock &amp; IoT Listrik (Token Auto)</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">Custom Domain &amp; Custom Branding Website</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface">SLA Uptime 99.9% &amp; Prioritas Support 24/7</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md font-bold transition-all text-center flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span>Hubungi Tim Sales</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Billing History Table Section -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm mb-space-xl">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Riwayat Tagihan &amp; Pembayaran Terakhir</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lacak semua faktur langganan, bukti pembayaran resmi, dan status aktivasi.</p>
+</div>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md font-semibold inline-flex items-center gap-1 self-start sm:self-auto" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+        Unduh Semua Laporan (CSV)
+      </button>
+</div>
+<!-- Responsive Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+<th class="py-3 px-space-md rounded-l-lg">ID Tagihan</th>
+<th class="py-3 px-space-md">Tanggal</th>
+<th class="py-3 px-space-md">Paket Langganan</th>
+<th class="py-3 px-space-md">Nominal</th>
+<th class="py-3 px-space-md">Metode Pembayaran</th>
+<th class="py-3 px-space-md">Status</th>
+<th class="py-3 px-space-md rounded-r-lg text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1: Current active trial -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-space-md font-label-md text-label-md font-bold text-primary">#INV-2024-001</td>
+<td class="py-3.5 px-space-md font-body-sm text-body-sm text-on-surface">28 Sep 2024, 09:14 WIB</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-md text-label-md text-on-surface font-medium">Trial Juragan (30 Hari)</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Promo Selamat Datang</span>
+</td>
+<td class="py-3.5 px-space-md font-label-md text-label-md font-bold text-on-surface">Rp0 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">(Gratis Trial)</span></td>
+<td class="py-3.5 px-space-md font-body-sm text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary">smart_toy</span>
+                Aktivasi Otomatis
+              </span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                Selesai
+              </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm font-semibold transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Invoice</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Account setup / Verification -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-space-md font-label-md text-label-md font-bold text-primary">#REG-2024-098</td>
+<td class="py-3.5 px-space-md font-body-sm text-body-sm text-on-surface">28 Sep 2024, 09:10 WIB</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-md text-label-md text-on-surface font-medium">Verifikasi Identitas Juragan (KYC)</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Biaya Verifikasi KTP &amp; Sertifikat</span>
+</td>
+<td class="py-3.5 px-space-md font-label-md text-label-md font-bold text-on-surface">Rp0 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">(Gratis)</span></td>
+<td class="py-3.5 px-space-md font-body-sm text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+                KostKita Subsidized
+              </span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-tertiary-fixed/30 text-tertiary font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                Selesai
+              </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="inline-flex items-center gap-1 px-space-sm py-1 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm font-semibold transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Lihat Bukti</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Security Footnote -->
+<div class="mt-space-md pt-space-sm flex flex-col sm:flex-row items-start sm:items-center justify-between text-body-sm font-body-sm text-on-surface-variant gap-2">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-tertiary">lock</span>
+<span>Semua pembayaran diproses melalui gateway terakreditasi Bank Indonesia (Xendit &amp; Midtrans).</span>
+</div>
+<span class="font-label-sm text-label-sm">Butuh faktur pajak PPn 11%? <a class="text-primary underline font-bold" href="#">Hubungi Finance</a></span>
+</div>
+</div>
+<!-- FAQ Section & Support Banner -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- FAQ Accordion (8 Cols) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">help_center</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Pertanyaan Sering Diajukan (FAQ)</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-lg">
+        Informasi penting seputar penagihan langganan SaaS pemilik kost di platform KostKita.
+      </p>
+<div class="space-y-space-md" id="faqAccordion">
+<!-- Q1 -->
+<div class="rounded-lg bg-surface-container-low p-space-md">
+<div class="flex items-center justify-between cursor-pointer font-label-md text-label-md text-on-surface font-bold">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+              Bagaimana jika masa paket atau trial saya habis?
+            </span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 pl-4">
+            Jika masa berlaku habis dan Anda belum meng-upgrade paket, seluruh data kamar dan riwayat penyewa tetap tersimpan aman di akun Anda (tidak dihapus). Namun, listing properti Anda akan otomatis disembunyikan dari hasil pencarian publik di aplikasi pencari kost, dan bot WhatsApp otomatis akan berhenti mengirim pengingat sewa sampai paket kembali aktif.
+          </p>
+</div>
+<!-- Q2 -->
+<div class="rounded-lg bg-surface-container-low p-space-md">
+<div class="flex items-center justify-between cursor-pointer font-label-md text-label-md text-on-surface font-bold">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+              Metode pembayaran apa saja yang diterima?
+            </span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 pl-4">
+            Kami menerima berbagai metode pembayaran instan: QRIS (GoPay, OVO, Dana, ShopeePay), Transfer Virtual Account semua bank utama (BCA, Mandiri, BNI, BRI, Permata, BSI), Kartu Kredit/Debit Visa &amp; Mastercard, serta transfer manual ke rekening PT KostKita Indonesia.
+          </p>
+</div>
+<!-- Q3 -->
+<div class="rounded-lg bg-surface-container-low p-space-md">
+<div class="flex items-center justify-between cursor-pointer font-label-md text-label-md text-on-surface font-bold">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+              Berapa lama proses verifikasi pembayaran manual?
+            </span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 pl-4">
+            Pembayaran melalui QRIS dan Virtual Account terverifikasi secara instan dalam 10 detik. Jika Anda memilih transfer rekening manual dengan mengunggah bukti transfer, tim verifikasi kami akan mengonfirmasi pembayaran dalam waktu 15 - 30 menit pada jam operasional (08.00 - 22.00 WIB).
+          </p>
+</div>
+</div>
+</div>
+<!-- Quick Help & Dedicated Advisor Card (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl p-space-lg shadow-sm">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/20 flex items-center justify-center mb-space-sm text-primary-fixed">
+<span class="material-symbols-outlined text-[24px]">support_agent</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm font-bold leading-tight">Konsultasi Paket Khusus Juragan</h4>
+<p class="font-body-sm text-body-sm text-on-primary-container mt-1 mb-space-md leading-relaxed">
+          Punya lebih dari 100 kamar atau butuh training langsung untuk penjaga kost di lokasi? Tim spesialis KostKita siap mendampingi Anda.
+        </p>
+<a class="w-full py-2.5 px-space-md rounded-lg bg-[#25D366] hover:bg-[#1fb355] text-white font-label-md text-label-md font-bold transition-all shadow-md flex items-center justify-center gap-space-xs" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span>WhatsApp Advisor KostKita</span>
+</a>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[22px]">policy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Jaminan 14 Hari Uang Kembali</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Jika tidak puas dengan fitur otomatisasi kami, pengembalian dana 100% tanpa syarat.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const btnMonthly = document.getElementById('btnMonthly');
+    const btnYearly = document.getElementById('btnYearly');
+    const priceElements = document.querySelectorAll('.price-val');
+    const periodElements = document.querySelectorAll('.period-val');
+    const billingNotes = document.querySelectorAll('.billing-note');
+
+    function setBillingCycle(isYearly) {
+      if (isYearly) {
+        btnYearly.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-xs');
+        btnYearly.classList.remove('text-on-surface-variant');
+        btnMonthly.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-xs');
+        btnMonthly.classList.add('text-on-surface-variant');
+
+        priceElements.forEach(el => {
+          el.textContent = el.getAttribute('data-yearly');
+        });
+        periodElements.forEach(el => {
+          el.textContent = '/ tahun';
+        });
+        billingNotes.forEach(el => {
+          el.classList.remove('hidden');
+        });
+      } else {
+        btnMonthly.classList.add('bg-surface-container-lowest', 'text-on-surface', 'shadow-xs');
+        btnMonthly.classList.remove('text-on-surface-variant');
+        btnYearly.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'shadow-xs');
+        btnYearly.classList.add('text-on-surface-variant');
+
+        priceElements.forEach(el => {
+          el.textContent = el.getAttribute('data-monthly');
+        });
+        periodElements.forEach(el => {
+          el.textContent = '/ bulan';
+        });
+        billingNotes.forEach(el => {
+          el.classList.add('hidden');
+        });
+      }
+    }
+
+    if (btnMonthly && btnYearly) {
+      btnMonthly.addEventListener('click', () => setBillingCycle(false));
+      btnYearly.addEventListener('click', () => setBillingCycle(true));
+    }
+  })();
+</script></main></div></body></html>

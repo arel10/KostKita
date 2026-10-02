@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><title>Owner Portal - KostKita</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-error-container": "#93000a", "on-primary-container": "#8dd2bf", "surface-variant": "#d3e4fe", "background": "#f8f9ff", "primary-container": "#0d5c4d", "tertiary-fixed-dim": "#3de273", "error": "#ba1a1a", "surface-container": "#e5eeff", "on-error": "#ffffff", "surface-container-low": "#eff4ff", "on-primary": "#ffffff", "on-primary-fixed-variant": "#005143", "surface": "#f8f9ff", "outline-variant": "#bfc9c4", "secondary-fixed-dim": "#ffb77d", "on-primary-fixed": "#00201a", "inverse-surface": "#213145", "surface-dim": "#cbdbf5", "error-container": "#ffdad6", "surface-tint": "#21695a", "on-surface": "#0b1c30", "on-tertiary-fixed-variant": "#005322", "on-tertiary-container": "#3be172", "on-surface-variant": "#3f4945", "secondary": "#904d00", "secondary-container": "#fe932c", "tertiary": "#00451b", "on-secondary": "#ffffff", "tertiary-container": "#005f28", "on-secondary-container": "#663500", "tertiary-fixed": "#66ff8e", "inverse-on-surface": "#eaf1ff", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#002109", "surface-container-highest": "#d3e4fe", "on-background": "#0b1c30", "on-secondary-fixed": "#2f1500", "primary": "#004337", "inverse-primary": "#8fd4c1", "on-tertiary": "#ffffff", "secondary-fixed": "#ffdcc3", "surface-bright": "#f8f9ff", "primary-fixed-dim": "#8fd4c1", "on-secondary-fixed-variant": "#6e3900", "surface-container-high": "#dce9ff", "primary-fixed": "#aaf0dc", "outline": "#6f7975" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "2rem", "space-lg": "1.5rem", "margin-sm": "1rem", "space-md": "1rem", "margin": "1.5rem", "gutter-sm": "1rem", "gutter-lg": "2rem", "space-sm": "0.5rem", "margin-lg": "3rem", "gutter": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "currency-stat": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }], "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "currency-stat": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "400" }], "headline-xl-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }] } } } }</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(15,23,42,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center gap-space-sm"><img alt="KostKita Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary font-bold leading-tight">KostKita</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Juragan Portal</span></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-sm" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span>Dashboard</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-properti" href="#"><span class="material-symbols-outlined text-[20px]">apartment</span>Properti</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-kamar" href="#"><span class="material-symbols-outlined text-[20px]">meeting_room</span>Kamar</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-penyewa" href="#"><span class="material-symbols-outlined text-[20px]">group</span>Penyewa</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-pembayaran" href="#"><span class="material-symbols-outlined text-[20px]">payments</span>Pembayaran</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-laporan" href="#"><span class="material-symbols-outlined text-[20px]">insights</span>Laporan</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-langganan" href="#"><span class="material-symbols-outlined text-[20px]">loyalty</span>Langganan</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-notifikasi" href="#"><span class="material-symbols-outlined text-[20px]">notifications</span>Notifikasi</a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md" data-path="owner-pengaturan" href="#"><span class="material-symbols-outlined text-[20px]">settings</span>Pengaturan</a></nav></div><div class="p-space-sm mb-space-sm"><div class="bg-surface-container-low p-space-sm rounded-lg flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[20px]">support_agent</span><span class="font-label-sm text-label-sm text-on-surface">Bantuan CS</span></div><span class="font-label-sm text-label-sm text-primary font-bold">Online</span></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl z-40 flex items-center justify-between px-gutter shadow-[0_1px_8px_rgba(15,23,42,0.03)]"><div class="flex items-center gap-space-md"><div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs w-64"><span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span><span class="font-body-sm text-body-sm text-on-surface-variant">Cari kamar, penyewa...</span></div><div class="flex items-center gap-space-xs bg-surface-container-lowest px-space-sm py-1 rounded-lg shadow-sm cursor-pointer"><span class="material-symbols-outlined text-primary text-[18px]">home_work</span><span class="font-label-sm text-label-sm font-semibold text-on-surface">Kost Melati Residence</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div></div><div class="flex items-center gap-space-md"><div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-secondary-fixed text-on-secondary-container font-label-sm text-label-sm font-semibold"><span class="w-2 h-2 rounded-full bg-secondary"></span>Paket Pro - 3 Hari Tersisa</div><button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuAYI_TmZGoiPiaU7QX3whK8YeowGFRf8L6EUUUKxrYcA8zW5MuGyfZMQXdR4V7PKs7rJy7bi1KTP6Bi2raC5abUr_9QE3dTYeB9fUnQFo6-xAp06xcvq6rALWW_cFUJeEIQ4gqtU8Hhy3qhaU_-APkPTI5BIGaRTReab66jtSUYVi_L5uM63WlxOooRzdd5Gk0bs0Cg0lCk7xbojsgj6l5pvuYALi0WYlecfnSPNlwvzWbCYDwiGV"/><div class="hidden sm:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface font-semibold leading-tight">Budi Santoso</span><span class="font-label-sm text-label-sm text-on-surface-variant">Pemilik Properti</span></div></div></div></header><main class="w-full pt-16 px-gutter bg-surface min-h-screen"><div class="flex flex-col w-full pb-16">
+<!-- Micro Breadcrumb & Navigation -->
+<div class="flex items-center justify-between py-space-md">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        Langganan
+      </a>
+<span class="text-outline-variant font-body-sm">/</span>
+<span class="text-on-surface-variant">Upgrade Paket Pro</span>
+<span class="text-outline-variant font-body-sm">/</span>
+<span class="text-primary font-bold">Instruksi Pembayaran</span>
+</div>
+<div class="hidden sm:flex items-center gap-space-xs bg-secondary-fixed text-on-secondary-container px-space-sm py-1 rounded-full text-label-sm font-label-sm font-semibold">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>Batas Waktu: <strong class="font-bold text-secondary" id="countdown-timer">23:59:45</strong></span>
+</div>
+</div>
+<!-- Page Header -->
+<div class="relative mb-space-lg">
+<div class="flex flex-col gap-1 max-w-3xl">
+<span class="text-primary font-label-sm text-label-sm tracking-wider uppercase font-extrabold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+        Checkout Berlangganan SaaS
+      </span>
+<h1 class="text-headline-lg font-headline-lg text-on-surface font-extrabold tracking-tight">
+        Selesaikan Pembayaran Upgrade
+      </h1>
+<p class="text-body-md font-body-md text-on-surface-variant">
+        Lakukan transfer manual tepat sesuai nominal unik di bawah, lalu unggah bukti transfer untuk verifikasi cepat oleh tim Super Admin (maks. 1x24 jam kerja).
+      </p>
+</div>
+</div>
+<!-- Main Layout Split (5:7 ratio on desktop) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Invoice Summary & Bank Accounts (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- Order Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Ringkasan Tagihan</span>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm px-space-sm py-0.5 rounded-full font-bold">
+            Hemat 17%
+          </span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-xs">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Paket Pro KostKita</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">12 Bulan (Tahunan)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Manajemen hingga 5 properti, notifikasi tagihan WhatsApp otomatis, dan multi-admin pengelola.
+          </p>
+</div>
+<div class="flex flex-col gap-2 pt-space-xs text-body-sm font-body-sm">
+<div class="flex justify-between items-center text-on-surface-variant">
+<span>Harga Paket (1 Tahun)</span>
+<span class="font-label-md text-label-md text-on-surface">Rp 1.990.000</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span>Kode Unik Verifikasi</span>
+<span class="material-symbols-outlined text-[14px] text-primary" title="Kode verifikasi otomatis">info</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-bold">+ Rp 742</span>
+</div>
+</div>
+<!-- Grand Total Highlight Card -->
+<div class="bg-primary text-on-primary rounded-xl p-space-md flex flex-col gap-space-xs shadow-md">
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-primary-container">Total Transfer Tepat</span>
+<span class="font-label-sm text-label-sm bg-primary-container text-on-primary px-2 py-0.5 rounded">Wajib Sesuai</span>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="font-currency-stat text-currency-stat font-extrabold tracking-tight">
+              Rp 1.990.742
+            </span>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-sm hover:bg-surface-container-high transition-colors" onclick="navigator.clipboard.writeText('1990742'); alert('Nominal Rp 1.990.742 berhasil disalin!');" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+              Salin Nominal
+            </button>
+</div>
+<p class="text-label-sm font-label-sm text-on-primary-container pt-1">
+            *Pastikan mentransfer hingga 3 digit terakhir (742) untuk verifikasi kilat tanpa hambatan.
+          </p>
+</div>
+</div>
+<!-- Payment Destination Methods -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Rekening Resmi KostKita</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">a.n. PT KostKita Digital Nusantara</span>
+</div>
+<span class="material-symbols-outlined text-tertiary-container text-[26px]">account_balance</span>
+</div>
+<!-- Bank List Accordion / Card Blocks -->
+<div class="flex flex-col gap-space-sm">
+<!-- Bank BCA -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-2 transition-all">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center font-bold text-primary text-label-sm shadow-xs">
+                  BCA
+                </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Bank Central Asia (BCA)</span>
+</div>
+<span class="text-label-sm font-label-sm text-primary font-semibold">Otomatis Terverifikasi</span>
+</div>
+<div class="flex items-center justify-between mt-1 pt-1">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-wider">8830-1928-4412</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">PT KostKita Digital Nusantara</span>
+</div>
+<button class="p-2 rounded-lg bg-surface-container-lowest text-primary hover:bg-surface-container shadow-xs transition-colors flex items-center gap-1 font-label-sm text-label-sm font-bold" onclick="navigator.clipboard.writeText('883019284412'); alert('No Rekening BCA berhasil disalin!');" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+<span class="hidden sm:inline">Salin</span>
+</button>
+</div>
+</div>
+<!-- Bank Mandiri -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-2 transition-all">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center font-bold text-secondary text-label-sm shadow-xs">
+                  MDR
+                </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Bank Mandiri</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Manual Check</span>
+</div>
+<div class="flex items-center justify-between mt-1 pt-1">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-wider">137-00-9821-3321</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">PT KostKita Digital Nusantara</span>
+</div>
+<button class="p-2 rounded-lg bg-surface-container-lowest text-primary hover:bg-surface-container shadow-xs transition-colors flex items-center gap-1 font-label-sm text-label-sm font-bold" onclick="navigator.clipboard.writeText('1370098213321'); alert('No Rekening Mandiri berhasil disalin!');" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+<span class="hidden sm:inline">Salin</span>
+</button>
+</div>
+</div>
+<!-- QRIS Dropdown / Option -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex items-center justify-between cursor-pointer hover:bg-surface-container transition-colors" onclick="document.getElementById('qris-modal-preview').classList.toggle('hidden')">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">qr_code_2</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">QRIS Statis Interbank</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">BCA Mobile, Livin, GoPay, OVO, ShopeePay</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">visibility</span>
+</div>
+<!-- Collapsible QRIS Code Preview -->
+<div class="hidden bg-surface-container-lowest p-space-md rounded-lg flex flex-col items-center text-center gap-2" id="qris-modal-preview">
+<div class="bg-surface-bright p-3 rounded-lg shadow-sm">
+<svg class="w-40 h-40 text-on-surface" fill="currentColor" viewbox="0 0 100 100">
+<rect fill="currentColor" height="30" width="30" x="0" y="0"></rect>
+<rect fill="white" height="20" width="20" x="5" y="5"></rect>
+<rect fill="currentColor" height="10" width="10" x="10" y="10"></rect>
+<rect fill="currentColor" height="30" width="30" x="70" y="0"></rect>
+<rect fill="white" height="20" width="20" x="75" y="5"></rect>
+<rect fill="currentColor" height="10" width="10" x="80" y="10"></rect>
+<rect fill="currentColor" height="30" width="30" x="0" y="70"></rect>
+<rect fill="white" height="20" width="20" x="5" y="75"></rect>
+<rect fill="currentColor" height="10" width="10" x="10" y="80"></rect>
+<rect fill="currentColor" height="25" width="6" x="36" y="10"></rect>
+<rect fill="currentColor" height="12" width="8" x="50" y="5"></rect>
+<rect fill="currentColor" height="16" width="16" x="42" y="38"></rect>
+<rect fill="currentColor" height="6" width="14" x="68" y="42"></rect>
+<rect fill="currentColor" height="10" width="12" x="14" y="45"></rect>
+<rect fill="currentColor" height="8" width="28" x="35" y="65"></rect>
+<rect fill="currentColor" height="24" width="20" x="72" y="68"></rect>
+<rect fill="currentColor" height="10" width="12" x="40" y="82"></rect>
+</svg>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">NMID: ID1020392019230</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pindai kode QRIS di atas melalui aplikasi m-banking atau e-wallet Anda.</span>
+</div>
+</div>
+<div class="bg-surface-container rounded-lg p-space-sm flex items-start gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">warning</span>
+<p class="font-body-sm text-body-sm leading-snug">
+<strong>Perhatian:</strong> Jangan membulatkan nominal transfer. Selisih 1 Rupiah dapat menunda validasi paket Anda secara instan.
+          </p>
+</div>
+</div>
+</div>
+<!-- Right Column: Upload Proof of Payment Form (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Form Konfirmasi &amp; Bukti Transfer</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Unggah salinan mutasi rekening, struk ATM, atau tangkapan layar m-banking</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Tahap 2 dari 4
+          </span>
+</div>
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); alert('Bukti pembayaran Anda berhasil dikirim ke antrean verifikasi!');">
+<!-- Dropzone Area -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center justify-between">
+<span>Berkas Bukti Transfer <span class="text-error">*</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Format JPG, PNG, PDF (Maks. 5 MB)</span>
+</label>
+<!-- Pre-populated / Dropped File Preview state -->
+<div class="relative bg-surface-container-low rounded-xl p-space-md flex flex-col items-center justify-center text-center transition-all cursor-pointer hover:bg-surface-container">
+<input accept="image/*,.pdf" class="absolute inset-0 opacity-0 cursor-pointer" type="file"/>
+<!-- File Attachment Pill/Card (Simulating pre-selected valid file) -->
+<div class="w-full bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm overflow-hidden">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">image</span>
+</div>
+<div class="flex flex-col text-left truncate">
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">struk_transfer_bca_ahmad.jpg</span>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant">
+<span>1.4 MB</span>
+<span>•</span>
+<span class="text-tertiary-container font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        Siap Diunggah
+                      </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors" title="Lihat Foto" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container transition-colors" title="Hapus Berkas" type="button">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Secondary click prompt -->
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-space-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                Klik atau seret file lain untuk mengganti foto bukti
+              </span>
+</div>
+</div>
+<!-- Form Input Fields -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Nama Pemilik Rekening -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="account_name">
+                Nama Pengirim di Rekening <span class="text-error">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="absolute left-3 text-on-surface-variant material-symbols-outlined text-[20px]">person</span>
+<input class="w-full h-11 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none transition-all" id="account_name" placeholder="Contoh: Budi Santoso" required="" type="text" value="Ahmad Pratama"/>
+</div>
+</div>
+<!-- Bank Asal Pengirim -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="origin_bank">
+                Bank Asal Pengirim <span class="text-error">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="absolute left-3 text-on-surface-variant material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<select class="w-full h-11 pl-10 pr-10 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none focus:bg-surface-container-lowest focus:outline-none transition-all" id="origin_bank" required="">
+<option selected="" value="BCA">Bank Central Asia (BCA)</option>
+<option value="MANDIRI">Bank Mandiri</option>
+<option value="BRI">Bank BRI</option>
+<option value="BNI">Bank BNI</option>
+<option value="BSI">Bank Syariah Indonesia (BSI)</option>
+<option value="CIMB">CIMB Niaga</option>
+<option value="OTHER">Bank Lainnya / E-Wallet</option>
+</select>
+<span class="absolute right-3 pointer-events-none text-on-surface-variant material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Tanggal & Waktu Transfer -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="transfer_datetime">
+                Tanggal &amp; Waktu Transfer <span class="text-error">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="absolute left-3 text-on-surface-variant material-symbols-outlined text-[20px]">event</span>
+<input class="w-full h-11 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none transition-all" id="transfer_datetime" placeholder="DD/MM/YYYY, HH:mm" required="" type="text" value="24 Oktober 2024, 14:35 WIB"/>
+</div>
+</div>
+<!-- Bank Tujuan KostKita -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="target_bank">
+                Ditransfer ke Rekening KostKita <span class="text-error">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="absolute left-3 text-on-surface-variant material-symbols-outlined text-[20px]">credit_card</span>
+<select class="w-full h-11 pl-10 pr-10 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg appearance-none focus:bg-surface-container-lowest focus:outline-none transition-all" id="target_bank" required="">
+<option selected="" value="BCA_8830">BCA - 8830-1928-4412 (PT KostKita)</option>
+<option value="MDR_1370">Mandiri - 137-00-9821-3321 (PT KostKita)</option>
+<option value="QRIS">QRIS Statis Digital KostKita</option>
+</select>
+<span class="absolute right-3 pointer-events-none text-on-surface-variant material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Catatan Tambahan (Optional) -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center justify-between" for="notes">
+<span>Catatan Tambahan</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Opsional</span>
+</label>
+<textarea class="w-full p-3 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none transition-all resize-none" id="notes" placeholder="Tuliskan keterangan bila pengirim memakai rekening pihak ketiga atau informasi nama kost..." rows="3">Upgrade Kost Melati &amp; Cendana tahunan</textarea>
+</div>
+<!-- Action Buttons Bar -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-xs">
+<a class="w-full sm:w-auto px-5 py-3 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md text-center transition-colors flex items-center justify-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+              Kembali ke Pilihan Paket
+            </a>
+<button class="w-full sm:w-auto px-8 py-3 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md font-bold shadow-md hover:bg-primary transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[20px]">send</span>
+              Kirim Bukti Pembayaran
+            </button>
+</div>
+</form>
+</div>
+<!-- Trust & Security Reassurance Banner -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">lock</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Verifikasi Aman &amp; Otomatis</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Data transaksi Anda dilindungi enkripsi 256-bit SSL. Hak akses Paket Pro akan langsung otomatis aktif setelah invoice diverifikasi tim kami.
+          </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Status Tracker / Stepper Horizontal Component -->
+<div class="mt-space-xl bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Status Alur Berlangganan</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pantau status konfirmasi langganan properti Anda secara berkala di portal ini</p>
+</div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+          Menunggu Konfirmasi Bukti
+        </div>
+</div>
+<!-- Stepper Track -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative pt-2">
+<!-- Step 1: Completed -->
+<div class="flex items-start gap-space-sm p-3 rounded-lg bg-surface-container-low">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 font-bold shadow-xs">
+<span class="material-symbols-outlined text-[18px]">done</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">1. Pilih Paket</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Paket Pro 12 Bulan</span>
+<span class="text-tertiary-container font-label-sm text-label-sm font-semibold mt-1">Selesai</span>
+</div>
+</div>
+<!-- Step 2: Active / In Progress -->
+<div class="flex items-start gap-space-sm p-3 rounded-lg bg-primary-fixed/30 shadow-xs">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 font-bold shadow-sm ring-4 ring-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">upload</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">2. Transfer &amp; Unggah</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Kirim bukti pembayaran</span>
+<span class="text-primary font-label-sm text-label-sm font-bold mt-1">Sedang Aktif</span>
+</div>
+</div>
+<!-- Step 3: Pending Verification -->
+<div class="flex items-start gap-space-sm p-3 rounded-lg bg-surface-container-low opacity-75">
+<div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 font-bold">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">3. Verifikasi Admin</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Validasi mutasi bank</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm mt-1">Menunggu</span>
+</div>
+</div>
+<!-- Step 4: Final Activation -->
+<div class="flex items-start gap-space-sm p-3 rounded-lg bg-surface-container-low opacity-75">
+<div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 font-bold">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">4. Pro Aktif</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Fitur Pro langsung aktif</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm mt-1">Antrean</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>
