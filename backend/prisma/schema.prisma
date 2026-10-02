@@ -1,0 +1,510 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  super_admin
+  owner
+}
+
+enum UserStatus {
+  active
+  suspended
+  deactivated
+}
+
+enum SubscriptionStatus {
+  trial
+  active
+  expiring_soon
+  expired
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  approved
+  rejected
+  expired
+  cancelled
+}
+
+enum PropertyType {
+  putra
+  putri
+  campur
+}
+
+enum PropertyStatus {
+  draft
+  active
+  inactive
+  suspended
+}
+
+enum RoomStatus {
+  available
+  occupied
+  maintenance
+}
+
+enum TenantStayStatus {
+  active
+  ended
+}
+
+enum TenantPaymentStatus {
+  paid
+  pending
+  overdue
+}
+
+enum TenantPaymentMethod {
+  cash
+  bank_transfer
+  other
+}
+
+enum NotificationType {
+  subscription_expiring
+  subscription_expired
+  payment_approved
+  payment_rejected
+  listing_suspended
+  owner_suspended
+  system_announcement
+}
+
+enum ListingReportReason {
+  info_not_match
+  whatsapp_inactive
+  not_available
+  location_not_match
+  inappropriate_content
+  fraud
+  other
+}
+
+enum ListingReportStatus {
+  pending
+  reviewed
+  resolved
+}
+
+// ─────────────────────────────────────────────
+// USERS
+// ─────────────────────────────────────────────
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  passwordHash    String     @map("password_hash")
+  name            String
+  phone           String?
+  role            UserRole   @default(owner)
+  status          UserStatus @default(active)
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  lastLoginAt     DateTime?  @map("last_login_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  subscriptions          Subscription[]
+  subscriptionPayments   SubscriptionPayment[]
+  properties             Property[]
+  tenants                Tenant[]
+  tenantStays            TenantStay[]
+  tenantPayments         TenantPayment[]
+  notifications          Notification[]
+  auditLogsAsActor       AuditLog[]            @relation("AuditLogActor")
+  reviewedPayments       SubscriptionPayment[] @relation("PaymentReviewer")
+  reviewedListingReports ListingReport[]       @relation("ListingReportReviewer")
+  updatedSystemSettings  SystemSetting[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// SUBSCRIPTION PLANS
+// ─────────────────────────────────────────────
+
+model SubscriptionPlan {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  price        Decimal  @db.Decimal(12, 2)
+  durationDays Int      @map("duration_days")
+  isActive     Boolean  @default(true) @map("is_active")
+  isDefault    Boolean  @default(false) @map("is_default")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  features      SubscriptionPlanFeature[]
+  subscriptions Subscription[]
+  payments      SubscriptionPayment[]
+
+  @@map("subscription_plans")
+}
+
+model SubscriptionPlanFeature {
+  id           String   @id @default(uuid())
+  planId       String   @map("plan_id")
+  featureKey   String   @map("feature_key")
+  featureValue String   @map("feature_value")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureKey])
+  @@map("subscription_plan_features")
+}
+
+// ─────────────────────────────────────────────
+// SUBSCRIPTIONS
+// ─────────────────────────────────────────────
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  ownerId              String             @map("owner_id")
+  planId               String             @map("plan_id")
+  status               SubscriptionStatus @default(trial)
+  startsAt             DateTime           @map("starts_at")
+  endsAt               DateTime           @map("ends_at")
+  activatedByPaymentId String?            @unique @map("activated_by_payment_id")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+
+  owner   User                 @relation(fields: [ownerId], references: [id])
+  plan    SubscriptionPlan     @relation(fields: [planId], references: [id])
+  payment SubscriptionPayment? @relation("ActivatedSubscription", fields: [activatedByPaymentId], references: [id])
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([endsAt])
+  @@map("subscriptions")
+}
+
+model SubscriptionPayment {
+  id              String        @id @default(uuid())
+  ownerId         String        @map("owner_id")
+  planId          String        @map("plan_id")
+  referenceNo     String        @unique @map("reference_no")
+  amount          Decimal       @db.Decimal(12, 2)
+  paymentDate     DateTime      @map("payment_date") @db.Date
+  paymentMethod   String        @map("payment_method")
+  proofUrl        String?       @map("proof_url")
+  notes           String?
+  status          PaymentStatus @default(pending)
+  reviewedBy      String?       @map("reviewed_by")
+  reviewedAt      DateTime?     @map("reviewed_at")
+  rejectionReason String?       @map("rejection_reason")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  owner    User             @relation(fields: [ownerId], references: [id])
+  plan     SubscriptionPlan @relation(fields: [planId], references: [id])
+  reviewer User?            @relation("PaymentReviewer", fields: [reviewedBy], references: [id])
+
+  activatedSubscription Subscription? @relation("ActivatedSubscription")
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("subscription_payments")
+}
+
+// ─────────────────────────────────────────────
+// PROPERTIES
+// ─────────────────────────────────────────────
+
+model Property {
+  id              String         @id @default(uuid())
+  ownerId         String         @map("owner_id")
+  name            String
+  slug            String         @unique
+  description     String?
+  type            PropertyType
+  whatsapp        String
+  address         String
+  province        String?
+  city            String?
+  district        String?
+  subdistrict     String?
+  postalCode      String?        @map("postal_code")
+  latitude        Decimal?       @db.Decimal(10, 8)
+  longitude       Decimal?       @db.Decimal(11, 8)
+  priceStart      Decimal?       @map("price_start") @db.Decimal(12, 2)
+  status          PropertyStatus @default(draft)
+  suspendedReason String?        @map("suspended_reason")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  owner      User               @relation(fields: [ownerId], references: [id])
+  photos     PropertyPhoto[]
+  facilities PropertyFacility[]
+  rules      PropertyRule[]
+  rooms      Room[]
+  reports    ListingReport[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([city])
+  @@index([type])
+  @@index([latitude, longitude])
+  @@map("properties")
+}
+
+model PropertyPhoto {
+  id         String   @id @default(uuid())
+  propertyId String   @map("property_id")
+  url        String
+  order      Int      @default(0)
+  isPrimary  Boolean  @default(false) @map("is_primary")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_photos")
+}
+
+model PropertyFacility {
+  id           String   @id @default(uuid())
+  propertyId   String   @map("property_id")
+  facilityName String   @map("facility_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_facilities")
+}
+
+model PropertyRule {
+  id         String   @id @default(uuid())
+  propertyId String   @map("property_id")
+  rule       String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_rules")
+}
+
+// ─────────────────────────────────────────────
+// ROOMS
+// ─────────────────────────────────────────────
+
+model Room {
+  id          String     @id @default(uuid())
+  propertyId  String     @map("property_id")
+  ownerId     String     @map("owner_id")
+  roomNumber  String     @map("room_number")
+  name        String?
+  type        String?
+  price       Decimal    @db.Decimal(12, 2)
+  description String?
+  status      RoomStatus @default(available)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  property   Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  photos     RoomPhoto[]
+  facilities RoomFacility[]
+  stays      TenantStay[]
+
+  @@unique([propertyId, roomNumber])
+  @@index([ownerId])
+  @@index([status])
+  @@map("rooms")
+}
+
+model RoomPhoto {
+  id        String   @id @default(uuid())
+  roomId    String   @map("room_id")
+  url       String
+  order     Int      @default(0)
+  isPrimary Boolean  @default(false) @map("is_primary")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("room_photos")
+}
+
+model RoomFacility {
+  id           String   @id @default(uuid())
+  roomId       String   @map("room_id")
+  facilityName String   @map("facility_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("room_facilities")
+}
+
+// ─────────────────────────────────────────────
+// TENANTS
+// ─────────────────────────────────────────────
+
+model Tenant {
+  id        String   @id @default(uuid())
+  ownerId   String   @map("owner_id")
+  name      String
+  whatsapp  String?
+  notes     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  owner User         @relation(fields: [ownerId], references: [id])
+  stays TenantStay[]
+
+  @@index([ownerId])
+  @@map("tenants")
+}
+
+model TenantStay {
+  id           String           @id @default(uuid())
+  tenantId     String           @map("tenant_id")
+  roomId       String           @map("room_id")
+  ownerId      String           @map("owner_id")
+  checkInDate  DateTime         @map("check_in_date") @db.Date
+  checkOutDate DateTime?        @map("check_out_date") @db.Date
+  rentPrice    Decimal          @map("rent_price") @db.Decimal(12, 2)
+  deposit      Decimal          @default(0) @db.Decimal(12, 2)
+  status       TenantStayStatus @default(active)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  room     Room            @relation(fields: [roomId], references: [id])
+  owner    User            @relation(fields: [ownerId], references: [id])
+  payments TenantPayment[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("tenant_stays")
+}
+
+// ─────────────────────────────────────────────
+// TENANT PAYMENTS
+// ─────────────────────────────────────────────
+
+model TenantPayment {
+  id            String               @id @default(uuid())
+  ownerId       String               @map("owner_id")
+  tenantStayId  String               @map("tenant_stay_id")
+  periodStart   DateTime             @map("period_start") @db.Date
+  periodEnd     DateTime             @map("period_end") @db.Date
+  amount        Decimal              @db.Decimal(12, 2)
+  paymentDate   DateTime?            @map("payment_date") @db.Date
+  paymentMethod TenantPaymentMethod? @map("payment_method")
+  status        TenantPaymentStatus  @default(pending)
+  notes         String?
+  createdAt     DateTime             @default(now()) @map("created_at")
+  updatedAt     DateTime             @updatedAt @map("updated_at")
+
+  owner      User       @relation(fields: [ownerId], references: [id])
+  tenantStay TenantStay @relation(fields: [tenantStayId], references: [id])
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("tenant_payments")
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  readAt    DateTime?        @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────────
+// LISTING REPORTS
+// ─────────────────────────────────────────────
+
+model ListingReport {
+  id              String              @id @default(uuid())
+  propertyId      String              @map("property_id")
+  reason          ListingReportReason
+  description     String?
+  reporterName    String?             @map("reporter_name")
+  reporterContact String?             @map("reporter_contact")
+  status          ListingReportStatus @default(pending)
+  reviewedBy      String?             @map("reviewed_by")
+  reviewedAt      DateTime?           @map("reviewed_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id])
+  reviewer User?    @relation("ListingReportReviewer", fields: [reviewedBy], references: [id])
+
+  @@map("listing_reports")
+}
+
+// ─────────────────────────────────────────────
+// AUDIT LOGS
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?  @map("actor_id")
+  actorRole  String?  @map("actor_role")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  oldValue   Json?    @map("old_value")
+  newValue   Json?    @map("new_value")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation("AuditLogActor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────
+// SYSTEM SETTINGS
+// ─────────────────────────────────────────────
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String?
+  description String?
+  updatedBy   String?  @map("updated_by")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  updater User? @relation(fields: [updatedBy], references: [id])
+
+  @@map("system_settings")
+}
