@@ -620,7 +620,7 @@ router.get('/system-health', handle(async (req, res) => {
           try {
             size += fs.statSync(full).size;
             count++;
-          } catch {}
+          } catch { }
         }
       }
     }

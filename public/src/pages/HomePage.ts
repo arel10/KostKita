@@ -75,17 +75,42 @@ export async function renderHomePage(): Promise<string> {
 
   return `
     <div class="flex flex-col w-full bg-white">
-      <!-- HERO SECTION WITH ULTRA-SOFT COLOR TRANSITION -->
-      <section class="relative w-full pt-8 sm:pt-12 pb-14 sm:pb-18 overflow-hidden" style="background: linear-gradient(180deg, #dcf0e7 0%, #e6f3ec 28%, #edf6f2 55%, #f5faf7 80%, #ffffff 100%);">
-        
-        <!-- Ultra-Soft Diffused Ambient Glow (Left) -->
-        <div class="absolute -top-32 -left-28 w-[720px] h-[900px] rounded-full bg-emerald-200/25 blur-[140px] pointer-events-none"></div>
+      <!-- HERO SECTION: LAYERED CURVED SHAPES (BULAT BERLAPIS) + SOFT FADE -->
+      <section class="relative z-0 w-full pt-8 sm:pt-12 pb-14 sm:pb-18">
 
-        <!-- Ultra-Soft Diffused Ambient Glow (Right behind photo) -->
-        <div class="absolute -top-24 -right-28 w-[760px] h-[950px] rounded-full bg-teal-200/20 blur-[150px] pointer-events-none"></div>
+        <!-- Background layer: extends 200px below the hero and fades out via mask (no hard edge) -->
+        <div
+          class="absolute inset-x-0 top-0 h-[calc(100%+200px)] overflow-hidden pointer-events-none"
+          style="background: linear-gradient(160deg, #eaf4ee 0%, #f1f8f4 55%, #f6faf8 100%); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0,0,0,0.5) 80%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0,0,0,0.5) 80%, transparent 100%);"
+        >
+          <!-- Kiri bawah: gelombang (terang) + seperempat lingkaran (lebih gelap) -->
+          <svg class="absolute left-0 bottom-[120px] w-[720px] h-[720px] max-w-[70vw]" viewBox="0 0 720 720" preserveAspectRatio="xMinYMax meet" fill="none">
+            <defs>
+              <linearGradient id="heroWave" x1="0" y1="0" x2="0.6" y2="1">
+                <stop offset="0%" stop-color="#e3efe8" />
+                <stop offset="100%" stop-color="#edf5f0" />
+              </linearGradient>
+              <linearGradient id="heroCircle" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#d3e6da" />
+                <stop offset="100%" stop-color="#e0eee5" />
+              </linearGradient>
+            </defs>
+            <path d="M0 90 C 150 60, 250 170, 320 320 C 390 470, 470 600, 640 720 L 0 720 Z" fill="url(#heroWave)" />
+            <circle cx="0" cy="720" r="400" fill="url(#heroCircle)" />
+          </svg>
 
-        <!-- Ultra-Soft Center Warmth -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 w-[850px] h-[550px] rounded-full bg-emerald-100/30 blur-[140px] pointer-events-none"></div>
+          <!-- Kanan atas: lingkaran besar lembut (aksen penyeimbang) -->
+          <svg class="absolute right-0 top-0 w-[560px] h-[560px] max-w-[55vw]" viewBox="0 0 560 560" preserveAspectRatio="xMaxYMin meet" fill="none">
+            <defs>
+              <linearGradient id="heroTopRight" x1="1" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d9eadf" />
+                <stop offset="100%" stop-color="#eaf4ee" />
+              </linearGradient>
+            </defs>
+            <circle cx="560" cy="0" r="360" fill="url(#heroTopRight)" />
+            <circle cx="560" cy="0" r="220" fill="#d1e5d8" fill-opacity="0.55" />
+          </svg>
+        </div>
 
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
@@ -237,7 +262,7 @@ export async function renderHomePage(): Promise<string> {
       </section>
 
       <!-- FEATURED REAL PROPERTIES (REKOMENDASI KOST TERVERIFIKASI) -->
-      <section class="w-full bg-white py-10">
+      <section class="relative z-10 w-full bg-transparent py-10">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
