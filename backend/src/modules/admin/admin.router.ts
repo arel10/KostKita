@@ -21,27 +21,68 @@ const handle = (fn: (req: Request, res: Response, next: NextFunction) => Promise
     }
   };
 
+// ── Helpers ───────────────────────────────────
+const startOfMonth = (d = new Date()) => new Date(d.getFullYear(), d.getMonth(), 1);
+const monthKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+const lastMonths = (n: number) => {
+  const now = new Date();
+  return Array.from({ length: n }, (_, i) => new Date(now.getFullYear(), now.getMonth() - (n - 1 - i), 1));
+};
+
 // ── Dashboard ─────────────────────────────────
 router.get('/dashboard', handle(async (req, res) => {
+  const sixMonthsAgo = lastMonths(6)[0];
   const [
     totalOwners,
     activeOwners,
     suspendedOwners,
     totalProperties,
     activeListings,
+    inactiveListings,
     pendingPayments,
     pendingReports,
+    activeSubscriptions,
+    revenueAgg,
+    recentOwners,
+    recentSubscriptions,
+    recentPayments,
+    recentProperties,
+    recentReports,
+    recentSuspends,
+    ownersTrend,
+    paymentsTrend,
   ] = await Promise.all([
     prisma.user.count({ where: { role: 'owner' } }),
     prisma.user.count({ where: { role: 'owner', status: 'active' } }),
     prisma.user.count({ where: { role: 'owner', status: 'suspended' } }),
     prisma.property.count(),
     prisma.property.count({ where: { status: 'active' } }),
+    prisma.property.count({ where: { status: { in: ['inactive', 'suspended'] } } }),
     prisma.subscriptionPayment.count({ where: { status: 'pending' } }),
     prisma.listingReport.count({ where: { status: 'pending' } }),
+    prisma.subscription.count({ where: { status: { in: ['active', 'expiring_soon'] } } }),
+    prisma.subscriptionPayment.aggregate({ _sum: { amount: true }, where: { status: 'approved', reviewedAt: { gte: startOfMonth() } } }),
+    prisma.user.findMany({ where: { role: 'owner' }, select: { id: true, name: true, email: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.subscription.findMany({ include: { owner: { select: { name: true } }, plan: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.subscriptionPayment.findMany({ where: { status: 'pending' }, include: { owner: { select: { name: true } }, plan: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.property.findMany({ select: { id: true, name: true, status: true, createdAt: true, owner: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.listingReport.findMany({ include: { property: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.auditLog.findMany({ where: { action: { in: ['owner.suspend', 'property.suspend'] } }, include: { actor: { select: { name: true } } }, orderBy: { createdAt: 'desc' }, take: 5 }),
+    prisma.user.findMany({ where: { role: 'owner', createdAt: { gte: sixMonthsAgo } }, select: { createdAt: true } }),
+    prisma.subscriptionPayment.findMany({ where: { status: 'approved', reviewedAt: { gte: sixMonthsAgo } }, select: { amount: true, reviewedAt: true } }),
   ]);
 
-  sendSuccess(res, { totalOwners, activeOwners, suspendedOwners, totalProperties, activeListings, pendingPayments, pendingReports });
+  const months = lastMonths(6).map((d) => ({ key: monthKey(d), label: d.toLocaleDateString('id-ID', { month: 'short' }), owners: 0, revenue: 0 }));
+  ownersTrend.forEach((o) => { const m = months.find((x) => x.key === monthKey(o.createdAt)); if (m) m.owners += 1; });
+  paymentsTrend.forEach((p) => { const m = months.find((x) => x.key === monthKey(p.reviewedAt!)); if (m) m.revenue += Number(p.amount); });
+
+  sendSuccess(res, {
+    totalOwners, activeOwners, suspendedOwners, totalProperties, activeListings, inactiveListings,
+    pendingPayments, pendingReports, activeSubscriptions,
+    monthlyRevenue: Number(revenueAgg._sum.amount ?? 0),
+    trend: months,
+    recentActivity: { owners: recentOwners, subscriptions: recentSubscriptions, payments: recentPayments, properties: recentProperties, reports: recentReports, suspends: recentSuspends },
+  });
 }));
 
 // ── Owner Management ──────────────────────────
@@ -151,6 +192,22 @@ router.get('/properties', handle(async (req, res) => {
   sendSuccess(res, properties, { meta: buildPaginationMeta(total, page, perPage) });
 }));
 
+router.get('/properties/:id', handle(async (req, res) => {
+  const property = await prisma.property.findUnique({
+    where: { id: req.params.id },
+    include: {
+      owner: { select: { id: true, name: true, email: true, phone: true, status: true } },
+      photos: { orderBy: { order: 'asc' } },
+      facilities: true,
+      rules: true,
+      rooms: { select: { id: true, roomNumber: true, name: true, price: true, status: true } },
+      reports: { orderBy: { createdAt: 'desc' } },
+    },
+  });
+  if (!property) { sendError(res, 'NOT_FOUND', 'Properti tidak ditemukan.', 404); return; }
+  sendSuccess(res, property);
+}));
+
 router.post('/properties/:id/suspend', validate(suspendSchema), handle(async (req, res) => {
   const property = await prisma.property.findUnique({ where: { id: req.params.id } });
   if (!property) { sendError(res, 'NOT_FOUND', 'Properti tidak ditemukan.', 404); return; }
@@ -188,11 +245,25 @@ router.get('/listing-reports', handle(async (req, res) => {
   sendSuccess(res, reports, { meta: buildPaginationMeta(total, page, perPage) });
 }));
 
-router.patch('/listing-reports/:id', handle(async (req, res) => {
+router.get('/listing-reports/:id', handle(async (req, res) => {
+  const report = await prisma.listingReport.findUnique({
+    where: { id: req.params.id },
+    include: { property: { select: { id: true, name: true, slug: true, status: true, owner: { select: { id: true, name: true, email: true } } } } },
+  });
+  if (!report) { sendError(res, 'NOT_FOUND', 'Laporan tidak ditemukan.', 404); return; }
+  sendSuccess(res, report);
+}));
+
+const reportStatusSchema = z.object({ status: z.enum(['pending', 'reviewed', 'resolved']) });
+
+router.patch('/listing-reports/:id', validate(reportStatusSchema), handle(async (req, res) => {
+  const existing = await prisma.listingReport.findUnique({ where: { id: req.params.id } });
+  if (!existing) { sendError(res, 'NOT_FOUND', 'Laporan tidak ditemukan.', 404); return; }
   await prisma.listingReport.update({
     where: { id: req.params.id },
     data: { status: req.body.status, reviewedBy: req.user!.sub, reviewedAt: new Date() },
   });
+  await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: AuditAction.LISTING_REPORT_REVIEW, entityType: EntityType.LISTING_REPORT, entityId: req.params.id, oldValue: { status: existing.status }, newValue: { status: req.body.status }, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
   sendSuccess(res, null, { message: 'Laporan berhasil diperbarui.' });
 }));
 
@@ -201,9 +272,22 @@ router.get('/audit-logs', handle(async (req, res) => {
   const q = req.query as any;
   const { page, perPage, skip } = getPaginationParams(q);
 
+  const where: any = {
+    ...(q.action && { action: { contains: q.action, mode: 'insensitive' } }),
+    ...(q.entityType && { entityType: q.entityType }),
+    ...(q.actorId && { actorId: q.actorId }),
+    ...((q.from || q.to) && {
+      createdAt: {
+        ...(q.from && { gte: new Date(q.from) }),
+        ...(q.to && { lte: new Date(new Date(q.to).setHours(23, 59, 59, 999)) }),
+      },
+    }),
+  };
+
   const [total, logs] = await Promise.all([
-    prisma.auditLog.count(),
+    prisma.auditLog.count({ where }),
     prisma.auditLog.findMany({
+      where,
       include: { actor: { select: { name: true, email: true, role: true } } },
       orderBy: { createdAt: 'desc' },
       skip,
@@ -255,7 +339,29 @@ router.post('/plans', validate(createPlanSchema), handle(async (req, res) => {
   sendSuccess(res, plan, { statusCode: 201 });
 }));
 
-router.patch('/plans/:id', handle(async (req, res) => {
+const updatePlanSchema = createPlanSchema.partial().extend({ isActive: z.boolean().optional() });
+
+router.get('/plans/:id', handle(async (req, res) => {
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { id: req.params.id }, include: { features: true } });
+  if (!plan) { sendError(res, 'NOT_FOUND', 'Paket tidak ditemukan.', 404); return; }
+  sendSuccess(res, plan);
+}));
+
+router.delete('/plans/:id', handle(async (req, res) => {
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { id: req.params.id }, include: { _count: { select: { subscriptions: true, payments: true } } } });
+  if (!plan) { sendError(res, 'NOT_FOUND', 'Paket tidak ditemukan.', 404); return; }
+  if (plan.isDefault) { sendError(res, 'PLAN_DEFAULT', 'Paket default tidak dapat dihapus.', 409); return; }
+  const used = plan._count.subscriptions + plan._count.payments > 0;
+  if (used) {
+    await prisma.subscriptionPlan.update({ where: { id: plan.id }, data: { isActive: false } });
+  } else {
+    await prisma.subscriptionPlan.delete({ where: { id: plan.id } });
+  }
+  await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: 'plan.delete', entityType: EntityType.PLAN, entityId: plan.id, newValue: { softDeleted: used }, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
+  sendSuccess(res, null, { message: used ? 'Paket sudah dipakai, dinonaktifkan.' : 'Paket berhasil dihapus.' });
+}));
+
+router.patch('/plans/:id', validate(updatePlanSchema), handle(async (req, res) => {
   const { features, ...planData } = req.body;
   const plan = await prisma.$transaction(async (tx) => {
     if (planData.isDefault) {
@@ -296,6 +402,124 @@ router.patch('/settings', handle(async (req, res) => {
   );
   await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: AuditAction.SETTINGS_UPDATE, entityType: EntityType.SYSTEM_SETTING, newValue: req.body });
   sendSuccess(res, null, { message: 'Pengaturan berhasil disimpan.' });
+}));
+
+// ── Subscriptions ─────────────────────────────
+router.get('/subscriptions', handle(async (req, res) => {
+  const q = req.query as any;
+  const { page, perPage, skip } = getPaginationParams(q);
+  const where: any = {
+    ...(q.status && { status: q.status }),
+    ...(q.planId && { planId: q.planId }),
+    ...(q.search && {
+      owner: { OR: [
+        { name: { contains: q.search, mode: 'insensitive' } },
+        { email: { contains: q.search, mode: 'insensitive' } },
+      ] },
+    }),
+  };
+  const [total, subs] = await Promise.all([
+    prisma.subscription.count({ where }),
+    prisma.subscription.findMany({
+      where,
+      include: { owner: { select: { id: true, name: true, email: true } }, plan: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: perPage,
+    }),
+  ]);
+  sendSuccess(res, subs, { meta: buildPaginationMeta(total, page, perPage) });
+}));
+
+// ── Payment Detail ────────────────────────────
+router.get('/payments/:id', handle(async (req, res) => {
+  const payment = await prisma.subscriptionPayment.findUnique({
+    where: { id: req.params.id },
+    include: {
+      owner: { select: { id: true, name: true, email: true, phone: true } },
+      plan: { select: { id: true, name: true, price: true, durationDays: true } },
+      reviewer: { select: { name: true } },
+    },
+  });
+  if (!payment) { sendError(res, 'NOT_FOUND', 'Pembayaran tidak ditemukan.', 404); return; }
+  sendSuccess(res, payment);
+}));
+
+// ── Platform Reports ──────────────────────────
+router.get('/reports/overview', handle(async (req, res) => {
+  const n = Math.min(24, Math.max(1, parseInt(String((req.query as any).months ?? '6'), 10)));
+  const months = lastMonths(n);
+  const from = months[0];
+
+  const [owners, payments, activeSubs, totalOwners, payingOwners, plans] = await Promise.all([
+    prisma.user.findMany({ where: { role: 'owner', createdAt: { gte: from } }, select: { createdAt: true } }),
+    prisma.subscriptionPayment.findMany({ where: { status: 'approved', reviewedAt: { gte: from } }, select: { amount: true, reviewedAt: true } }),
+    prisma.subscription.groupBy({ by: ['planId'], where: { status: { in: ['trial', 'active', 'expiring_soon'] } }, _count: { _all: true } }),
+    prisma.user.count({ where: { role: 'owner' } }),
+    prisma.subscriptionPayment.groupBy({ by: ['ownerId'], where: { status: 'approved' } }),
+    prisma.subscriptionPlan.findMany({ select: { id: true, name: true } }),
+  ]);
+
+  const series = months.map((d) => ({ key: monthKey(d), label: d.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' }), owners: 0, revenue: 0 }));
+  owners.forEach((o) => { const m = series.find((x) => x.key === monthKey(o.createdAt)); if (m) m.owners += 1; });
+  payments.forEach((p) => { const m = series.find((x) => x.key === monthKey(p.reviewedAt!)); if (m) m.revenue += Number(p.amount); });
+
+  const planName = new Map(plans.map((p) => [p.id, p.name]));
+  const distribution = activeSubs.map((a) => ({ plan: planName.get(a.planId) ?? 'Unknown', count: a._count._all }));
+
+  sendSuccess(res, {
+    series,
+    totalRevenue: series.reduce((s, m) => s + m.revenue, 0),
+    newOwners: series.reduce((s, m) => s + m.owners, 0),
+    distribution,
+    conversion: { totalOwners, payingOwners: payingOwners.length, rate: totalOwners ? Math.round((payingOwners.length / totalOwners) * 1000) / 10 : 0 },
+  });
+}));
+
+// ── Notifications / Announcements ─────────────
+const announcementSchema = z.object({
+  title: z.string().min(3).max(150),
+  message: z.string().min(5).max(2000),
+  target: z.enum(['all', 'active', 'suspended']).default('all'),
+});
+
+router.post('/notifications/announcement', validate(announcementSchema), handle(async (req, res) => {
+  const { title, message, target } = req.body;
+  const owners = await prisma.user.findMany({
+    where: { role: 'owner', ...(target !== 'all' && { status: target }) },
+    select: { id: true },
+  });
+  const { randomUUID } = await import('crypto');
+  const announcementId = randomUUID();
+  if (owners.length) {
+    await prisma.notification.createMany({
+      data: owners.map((o) => ({ userId: o.id, type: 'system_announcement' as const, title, message, data: { announcementId, target, by: req.user!.sub } })),
+    });
+  }
+  await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: 'notification.announcement', entityType: 'notification', entityId: announcementId, newValue: { title, target, recipients: owners.length }, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
+  sendSuccess(res, { announcementId, recipients: owners.length }, { statusCode: 201, message: 'Pengumuman berhasil dikirim.' });
+}));
+
+router.get('/notifications', handle(async (req, res) => {
+  const rows = await prisma.notification.findMany({
+    where: { type: { in: ['system_announcement', 'owner_suspended', 'listing_suspended', 'payment_approved', 'payment_rejected'] } },
+    include: { user: { select: { name: true, email: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 200,
+  });
+  const grouped: any[] = [];
+  const seen = new Map<string, any>();
+  for (const r of rows) {
+    const id = (r.data as any)?.announcementId;
+    if (id) {
+      if (seen.has(id)) { seen.get(id).recipients += 1; continue; }
+      const item = { id, type: r.type, title: r.title, message: r.message, createdAt: r.createdAt, recipients: 1, target: (r.data as any)?.target };
+      seen.set(id, item); grouped.push(item);
+    } else {
+      grouped.push({ id: r.id, type: r.type, title: r.title, message: r.message, createdAt: r.createdAt, recipients: 1, to: r.user?.name });
+    }
+  }
+  sendSuccess(res, grouped.slice(0, 50));
 }));
 
 export default router;
