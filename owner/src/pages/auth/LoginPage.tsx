@@ -162,25 +162,6 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Google Sign-In */}
-              <div className="mb-4">
-                <GoogleAuthButton
-                  label="Masuk dengan Akun Google"
-                  onSuccess={handleGoogleSuccess}
-                  onError={(msg) => setError(msg)}
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="relative my-4 flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200"></div>
-                </div>
-                <div className="relative bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                  atau dengan email
-                </div>
-              </div>
-
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -229,6 +210,24 @@ export const LoginPage: React.FC = () => {
                       </span>
                     </button>
                   </div>
+                </div>
+
+                <div className="relative my-4 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <div className="relative bg-white px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    atau dengan Google
+                  </div>
+                </div>
+                {/* Google Sign-In */}
+                <div className="mb-4">
+                  <GoogleAuthButton
+                    label="Masuk dengan Akun Google"
+                    onSuccess={handleGoogleSuccess}
+                    onError={(msg) => setError(msg)}
+                    disabled={isLoading}
+                  />
                 </div>
 
                 <button

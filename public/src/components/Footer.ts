@@ -22,27 +22,27 @@ export function renderFooter(): string {
             </div>
           </div>
 
-          <!-- Col 2: Cari Kost Populer -->
+          <!-- Col 2: Kategori Favorit -->
           <div class="space-y-3">
-            <h4 class="text-sm font-bold text-on-surface tracking-wider uppercase">Kota Populer</h4>
+            <h4 class="text-sm font-bold text-on-surface tracking-wider uppercase">Kategori Kost</h4>
             <ul class="space-y-2 text-sm text-on-surface-variant">
-              <li><a href="#/search?city=Padang" class="hover:text-primary transition-colors">Kost di Padang</a></li>
-              <li><a href="#/search?city=Sleman" class="hover:text-primary transition-colors">Kost di Jogja (UGM)</a></li>
-              <li><a href="#/search?city=Depok" class="hover:text-primary transition-colors">Kost di Depok (UI)</a></li>
-              <li><a href="#/search?city=Jakarta" class="hover:text-primary transition-colors">Kost di Jakarta Selatan</a></li>
-              <li><a href="#/search?city=Bandung" class="hover:text-primary transition-colors">Kost di Bandung (ITB)</a></li>
+              <li><a href="#/search?type=putri" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Kost Khusus Putri</span></a></li>
+              <li><a href="#/search?type=putra" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Kost Khusus Putra</span></a></li>
+              <li><a href="#/search?type=campur" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Kost Campur Nyaman</span></a></li>
+              <li><a href="#/search?facilities=Kamar+Mandi+Dalam" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Kamar Mandi Dalam</span></a></li>
+              <li><a href="#/search?facilities=AC" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Kost Ber-AC & WiFi</span></a></li>
+              <li><a href="#/search?priceMax=1500000" class="hover:text-primary transition-colors flex items-center gap-1.5"> <span>Budget Mahasiswa (&lt; 1.5 Jt)</span></a></li>
             </ul>
           </div>
 
           <!-- Col 3: Fitur Calon Penyewa -->
           <div class="space-y-3">
-            <h4 class="text-sm font-bold text-on-surface tracking-wider uppercase">Penyewa</h4>
+            <h4 class="text-sm font-bold text-on-surface tracking-wider uppercase">Pencarian Cerdas</h4>
             <ul class="space-y-2 text-sm text-on-surface-variant">
-              <li><a href="#/search" class="hover:text-primary transition-colors">Jelajahi Peta Kost</a></li>
-              <li><a href="#/search?type=putri" class="hover:text-primary transition-colors">Kost Khusus Putri</a></li>
-              <li><a href="#/search?type=putra" class="hover:text-primary transition-colors">Kost Khusus Putra</a></li>
-              <li><a href="#/search?type=campur" class="hover:text-primary transition-colors">Kost Campur</a></li>
-              <li><a href="#/search?facilities=AC" class="hover:text-primary transition-colors">Kost Ber-AC & WiFi</a></li>
+              <li><a href="#/search" class="hover:text-primary transition-colors flex items-center gap-1.5">Jelajahi Peta Kost</a></li>
+              <li><a href="#/search" class="hover:text-primary transition-colors flex items-center gap-1.5">Radar GPS Lokasi Saya</a></li>
+              <li><a href="#/search" class="hover:text-primary transition-colors flex items-center gap-1.5">Kost Terverifikasi</a></li>
+              <li><a href="#/search" class="hover:text-primary transition-colors flex items-center gap-1.5">Chat WhatsApp Langsung</a></li>
             </ul>
           </div>
 

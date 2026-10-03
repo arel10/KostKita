@@ -44,8 +44,8 @@ export function createApp() {
 
   // ── Rate Limiting ──────────────────────────
   app.use(rateLimit({
-    windowMs: env.RATE_LIMIT_WINDOW_MS,
-    max: env.RATE_LIMIT_MAX,
+    windowMs: env.isDev() ? 60 * 1000 : env.RATE_LIMIT_WINDOW_MS,
+    max: env.isDev() ? 5000 : env.RATE_LIMIT_MAX,
     standardHeaders: true,
     legacyHeaders: false,
     message: {

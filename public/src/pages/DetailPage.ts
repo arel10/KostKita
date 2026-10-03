@@ -46,15 +46,15 @@ export async function renderDetailPage(slug: string): Promise<string> {
     property.type === 'putri'
       ? 'Kost Putri'
       : property.type === 'putra'
-      ? 'Kost Putra'
-      : 'Kost Campur';
+        ? 'Kost Putra'
+        : 'Kost Campur';
 
   const typeBadgeClass =
     property.type === 'putri'
       ? 'bg-rose-100 text-rose-800'
       : property.type === 'putra'
-      ? 'bg-blue-100 text-blue-800'
-      : 'bg-emerald-100 text-emerald-800';
+        ? 'bg-blue-100 text-blue-800'
+        : 'bg-emerald-100 text-emerald-800';
 
   const availableCount = property.rooms.filter((r) => r.status === 'available').length;
 
@@ -90,12 +90,6 @@ export async function renderDetailPage(slug: string): Promise<string> {
           <h1 class="text-2xl sm:text-4xl font-extrabold text-on-surface tracking-tight">${property.name}</h1>
 
           <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-on-surface-variant">
-            <div class="flex items-center gap-1 text-amber-500 font-bold">
-              <span class="material-symbols-outlined text-[18px]">star</span>
-              <span>4.9</span>
-              <span class="text-on-surface-variant font-normal">(18 Ulasan Penyewa)</span>
-            </div>
-            <span class="text-outline">•</span>
             <div class="flex items-center gap-1">
               <span class="material-symbols-outlined text-[18px] text-primary">location_on</span>
               <span>${property.address}, ${property.district ? `${property.district}, ` : ''}${property.city || ''}</span>
@@ -134,8 +128,8 @@ export async function renderDetailPage(slug: string): Promise<string> {
 
         <!-- Secondary Photos -->
         ${secondaryPhotos
-          .map(
-            (ph, idx) => `
+      .map(
+        (ph, idx) => `
             <div class="relative group overflow-hidden bg-surface-container hidden md:block cursor-pointer gallery-secondary-photo" data-idx="${idx + 1}">
               <img 
                 src="${ph.url}" 
@@ -144,8 +138,8 @@ export async function renderDetailPage(slug: string): Promise<string> {
               />
             </div>
           `
-          )
-          .join('')}
+      )
+      .join('')}
 
         <!-- View All Photos Badge Button -->
         <button id="btnOpenGalleryModal" class="absolute bottom-4 right-4 bg-white/95 hover:bg-white text-primary px-3.5 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-1.5 backdrop-blur-md transition-all">
@@ -185,15 +179,15 @@ export async function renderDetailPage(slug: string): Promise<string> {
             <h2 class="text-lg font-bold text-on-surface">Fasilitas Kost Bersama</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               ${property.facilities
-                .map(
-                  (f) => `
+      .map(
+        (f) => `
                 <div class="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-surface-container-high/60 shadow-xs">
                   <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
                   <span class="text-xs sm:text-sm font-medium text-on-surface">${f.facilityName}</span>
                 </div>
               `
-                )
-                .join('')}
+      )
+      .join('')}
             </div>
           </div>
 
@@ -211,20 +205,19 @@ export async function renderDetailPage(slug: string): Promise<string> {
 
             <div class="space-y-3">
               ${property.rooms
-                .map((room) => {
-                  const isAvailable = room.status === 'available';
-                  const isSelected = selectedRoom?.id === room.id;
-                  const roomPhoto = room.photos?.[0]?.url || primaryPhoto;
+      .map((room) => {
+        const isAvailable = room.status === 'available';
+        const isSelected = selectedRoom?.id === room.id;
+        const roomPhoto = room.photos?.[0]?.url || primaryPhoto;
 
-                  return `
+        return `
                     <div 
-                      class="room-card p-4 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between ${
-                        !isAvailable
-                          ? 'bg-surface-container-low/50 opacity-60 border-surface-container pointer-events-none'
-                          : isSelected
-                          ? 'bg-white border-primary shadow-md ring-2 ring-primary/20'
-                          : 'bg-white border-surface-container-high/60 hover:border-primary/40 shadow-xs'
-                      }"
+                      class="room-card p-4 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between ${!isAvailable
+            ? 'bg-surface-container-low/50 opacity-60 border-surface-container pointer-events-none'
+            : isSelected
+              ? 'bg-white border-primary shadow-md ring-2 ring-primary/20'
+              : 'bg-white border-surface-container-high/60 hover:border-primary/40 shadow-xs'
+          }"
                       data-room-id="${room.id}"
                     >
                       <div class="flex items-center gap-4 w-full sm:w-auto">
@@ -234,17 +227,16 @@ export async function renderDetailPage(slug: string): Promise<string> {
                         <div>
                           <div class="flex items-center gap-2">
                             <h4 class="font-bold text-base text-on-surface">${room.name || `Kamar ${room.roomNumber}`}</h4>
-                            <span class="text-[11px] px-2 py-0.5 rounded font-bold ${
-                              isAvailable ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-outline'
-                            }">
+                            <span class="text-[11px] px-2 py-0.5 rounded font-bold ${isAvailable ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-outline'
+          }">
                               ${isAvailable ? 'Tersedia' : 'Terisi'}
                             </span>
                           </div>
                           <p class="text-xs text-on-surface-variant mt-1 line-clamp-1">${room.description || 'Fasilitas kamar lengkap dan nyaman'}</p>
                           <div class="flex flex-wrap gap-1.5 mt-2">
                             ${(room.facilities || [])
-                              .map((rf) => `<span class="px-2 py-0.5 rounded bg-surface-container-low text-[10px] text-on-surface-variant font-medium">${rf.facilityName}</span>`)
-                              .join('')}
+            .map((rf) => `<span class="px-2 py-0.5 rounded bg-surface-container-low text-[10px] text-on-surface-variant font-medium">${rf.facilityName}</span>`)
+            .join('')}
                           </div>
                         </div>
                       </div>
@@ -256,44 +248,42 @@ export async function renderDetailPage(slug: string): Promise<string> {
                         </div>
                         <button 
                           type="button"
-                          class="select-room-btn px-4 py-1.5 rounded-lg text-xs font-semibold mt-2 transition-colors ${
-                            isSelected
-                              ? 'bg-primary text-white'
-                              : 'bg-surface-container hover:bg-primary hover:text-white text-primary'
-                          }"
+                          class="select-room-btn px-4 py-1.5 rounded-lg text-xs font-semibold mt-2 transition-colors ${isSelected
+            ? 'bg-primary text-white'
+            : 'bg-surface-container hover:bg-primary hover:text-white text-primary'
+          }"
                         >
                           ${isSelected ? '✓ Terpilih' : 'Pilih Kamar'}
                         </button>
                       </div>
                     </div>
                   `;
-                })
-                .join('')}
+      })
+      .join('')}
             </div>
           </div>
 
           <!-- Rules -->
-          ${
-            property.rules.length > 0
-              ? `
+          ${property.rules.length > 0
+      ? `
                 <div class="space-y-4 pt-4 border-t border-surface-container-high/60">
                   <h2 class="text-lg font-bold text-on-surface">Peraturan Kost</h2>
                   <ul class="space-y-2.5">
                     ${property.rules
-                      .map(
-                        (r) => `
+        .map(
+          (r) => `
                       <li class="flex items-start gap-2.5 text-xs sm:text-sm text-on-surface-variant">
                         <span class="material-symbols-outlined text-outline text-[18px] shrink-0 mt-0.5">info</span>
                         <span>${r.rule}</span>
                       </li>
                     `
-                      )
-                      .join('')}
+        )
+        .join('')}
                   </ul>
                 </div>
               `
-              : ''
-          }
+      : ''
+    }
 
           <!-- Accessibility & Mini Map -->
           <div class="space-y-4 pt-4 border-t border-surface-container-high/60">
@@ -326,11 +316,11 @@ export async function renderDetailPage(slug: string): Promise<string> {
               <a 
                 id="btnDirectWhatsapp"
                 href="${buildWhatsAppLink(
-                  property.whatsapp,
-                  property.name,
-                  selectedRoom?.name || `Kamar ${selectedRoom?.roomNumber || ''}`,
-                  selectedRoom?.price || property.priceStart
-                )}"
+      property.whatsapp,
+      property.name,
+      selectedRoom?.name || `Kamar ${selectedRoom?.roomNumber || ''}`,
+      selectedRoom?.price || property.priceStart
+    )}"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="w-full py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
@@ -370,16 +360,16 @@ export async function renderDetailPage(slug: string): Promise<string> {
         </div>
         <div class="flex gap-2 overflow-x-auto justify-center pb-2">
           ${property.photos
-            .map(
-              (p, idx) => `
+      .map(
+        (p, idx) => `
             <img 
               src="${p.url}" 
               class="w-16 h-16 rounded-xl object-cover cursor-pointer border-2 border-transparent hover:border-primary transition-all modal-thumb-img" 
               data-url="${p.url}"
             />
           `
-            )
-            .join('')}
+      )
+      .join('')}
         </div>
       </div>
 
@@ -505,7 +495,7 @@ export function setupDetailPageEvents() {
             text: `Temukan kost ${prop.name} di KostKita:`,
             url: window.location.href,
           });
-        } catch (_) {}
+        } catch (_) { }
       } else {
         await navigator.clipboard.writeText(window.location.href);
         alert('Tautan kost berhasil disalin ke clipboard!');

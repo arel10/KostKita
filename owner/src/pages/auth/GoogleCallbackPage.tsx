@@ -6,8 +6,12 @@ export const GoogleCallbackPage: React.FC = () => {
   const { loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const hasProcessedRef = React.useRef(false);
 
   useEffect(() => {
+    if (hasProcessedRef.current) return;
+    hasProcessedRef.current = true;
+
     const processCallback = async () => {
       try {
         // 1. Cek access_token di URL hash (#access_token=...)

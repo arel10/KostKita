@@ -25,7 +25,7 @@ interface TenantMetadata {
 
 function packTenantNotes(notes?: string | null, idCardNumber?: string | null, emergencyPhone?: string | null): string | null {
   const hasMeta = (idCardNumber !== undefined && idCardNumber !== null && idCardNumber.trim() !== '') ||
-                  (emergencyPhone !== undefined && emergencyPhone !== null && emergencyPhone.trim() !== '');
+    (emergencyPhone !== undefined && emergencyPhone !== null && emergencyPhone.trim() !== '');
   if (!hasMeta) {
     return notes || null;
   }
@@ -204,25 +204,25 @@ export async function listTenants(ownerId: string, query: { page?: number; perPa
       stays: t.stays.map((s) => {
         const dueInfo = s.status === 'active' ? calculateDueInfo(s.checkInDate, s.payments) : null;
         return {
-        ...s,
-        startDate: s.checkInDate.toISOString(),
-        endDate: s.checkOutDate ? s.checkOutDate.toISOString() : null,
-        rentAmount: Number(s.rentPrice),
-        deposit: Number(s.deposit),
-        dueInfo,
-        payments: s.payments.map((p) => ({
-          ...p,
-          amount: Number(p.amount),
-        })),
-        room: s.room ? {
-          ...s.room,
-          propertyId: s.room.propertyId,
-          property: s.room.property || { id: '', name: 'Properti', city: '' },
-        } : null,
-      };
-    }),
-  };
-});
+          ...s,
+          startDate: s.checkInDate.toISOString(),
+          endDate: s.checkOutDate ? s.checkOutDate.toISOString() : null,
+          rentAmount: Number(s.rentPrice),
+          deposit: Number(s.deposit),
+          dueInfo,
+          payments: s.payments.map((p) => ({
+            ...p,
+            amount: Number(p.amount),
+          })),
+          room: s.room ? {
+            ...s.room,
+            propertyId: s.room.propertyId,
+            property: s.room.property || { id: '', name: 'Properti', city: '' },
+          } : null,
+        };
+      }),
+    };
+  });
 
   return { data: mappedTenants, meta: buildPaginationMeta(total, page, perPage) };
 }
@@ -347,10 +347,10 @@ export async function getTenantById(ownerId: string, tenantId: string) {
       deposit: Number(s.deposit),
       room: s.room
         ? {
-            ...s.room,
-            propertyId: s.room.propertyId,
-            property: s.room.property || { id: '', name: 'Properti', city: '' },
-          }
+          ...s.room,
+          propertyId: s.room.propertyId,
+          property: s.room.property || { id: '', name: 'Properti', city: '' },
+        }
         : null,
     })),
   };

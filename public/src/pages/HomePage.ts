@@ -3,14 +3,44 @@ import { OWNER_ROUTES } from '../services/config';
 import { PropertyListItem } from '../types';
 
 export async function renderHomePage(): Promise<string> {
-  // Fetch real featured properties from backend
-  let featured: PropertyListItem[] = [];
+  // Fetch real properties from backend
+  let properties: PropertyListItem[] = [];
   try {
-    const res = await fetchProperties({ perPage: 4 });
-    featured = res.data;
+    const res = await fetchProperties({ perPage: 50 });
+    properties = res.data;
   } catch (e) {
-    console.error('Failed to load featured properties:', e);
+    console.error('Failed to load properties for homepage:', e);
   }
+
+  // 4 Featured properties for the showcase section
+  const featured = properties.slice(0, 4);
+
+  // Extract REAL active cities dynamically from database
+  const cityMap: Record<string, { count: number; rawCity: string; minPrice: number }> = {};
+  properties.forEach((p) => {
+    if (p.city) {
+      const cleanName = p.city.replace(/^(Kota|Kabupaten)\s+/i, '').trim();
+      const numPrice = Number(p.priceStart) || 0;
+      if (!cityMap[cleanName]) {
+        cityMap[cleanName] = {
+          count: 0,
+          rawCity: p.city,
+          minPrice: numPrice,
+        };
+      }
+      cityMap[cleanName].count += 1;
+      if (numPrice < cityMap[cleanName].minPrice) {
+        cityMap[cleanName].minPrice = numPrice;
+      }
+    }
+  });
+
+  const realActiveCities = Object.entries(cityMap).map(([name, info]) => ({
+    name,
+    rawCity: info.rawCity,
+    count: info.count,
+    minPrice: info.minPrice,
+  }));
 
   return `
     <div class="flex flex-col w-full">
@@ -115,93 +145,15 @@ export async function renderHomePage(): Promise<string> {
 
             <!-- Quick Filter Tags -->
             <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-surface-container-low text-xs text-on-surface-variant font-medium">
-              <span class="text-outline">Paling Dicari:</span>
-              <a href="#/search?search=Unand" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">Unand Padang</a>
-              <a href="#/search?search=UGM" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">Pogung UGM</a>
-              <a href="#/search?search=UI" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">Kukusan UI</a>
-              <a href="#/search?city=Jakarta" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">Tebet Jaksel</a>
-              <a href="#/search?city=Bandung" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface">Dago Bandung</a>
+              <span class="text-outline">Kategori Populer:</span>
+              <a href="#/search?type=putri" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-rose-50 hover:text-rose-700 transition-colors text-on-surface font-semibold">Kost Putri</a>
+              <a href="#/search?type=putra" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-blue-50 hover:text-blue-700 transition-colors text-on-surface font-semibold">Kost Putra</a>
+              <a href="#/search?type=campur" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors text-on-surface font-semibold">Kost Campur</a>
+              <a href="#/search?facilities=Kamar+Mandi+Dalam" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-purple-50 hover:text-purple-700 transition-colors text-on-surface font-semibold">Kamar Mandi Dalam</a>
+              <a href="#/search?facilities=AC" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-cyan-50 hover:text-cyan-700 transition-colors text-on-surface font-semibold">Ber-AC & WiFi</a>
+              <a href="#/search?priceMax=1500000" class="px-3 py-1 rounded-lg bg-surface-container-low hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-on-surface font-semibold">Budget &lt; 1.5 Jt</a>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- POPULAR LOCATIONS BENTO GRID -->
-      <section class="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-          <div>
-            <div class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest mb-1.5">
-              <span class="w-3 h-1 bg-primary rounded-full"></span>
-              <span>Eksplorasi Area Strategis</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">Kota & Kampus Favorit</h2>
-          </div>
-          <a href="#/search" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-            <span>Lihat Semua Area</span>
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <!-- Card 1: Padang -->
-          <a href="#/search?city=Padang" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
-            <img 
-              src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=800&q=80" 
-              alt="Kota Padang" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md mb-2 inline-block">Sumatera Barat</span>
-              <h3 class="text-xl font-bold">Kota Padang</h3>
-              <p class="text-xs text-white/80 mt-0.5">Area Kuranji, Unand, UNP</p>
-            </div>
-          </a>
-
-          <!-- Card 2: Yogyakarta -->
-          <a href="#/search?city=Sleman" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
-            <img 
-              src="https://images.unsplash.com/photo-1584810359583-96fc3448beaa?auto=format&fit=crop&w=800&q=80" 
-              alt="Yogyakarta" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md mb-2 inline-block">D.I. Yogyakarta</span>
-              <h3 class="text-xl font-bold">Sleman & UGM</h3>
-              <p class="text-xs text-white/80 mt-0.5">Pogung, Kaliurang, Gejayan</p>
-            </div>
-          </a>
-
-          <!-- Card 3: Depok UI -->
-          <a href="#/search?city=Depok" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
-            <img 
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80" 
-              alt="Depok" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md mb-2 inline-block">Jawa Barat</span>
-              <h3 class="text-xl font-bold">Depok (UI)</h3>
-              <p class="text-xs text-white/80 mt-0.5">Kukusan, Margonda, Barel</p>
-            </div>
-          </a>
-
-          <!-- Card 4: Jakarta Selatan -->
-          <a href="#/search?city=Jakarta" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-card transition-all">
-            <img 
-              src="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80" 
-              alt="Jakarta Selatan" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent"></div>
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md mb-2 inline-block">DKI Jakarta</span>
-              <h3 class="text-xl font-bold">Jakarta Selatan</h3>
-              <p class="text-xs text-white/80 mt-0.5">Tebet, Kuningan, Pancoran</p>
-            </div>
-          </a>
         </div>
       </section>
 

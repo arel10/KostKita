@@ -470,10 +470,12 @@ router.get('/subscriptions', handle(async (req, res) => {
     ...(q.status && { status: q.status }),
     ...(q.planId && { planId: q.planId }),
     ...(q.search && {
-      owner: { OR: [
-        { name: { contains: q.search, mode: 'insensitive' } },
-        { email: { contains: q.search, mode: 'insensitive' } },
-      ] },
+      owner: {
+        OR: [
+          { name: { contains: q.search, mode: 'insensitive' } },
+          { email: { contains: q.search, mode: 'insensitive' } },
+        ]
+      },
     }),
   };
   const [total, subs] = await Promise.all([

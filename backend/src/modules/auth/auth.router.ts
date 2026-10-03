@@ -13,10 +13,10 @@ import {
 
 const router = Router();
 
-// Stricter rate limit for auth routes
+// Stricter rate limit for auth routes (relaxed in development)
 const authLimiter = rateLimit({
-  windowMs: env.RATE_LIMIT_WINDOW_MS,
-  max: env.AUTH_RATE_LIMIT_MAX,
+  windowMs: env.isDev() ? 60 * 1000 : env.RATE_LIMIT_WINDOW_MS,
+  max: env.isDev() ? 1000 : env.AUTH_RATE_LIMIT_MAX,
   message: {
     success: false,
     error: {

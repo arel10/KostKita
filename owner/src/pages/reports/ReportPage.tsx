@@ -3,12 +3,16 @@ import { Badge } from '../../components/ui/Badge';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
 import api from '../../lib/api';
 import { DashboardReport, OccupancyPropertyReport, RevenueReportData } from '../../types';
+import { useAuth } from '../../context/AuthContext';
+import { PrintableReportTemplate } from '../../components/reports/PrintableReportTemplate';
 
 export const ReportPage: React.FC = () => {
+  const { user } = useAuth();
   const [dashboardReport, setDashboardReport] = useState<DashboardReport | null>(null);
   const [occupancyData, setOccupancyData] = useState<OccupancyPropertyReport[]>([]);
   const [revenueData, setRevenueData] = useState<RevenueReportData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   // Preset & custom date filters
   const [datePreset, setDatePreset] = useState<'this_month' | 'last_month' | 'this_year' | 'all' | 'custom'>('this_month');
@@ -204,46 +208,64 @@ export const ReportPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16 print:p-0 print:space-y-6">
-      {/* Print-only CSS */}
+    <div className="space-y-8 max-w-7xl mx-auto pb-16 print:p-0 print:space-y-0">
+      {/* ── Advanced Print-only CSS ── */}
       <style>{`
         @media print {
-          nav, aside, header, .no-print {
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm 10mm 10mm;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          /* Sembunyikan semua elemen UI layar saat pencetakan */
+          body * {
+            visibility: hidden !important;
+          }
+          /* Jadikan hanya #printable-report-area dan seluruh isinya yang dicetak */
+          #printable-report-area,
+          #printable-report-area * {
+            visibility: visible !important;
+          }
+          #printable-report-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .no-print, nav, aside, header, footer {
             display: none !important;
           }
-          body {
-            background: white !important;
-            color: black !important;
-            font-size: 11pt !important;
-          }
-          .print-header {
-            display: block !important;
-          }
-          .shadow-sm, .shadow-md, .shadow-xs {
-            box-shadow: none !important;
-          }
-          .border {
-            border-color: #cbd5e1 !important;
-          }
         }
-        .print-header {
+        .print-only-report {
           display: none;
         }
       `}</style>
 
-      {/* Printable Header */}
-      <div className="print-header pb-4 border-b border-slate-300">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-slate-900">KostKita - Laporan Keuangan & Okupansi</h1>
-            <p className="text-xs text-slate-600 mt-0.5">
-              Periode: {fromDate ? formatDateSafe(fromDate) : 'Semua'} s/d {toDate ? formatDateSafe(toDate) : 'Sekarang'}
-            </p>
-          </div>
-          <div className="text-right text-xs text-slate-500">
-            Dicetak: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-          </div>
-        </div>
+      {/* ── PRINT-ONLY CONTAINER (Tersembunyi di web, aktif saat dicetak / diexport PDF) ── */}
+      <div id="printable-report-area" className="print-only-report">
+        <PrintableReportTemplate
+          user={user}
+          dashboardReport={dashboardReport}
+          occupancyData={occupancyData}
+          revenueData={revenueData}
+          filteredLedger={filteredLedger}
+          filteredTotalAmount={filteredTotalAmount}
+          fromDate={fromDate}
+          toDate={toDate}
+          selectedPropertyId={selectedPropertyId}
+          selectedPaymentStatus={selectedPaymentStatus}
+          selectedPaymentMethod={selectedPaymentMethod}
+        />
       </div>
 
       {/* Page Header (No-print controls) */}
@@ -258,7 +280,7 @@ export const ReportPage: React.FC = () => {
         </div>
 
         {/* Action Buttons: Export & Print */}
-        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             type="button"
             onClick={handleExportCSV}
@@ -271,9 +293,19 @@ export const ReportPage: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => setShowPrintPreview(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+            title="Buka Pratinjau Kertas A4 & Cetak PDF Resmi"
+          >
+            <span className="material-symbols-outlined text-[17px] text-amber-300">visibility</span>
+            <span>Pratinjau PDF</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-colors cursor-pointer"
-            title="Cetak atau Simpan sebagai PDF"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-colors cursor-pointer"
+            title="Cetak atau Simpan Langsung sebagai PDF"
           >
             <span className="material-symbols-outlined text-[17px]">print</span>
             <span>Cetak / PDF</span>
@@ -897,6 +929,80 @@ export const ReportPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* ── PRINT PREVIEW MODAL ── */}
+      {showPrintPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in duration-200 no-print">
+          <div className="bg-slate-100 rounded-3xl shadow-2xl border border-slate-700/30 w-full max-w-5xl max-h-[95vh] flex flex-col overflow-hidden">
+            {/* Modal Top Bar */}
+            <div className="px-6 py-3.5 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Pratinjau Dokumen Laporan Resmi (PDF / Cetak)
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Format standar A4 dengan kop resmi, ringkasan eksekutif, buku kas, dan pengesahan.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[15px] text-emerald-600">table_view</span>
+                  <span>Ekspor CSV</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[17px]">print</span>
+                  <span>Cetak / Simpan PDF</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowPrintPreview(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors ml-1 cursor-pointer"
+                  title="Tutup Pratinjau"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body - Paper Canvas with Drop Shadow */}
+            <div className="p-4 sm:p-8 overflow-y-auto flex-1 bg-slate-800/10 flex justify-center">
+              <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-[210mm] my-2 transition-all">
+                <PrintableReportTemplate
+                  user={user}
+                  dashboardReport={dashboardReport}
+                  occupancyData={occupancyData}
+                  revenueData={revenueData}
+                  filteredLedger={filteredLedger}
+                  filteredTotalAmount={filteredTotalAmount}
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  selectedPropertyId={selectedPropertyId}
+                  selectedPaymentStatus={selectedPaymentStatus}
+                  selectedPaymentMethod={selectedPaymentMethod}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
