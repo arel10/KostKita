@@ -67,9 +67,9 @@ const statTone = {
   violet: 'from-violet-500 to-purple-600',
 };
 
-export const StatCard: React.FC<StatProps> = ({ label, value, icon, tone = 'brand', hint, delay = 0 }) => (
-  <div className="card p-5 flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 animate-fade-up" style={{ animationDelay: `${delay}ms` }}>
-    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${statTone[tone]} text-white flex items-center justify-center shadow-md shrink-0`}>
+export const StatCard: React.FC<StatProps> = ({ label, value, icon, tone = 'brand', hint }) => (
+  <div className="card p-5 flex items-start gap-4 hover:shadow-md transition-shadow">
+    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${statTone[tone]} text-white flex items-center justify-center shadow-xs shrink-0`}>
       <span className="material-symbols-outlined text-[22px]">{icon}</span>
     </div>
     <div className="min-w-0">

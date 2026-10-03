@@ -18,18 +18,34 @@ export async function navigate() {
   if (routePath.startsWith('/search')) activeNav = 'search';
   else if (routePath.startsWith('/kost/')) activeNav = 'detail';
 
-  // Show loading indicator
-  app.innerHTML = `
-    ${renderNavbar(activeNav)}
-    <main class="flex-1 flex items-center justify-center min-h-[60vh]">
-      <div class="flex flex-col items-center gap-3">
-        <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs font-semibold text-outline font-sans">Memuat data KostKita...</p>
-      </div>
-    </main>
-    ${renderFooter()}
-  `;
-  setupNavbarEvents();
+  // Soft loading indicator: top progress bar instead of harsh full-screen flashing
+  let progressBar = document.getElementById('routeProgressBar');
+  const existingMain = app.querySelector('main');
+
+  if (existingMain) {
+    if (!progressBar) {
+      progressBar = document.createElement('div');
+      progressBar.id = 'routeProgressBar';
+      progressBar.className = 'fixed top-0 left-0 h-[3px] bg-gradient-to-r from-primary via-emerald-400 to-amber-400 z-50 transition-all duration-300 w-1/3 shadow-sm';
+      document.body.appendChild(progressBar);
+      setTimeout(() => { if (progressBar) progressBar.style.width = '75%'; }, 50);
+    }
+    existingMain.style.opacity = '0.6';
+    existingMain.style.transition = 'opacity 0.15s ease-out';
+  } else {
+    // Initial mount only
+    app.innerHTML = `
+      ${renderNavbar(activeNav)}
+      <main class="flex-1 flex items-center justify-center min-h-[60vh]">
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-xs font-semibold text-outline font-sans">Memuat KostKita...</p>
+        </div>
+      </main>
+      ${renderFooter()}
+    `;
+    setupNavbarEvents();
+  }
 
   // Render requested page
   try {
@@ -62,9 +78,14 @@ export async function navigate() {
       `;
     }
 
+    if (progressBar) {
+      progressBar.style.width = '100%';
+      setTimeout(() => progressBar?.remove(), 200);
+    }
+
     app.innerHTML = `
       ${renderNavbar(activeNav)}
-      <main class="flex-1 w-full animate-fade-in">${pageHtml}</main>
+      <main class="flex-1 w-full page-soft-enter">${pageHtml}</main>
       ${renderFooter()}
     `;
 

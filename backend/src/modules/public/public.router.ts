@@ -48,4 +48,11 @@ router.post('/listing-reports', handle(async (req, res) => {
   sendSuccess(res, result, { statusCode: 201, message: 'Laporan berhasil dikirim. Terima kasih.' });
 }));
 
+router.get('/banners', handle(async (req, res) => {
+  const { getStoredBanners } = await import('../../utils/banners');
+  const allBanners = await getStoredBanners();
+  const activeBanners = allBanners.filter((b) => b.isActive);
+  sendSuccess(res, activeBanners);
+}));
+
 export default router;

@@ -120,3 +120,28 @@ export function buildWhatsAppLink(phone: string, propertyName: string, roomName?
 
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 }
+
+export interface PromoBanner {
+  id: string;
+  title: string;
+  subtitle: string;
+  badgeText: string;
+  imageUrl?: string;
+  targetUrl: string;
+  theme: 'blue' | 'emerald' | 'amber' | 'purple' | 'rose' | 'slate';
+  ctaText?: string;
+  isActive: boolean;
+  order: number;
+}
+
+export async function fetchBanners(): Promise<PromoBanner[]> {
+  try {
+    const res = await fetch(`${API_BASE}/banners`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch (err) {
+    console.error('Failed to fetch banners:', err);
+    return [];
+  }
+}

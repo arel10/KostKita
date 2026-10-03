@@ -8,6 +8,21 @@ export interface AdminUser {
 
 export interface PageMeta { page: number; perPage: number; total: number; totalPages: number }
 
+export interface BannerItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  badgeText: string;
+  imageUrl?: string;
+  targetUrl: string;
+  theme?: string;
+  ctaText?: string;
+  isActive: boolean;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Plan {
   id: string;
   name: string;

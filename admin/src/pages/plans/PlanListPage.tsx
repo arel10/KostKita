@@ -36,8 +36,8 @@ export const PlanListPage: React.FC = () => {
 
       {isLoading ? <Spinner /> : !data?.length ? <EmptyState icon="sell" title="Belum ada paket" /> : (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {data.map((p, i) => (
-            <div key={p.id} className={`card p-6 flex flex-col animate-fade-up ${!p.isActive ? 'opacity-70' : ''} ${p.isDefault ? 'ring-2 ring-brand-400/50' : ''}`} style={{ animationDelay: `${i * 60}ms` }}>
+          {data.map((p) => (
+            <div key={p.id} className={`card p-6 flex flex-col ${!p.isActive ? 'opacity-70' : ''} ${p.isDefault ? 'ring-2 ring-brand-400/50' : ''}`}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="text-lg font-extrabold text-ink-900">{p.name}</h3>

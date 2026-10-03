@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import { Router } from 'express';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
@@ -580,6 +581,209 @@ router.get('/notifications', handle(async (req, res) => {
     }
   }
   sendSuccess(res, grouped.slice(0, 50));
+}));
+
+// ── System Health & Monitoring ─────────────────
+router.get('/system-health', handle(async (req, res) => {
+  const dbStart = Date.now();
+  let dbStatus = 'healthy';
+  let dbLatency = 0;
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbLatency = Date.now() - dbStart;
+  } catch (err) {
+    dbStatus = 'unhealthy';
+    dbLatency = -1;
+  }
+
+  const mem = process.memoryUsage();
+  const memory = {
+    rss: Math.round(mem.rss / 1024 / 1024),
+    heapUsed: Math.round(mem.heapUsed / 1024 / 1024),
+    heapTotal: Math.round(mem.heapTotal / 1024 / 1024),
+    systemTotal: Math.round(os.totalmem() / 1024 / 1024),
+    systemFree: Math.round(os.freemem() / 1024 / 1024),
+  };
+
+  const getDirInfo = (dirPath: string) => {
+    let size = 0;
+    let count = 0;
+    if (fs.existsSync(dirPath)) {
+      const items = fs.readdirSync(dirPath, { withFileTypes: true });
+      for (const item of items) {
+        const full = path.join(dirPath, item.name);
+        if (item.isDirectory()) {
+          const sub = getDirInfo(full);
+          size += sub.size;
+          count += sub.count;
+        } else {
+          try {
+            size += fs.statSync(full).size;
+            count++;
+          } catch {}
+        }
+      }
+    }
+    return { size, count };
+  };
+
+  const uploadDir = path.resolve(process.cwd(), 'uploads');
+  const uploadStats = getDirInfo(uploadDir);
+
+  const [usersCount, propertiesCount, roomsCount, tenantsCount, subsCount, paymentsCount, auditLogsCount] = await Promise.all([
+    prisma.user.count(),
+    prisma.property.count(),
+    prisma.room.count(),
+    prisma.tenant.count(),
+    prisma.subscription.count(),
+    prisma.subscriptionPayment.count(),
+    prisma.auditLog.count(),
+  ]);
+
+  const uptimeSeconds = Math.floor(process.uptime());
+
+  sendSuccess(res, {
+    status: dbStatus === 'healthy' ? 'operational' : 'degraded',
+    timestamp: new Date().toISOString(),
+    database: {
+      status: dbStatus,
+      latencyMs: dbLatency,
+      provider: 'PostgreSQL',
+      counts: {
+        users: usersCount,
+        properties: propertiesCount,
+        rooms: roomsCount,
+        tenants: tenantsCount,
+        subscriptions: subsCount,
+        payments: paymentsCount,
+        auditLogs: auditLogsCount,
+      },
+    },
+    system: {
+      uptimeSeconds,
+      nodeVersion: process.version,
+      platform: `${os.platform()} (${os.arch()})`,
+      osRelease: os.release(),
+      cpuCount: os.cpus().length,
+      cpuModel: os.cpus()[0]?.model || 'Standard CPU',
+      processId: process.pid,
+      environment: env.NODE_ENV,
+    },
+    memory,
+    storage: {
+      cloudinaryConfigured: Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),
+      cloudinaryCloudName: env.CLOUDINARY_CLOUD_NAME || null,
+      localUploadsCount: uploadStats.count,
+      localUploadsSizeMb: Math.round((uploadStats.size / 1024 / 1024) * 100) / 100,
+    },
+    services: {
+      googleAuth: Boolean(env.GOOGLE_CLIENT_ID),
+      rateLimiter: true,
+      jwtAuth: true,
+    },
+  });
+}));
+
+// ── Banner Management ─────────────────────────
+router.get('/banners', handle(async (req, res) => {
+  const { getStoredBanners } = await import('../../utils/banners');
+  const banners = await getStoredBanners();
+  sendSuccess(res, banners);
+}));
+
+const bannerSchema = z.object({
+  title: z.string().min(3).max(150),
+  subtitle: z.string().min(3).max(300),
+  badgeText: z.string().max(50).default('PROMO'),
+  imageUrl: z.string().optional(),
+  targetUrl: z.string().default('#/search'),
+  theme: z.string().optional().default('slate'),
+  ctaText: z.string().max(50).default('Lihat Promo'),
+  isActive: z.boolean().default(true),
+  order: z.number().int().default(0),
+});
+
+router.post('/banners', validate(bannerSchema), handle(async (req, res) => {
+  const { getStoredBanners, saveStoredBanners } = await import('../../utils/banners');
+  const banners = await getStoredBanners();
+  const { randomUUID } = await import('crypto');
+  const newBanner = {
+    id: `banner-${randomUUID()}`,
+    ...req.body,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  banners.push(newBanner);
+  await saveStoredBanners(banners, req.user!.sub);
+  sendSuccess(res, newBanner, { statusCode: 201, message: 'Banner berhasil ditambahkan.' });
+}));
+
+router.put('/banners/:id', validate(bannerSchema.partial()), handle(async (req, res) => {
+  const { getStoredBanners, saveStoredBanners } = await import('../../utils/banners');
+  const banners = await getStoredBanners();
+  const idx = banners.findIndex((b) => b.id === req.params.id);
+  if (idx === -1) {
+    sendError(res, 'NOT_FOUND', 'Banner tidak ditemukan.', 404);
+    return;
+  }
+  banners[idx] = {
+    ...banners[idx],
+    ...req.body,
+    updatedAt: new Date().toISOString(),
+  };
+  await saveStoredBanners(banners, req.user!.sub);
+  sendSuccess(res, banners[idx], { message: 'Banner berhasil diperbarui.' });
+}));
+
+router.delete('/banners/:id', handle(async (req, res) => {
+  const { getStoredBanners, saveStoredBanners } = await import('../../utils/banners');
+  const banners = await getStoredBanners();
+  const filtered = banners.filter((b) => b.id !== req.params.id);
+  if (filtered.length === banners.length) {
+    sendError(res, 'NOT_FOUND', 'Banner tidak ditemukan.', 404);
+    return;
+  }
+  await saveStoredBanners(filtered, req.user!.sub);
+  sendSuccess(res, null, { message: 'Banner berhasil dihapus.' });
+}));
+
+router.post('/banners/upload', uploadImages.single('image'), handle(async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    sendError(res, 'NO_FILE', 'File gambar tidak ditemukan.', 400);
+    return;
+  }
+
+  let imageUrl = '';
+  const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+  if (hasCloudinary) {
+    try {
+      const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: 'kostkita/banners', resource_type: 'image' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result as { secure_url: string });
+          }
+        ).end(file.buffer);
+      });
+      imageUrl = result.secure_url;
+    } catch (cloudErr) {
+      console.warn('Cloudinary upload failed for banner, fallback to local:', cloudErr);
+    }
+  }
+
+  if (!imageUrl) {
+    const uploadDir = path.resolve(process.cwd(), 'uploads/banners');
+    fs.mkdirSync(uploadDir, { recursive: true });
+    const ext = path.extname(file.originalname) || '.png';
+    const filename = `banner-${Date.now()}${ext}`;
+    const filePath = path.join(uploadDir, filename);
+    fs.writeFileSync(filePath, file.buffer);
+    imageUrl = `${env.APP_URL}/uploads/banners/${filename}`;
+  }
+
+  sendSuccess(res, { url: imageUrl }, { message: 'Gambar banner berhasil diunggah.' });
 }));
 
 export default router;

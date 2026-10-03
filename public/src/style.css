@@ -90,3 +90,21 @@
 .animate-fade-in {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Soft Page Transition */
+@keyframes softPageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.998);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-soft-enter {
+  animation: softPageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+

@@ -22,6 +22,8 @@ import { ListingReportPage } from './pages/reports/ListingReportPage';
 import { NotificationPage } from './pages/notifications/NotificationPage';
 import { AuditLogPage } from './pages/audit/AuditLogPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
+import { SystemHealthPage } from './pages/system/SystemHealthPage';
+import { BannerListPage } from './pages/banners/BannerListPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1, staleTime: 15_000 } },
@@ -38,6 +40,7 @@ export const App: React.FC = () => (
             <Route element={<ProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<DashboardPage />} />
+                <Route path="/admin/banners" element={<BannerListPage />} />
                 <Route path="/admin/owners" element={<OwnerListPage />} />
                 <Route path="/admin/owners/:id" element={<OwnerDetailPage />} />
                 <Route path="/admin/properties" element={<PropertyListPage />} />
@@ -53,6 +56,7 @@ export const App: React.FC = () => (
                 <Route path="/admin/notifications" element={<NotificationPage />} />
                 <Route path="/admin/audit-logs" element={<AuditLogPage />} />
                 <Route path="/admin/settings" element={<SettingsPage />} />
+                <Route path="/admin/system-health" element={<SystemHealthPage />} />
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               </Route>
             </Route>
