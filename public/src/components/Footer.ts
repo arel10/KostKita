@@ -7,11 +7,9 @@ export function renderFooter(): string {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           <!-- Col 1: Brand & Overview -->
           <div class="lg:col-span-2 space-y-4">
-            <div class="flex items-center gap-2">
-              <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow">
-                <span class="material-symbols-outlined text-[20px]">apartment</span>
-              </div>
-              <span class="text-xl font-bold tracking-tight text-primary">KostKita</span>
+            <div class="flex items-center gap-2.5">
+              <img src="/logo.png" alt="KostKita Logo" class="h-10 w-auto object-contain" />
+              <span class="text-xl font-extrabold tracking-tight text-slate-900">Kost<span class="text-amber-500">Kita</span></span>
             </div>
             <p class="text-sm text-on-surface-variant max-w-sm leading-relaxed">
               Platform discovery kost terpercaya dan sistem manajemen properti kost multi-tenant terlengkap di Indonesia. Hubungkan calon penyewa langsung ke pemilik kost tanpa perantara.

@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs';
 import { Router } from 'express';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
@@ -5,6 +7,9 @@ import prisma from '../../config/database';
 import { authenticate } from '../../middleware/authenticate';
 import { authorize } from '../../middleware/authorize';
 import { validate } from '../../middleware/validate';
+import { uploadImages } from '../../middleware/upload';
+import { cloudinary } from '../../config/storage';
+import { env } from '../../config/env';
 import { sendSuccess, sendError, getPaginationParams, buildPaginationMeta } from '../../utils/response';
 import { logAudit } from '../../utils/audit';
 import { createNotification } from '../../utils/notification';
@@ -402,6 +407,59 @@ router.patch('/settings', handle(async (req, res) => {
   );
   await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: AuditAction.SETTINGS_UPDATE, entityType: EntityType.SYSTEM_SETTING, newValue: req.body });
   sendSuccess(res, null, { message: 'Pengaturan berhasil disimpan.' });
+}));
+
+router.post('/settings/upload-qris', uploadImages.single('qris'), handle(async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    sendError(res, 'NO_FILE', 'File gambar QRIS tidak ditemukan.', 400);
+    return;
+  }
+
+  let qrisUrl = '';
+  const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+  if (hasCloudinary) {
+    try {
+      const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: 'kostkita/qris', resource_type: 'image' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result as { secure_url: string });
+          }
+        ).end(file.buffer);
+      });
+      qrisUrl = result.secure_url;
+    } catch (cloudErr) {
+      console.warn('Cloudinary upload failed for QRIS, fallback to local:', cloudErr);
+    }
+  }
+
+  if (!qrisUrl) {
+    const uploadDir = path.resolve(process.cwd(), 'uploads/settings');
+    fs.mkdirSync(uploadDir, { recursive: true });
+    const ext = path.extname(file.originalname) || '.png';
+    const filename = `qris-${Date.now()}${ext}`;
+    const filePath = path.join(uploadDir, filename);
+    fs.writeFileSync(filePath, file.buffer);
+    qrisUrl = `${env.APP_URL}/uploads/settings/${filename}`;
+  }
+
+  await prisma.systemSetting.upsert({
+    where: { key: 'payment_qris_image_url' },
+    update: { value: qrisUrl, updatedBy: req.user!.sub },
+    create: { key: 'payment_qris_image_url', value: qrisUrl, description: 'URL Gambar QRIS Pembayaran', updatedBy: req.user!.sub },
+  });
+
+  await logAudit({
+    actorId: req.user!.sub,
+    actorRole: 'super_admin',
+    action: AuditAction.SETTINGS_UPDATE,
+    entityType: EntityType.SYSTEM_SETTING,
+    newValue: { payment_qris_image_url: qrisUrl },
+  });
+
+  sendSuccess(res, { url: qrisUrl }, { message: 'Gambar QRIS berhasil diunggah.' });
 }));
 
 // ── Subscriptions ─────────────────────────────

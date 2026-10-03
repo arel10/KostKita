@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
@@ -77,18 +77,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container: Fixed drawer on mobile, static column on desktop */}
       <aside
-        className={`fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-2xl lg:shadow-[0_1px_8px_rgba(15,23,42,0.06)] border-r border-slate-100 select-none transition-transform duration-300 ease-in-out ${
-          isOpenMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-2xl lg:shadow-[0_1px_8px_rgba(15,23,42,0.06)] border-r border-slate-100 select-none transition-transform duration-300 ease-in-out ${isOpenMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Brand Header with Close Button for mobile */}
           <div className="h-16 px-4 flex items-center justify-between border-b border-slate-100 shrink-0 bg-white">
-            <img
-              alt="KostKita Brand Logo"
-              className="h-9 w-auto object-contain"
-              src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"
-            />
+            <Link to="/dashboard" className="flex items-center gap-2.5">
+              <img
+                alt="KostKita Brand Logo"
+                className="h-10 w-auto object-contain"
+                src="/logo.png"
+              />
+              <div className="flex flex-col">
+                <span className="font-extrabold text-base text-slate-900 leading-tight tracking-tight">
+                  Kost<span className="text-amber-500">Kita</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Juragan Portal
+                </span>
+              </div>
+            </Link>
             <button
               onClick={onCloseMobile}
               className="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
@@ -113,10 +122,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     end={item.path === '/'}
                     onClick={() => onCloseMobile?.()}
                     className={({ isActive }) =>
-                      `flex items-center justify-between px-3 py-2 rounded-xl font-medium text-sm transition-all duration-200 group ${
-                        isActive
-                          ? 'bg-primary text-white shadow-sm font-semibold'
-                          : 'text-on-surface-variant hover:bg-slate-100/80 hover:text-slate-900'
+                      `flex items-center justify-between px-3 py-2 rounded-xl font-medium text-sm transition-all duration-200 group ${isActive
+                        ? 'bg-primary text-white shadow-sm font-semibold'
+                        : 'text-on-surface-variant hover:bg-slate-100/80 hover:text-slate-900'
                       }`
                     }
                   >
@@ -124,9 +132,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <>
                         <div className="flex items-center gap-3">
                           <span
-                            className={`material-symbols-outlined text-[20px] transition-colors ${
-                              isActive ? 'text-white' : 'text-slate-500 group-hover:text-primary'
-                            }`}
+                            className={`material-symbols-outlined text-[20px] transition-colors ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-primary'
+                              }`}
                           >
                             {item.icon}
                           </span>
@@ -134,11 +141,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                         {item.badge !== undefined && (
                           <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-bold shadow-xs ${
-                              isActive
-                                ? 'bg-white text-primary'
-                                : 'bg-red-500 text-white'
-                            }`}
+                            className={`text-xs px-2 py-0.5 rounded-full font-bold shadow-xs ${isActive
+                              ? 'bg-white text-primary'
+                              : 'bg-red-500 text-white'
+                              }`}
                           >
                             {item.badge}
                           </span>

@@ -100,6 +100,8 @@ async function main() {
     { key: 'payment_bank_name', value: 'Bank Central Asia (BCA)', description: 'Nama bank untuk pembayaran subscription' },
     { key: 'payment_account_number', value: '1234567890', description: 'Nomor rekening pembayaran subscription' },
     { key: 'payment_account_name', value: 'PT KostKita Indonesia', description: 'Nama rekening' },
+    { key: 'payment_qris_name', value: 'KostKita Indonesia', description: 'Nama merchant/pemilik QRIS' },
+    { key: 'payment_qris_image_url', value: '', description: 'URL Gambar QRIS pembayaran subscription' },
     { key: 'maintenance_mode', value: 'false', description: 'Mode maintenance (true/false)' },
     { key: 'trial_duration_days', value: '30', description: 'Durasi default trial dalam hari' },
   ];

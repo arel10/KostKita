@@ -70,8 +70,8 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <img
               alt="KostKita Logo"
-              className="h-8 w-auto object-contain"
-              src="https://lh3.googleusercontent.com/aida/AEtjO1VBXk-rrHeuSGTmC1GsduFiIXgGgbohpemgJG_5kzf3Krc8fp9-13XtS8nhLYX1OuShuv3f_ySc8cOFmEWrUdsQQDgao1qGqeAVXVSVJsZP4X0kAnorc8IXVeNsQnc1AyXON1l590IMdXeUNsEhrLZ74zzk3x1Gytk0AZzf5HMocYhLiDmMz7vKQO9LyU3mYCniewr3WJKaGDY2BzE3tJh9cf_PjYUBKzdAX3VSVkHrmd2H--Jd7vLUtjA"
+              className="h-9 w-auto object-contain"
+              src="/logo.png"
             />
             <span className="font-extrabold text-xl text-primary tracking-tight">KostKita</span>
             <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed ml-1">

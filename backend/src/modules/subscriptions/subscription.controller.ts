@@ -27,6 +27,11 @@ export const getPlans = handle(async (req, res) => {
   sendSuccess(res, result);
 });
 
+export const getPaymentMethods = handle(async (_req, res) => {
+  const result = await subService.getPaymentMethods();
+  sendSuccess(res, result);
+});
+
 export const submitProof = handle(async (req, res) => {
   const result = await subService.submitPaymentProof(
     req.user!.sub,

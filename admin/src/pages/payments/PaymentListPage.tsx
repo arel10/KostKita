@@ -40,7 +40,7 @@ export const PaymentListPage: React.FC = () => {
         </div>
 
         {isLoading ? <Spinner /> : !data?.rows.length ? (
-          <EmptyState icon="payments" title="Tidak ada pembayaran" description={status === 'pending' ? 'Semua pembayaran sudah diverifikasi 🎉' : undefined} />
+          <EmptyState icon="payments" title="Tidak ada pembayaran" description={status === 'pending' ? 'Semua pembayaran sudah diverifikasi' : undefined} />
         ) : (
           <div className={`overflow-x-auto transition-opacity ${isFetching ? 'opacity-60' : ''}`}>
             <table className="w-full">

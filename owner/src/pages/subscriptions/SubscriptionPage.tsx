@@ -5,17 +5,30 @@ import { LoadingSpinner } from '../../components/ui/Feedback';
 import api from '../../lib/api';
 import { Subscription, SubscriptionPlan, SubscriptionPayment } from '../../types';
 
+interface PaymentMethodsData {
+  bank: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+  };
+  qris: {
+    imageUrl: string;
+    merchantName: string;
+  };
+}
+
 export const SubscriptionPage: React.FC = () => {
   const [currentSub, setCurrentSub] = useState<Subscription | null>(null);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [paymentHistory, setPaymentHistory] = useState<SubscriptionPayment[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Upgrade Modal State
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
-  const [paymentMethod, setPaymentMethod] = useState('Transfer Bank BCA');
+  const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'qris'>('bank_transfer');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,10 +38,11 @@ export const SubscriptionPage: React.FC = () => {
   const fetchSubscriptionData = async () => {
     setIsLoading(true);
     try {
-      const [currentRes, plansRes, historyRes] = await Promise.allSettled([
+      const [currentRes, plansRes, historyRes, methodsRes] = await Promise.allSettled([
         api.get('/subscriptions/current'),
         api.get('/subscriptions/plans'),
         api.get('/subscriptions/payments'),
+        api.get('/subscriptions/payment-methods'),
       ]);
 
       if (currentRes.status === 'fulfilled' && currentRes.value.data?.data) {
@@ -39,6 +53,9 @@ export const SubscriptionPage: React.FC = () => {
       }
       if (historyRes.status === 'fulfilled' && historyRes.value.data?.data) {
         setPaymentHistory(historyRes.value.data.data);
+      }
+      if (methodsRes.status === 'fulfilled' && methodsRes.value.data?.data) {
+        setPaymentMethods(methodsRes.value.data.data);
       }
     } catch (e) {
       console.error('Failed to load subscription data:', e);
@@ -51,10 +68,15 @@ export const SubscriptionPage: React.FC = () => {
     fetchSubscriptionData();
   }, []);
 
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
   const handleOpenUpgrade = (plan: SubscriptionPlan) => {
     setSelectedPlan(plan);
-    setPaymentDate(new Date().toISOString().split('T')[0]);
-    setPaymentMethod('Transfer Bank BCA');
+    setPaymentMethod('bank_transfer');
     setNotes('');
     setProofFile(null);
     setUpgradeError(null);
@@ -75,7 +97,6 @@ export const SubscriptionPage: React.FC = () => {
     const formData = new FormData();
     formData.append('planId', selectedPlan.id);
     formData.append('amount', String(selectedPlan.price));
-    formData.append('paymentDate', paymentDate);
     formData.append('paymentMethod', paymentMethod);
     if (notes) formData.append('notes', notes);
     formData.append('proof', proofFile);
@@ -283,8 +304,9 @@ export const SubscriptionPage: React.FC = () => {
               <tr>
                 <th className="px-6 py-4">Nomor Invoice</th>
                 <th className="px-6 py-4">Paket Dipilih</th>
-                <th className="px-6 py-4">Nominal Transfer</th>
-                <th className="px-6 py-4">Tanggal Pembayaran</th>
+                <th className="px-6 py-4">Metode</th>
+                <th className="px-6 py-4">Nominal</th>
+                <th className="px-6 py-4">Tanggal Pengajuan</th>
                 <th className="px-6 py-4">Status Verifikasi</th>
               </tr>
             </thead>
@@ -296,6 +318,17 @@ export const SubscriptionPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 font-bold text-slate-900">
                     {h.plan?.name || 'Paket Langganan'}
+                  </td>
+                  <td className="px-6 py-4">
+                    {h.paymentMethod === 'qris' ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        QRIS
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        Transfer Bank
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 font-extrabold text-slate-900">
                     {formatRupiah(h.amount)}
@@ -334,7 +367,7 @@ export const SubscriptionPage: React.FC = () => {
 
               {paymentHistory.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
                     Belum ada riwayat transaksi langganan.
                   </td>
                 </tr>
@@ -348,8 +381,8 @@ export const SubscriptionPage: React.FC = () => {
       <Modal
         isOpen={isUpgradeModalOpen}
         onClose={() => setIsUpgradeModalOpen(false)}
-        title={`Instruksi Pembayaran Paket ${selectedPlan?.name}`}
-        description="Transfer manual dan unggah bukti transfer untuk aktivasi paket."
+        title={`Konfirmasi Pembayaran Paket ${selectedPlan?.name}`}
+        description="Pilih metode pembayaran dan unggah bukti transfer/pembayaran."
         maxWidth="lg"
       >
         <form onSubmit={handleSubmitProof} className="space-y-4">
@@ -364,56 +397,128 @@ export const SubscriptionPage: React.FC = () => {
             </div>
           )}
 
-          {/* Bank Instructions Card */}
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-              Rekening Resmi Pembayaran SaaS KostKita:
-            </span>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-extrabold text-slate-900">Bank Central Asia (BCA)</p>
-                <p className="text-xs text-slate-600">Nomor Rekening: <strong className="font-mono text-primary">8870-1234-5678</strong></p>
-                <p className="text-[11px] text-slate-500">Atas Nama: PT KostKita Solusi Digital</p>
-              </div>
-              <div className="text-right">
-                <span className="text-[11px] text-slate-400 block">Nominal Transfer:</span>
-                <span className="text-lg font-black text-primary">
-                  {formatRupiah(selectedPlan?.price || 0)}
-                </span>
-              </div>
-            </div>
+          {/* Payment Method Selector */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              Metode Pembayaran *
+            </label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value as 'bank_transfer' | 'qris')}
+              className="w-full px-3 py-2.5 text-xs font-semibold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-800 bg-white cursor-pointer shadow-sm"
+            >
+              <option value="bank_transfer">Transfer Bank (BCA, Mandiri, BRI, BNI, dll)</option>
+              <option value="qris">QRIS (GoPay, OVO, DANA, ShopeePay, m-Banking)</option>
+            </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                Tanggal Pembayaran *
-              </label>
-              <input
-                type="date"
-                value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-                required
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none text-slate-800"
-              />
+          {/* Dynamic Instructions Card */}
+          {paymentMethod === 'bank_transfer' ? (
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                  Rekening Resmi Pembayaran SaaS KostKita:
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md">
+                  Transfer Bank
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <div>
+                  <p className="text-sm font-extrabold text-slate-900">
+                    {paymentMethods?.bank?.bankName || 'Bank Central Asia (BCA)'}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-xs text-slate-600">
+                      No. Rekening:{' '}
+                      <strong className="font-mono text-primary text-sm font-bold">
+                        {paymentMethods?.bank?.accountNumber || '1234567890'}
+                      </strong>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(paymentMethods?.bank?.accountNumber || '1234567890', 'rek')}
+                      className="px-2 py-0.5 text-[10px] font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded transition"
+                    >
+                      {copiedKey === 'rek' ? 'Disalin!' : 'Salin'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Atas Nama: {paymentMethods?.bank?.accountName || 'PT KostKita Indonesia'}
+                  </p>
+                </div>
+                <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0">
+                  <span className="text-[11px] text-slate-400 block">Nominal Transfer:</span>
+                  <div className="flex sm:justify-end items-center gap-2">
+                    <span className="text-lg font-black text-primary">
+                      {formatRupiah(selectedPlan?.price || 0)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(String(selectedPlan?.price || 0), 'nominal')}
+                      className="px-2 py-0.5 text-[10px] font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded transition"
+                    >
+                      {copiedKey === 'nominal' ? 'Disalin!' : 'Salin'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                Metode Pembayaran
-              </label>
-              <input
-                type="text"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                required
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none text-slate-800"
-              />
+          ) : (
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                  Scan QRIS Resmi SaaS KostKita:
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md">
+                  QRIS Standar Nasional
+                </span>
+              </div>
+
+              <div className="text-center py-1">
+                {paymentMethods?.qris?.imageUrl ? (
+                  <div className="inline-block p-3 bg-white rounded-2xl border border-slate-200 shadow-sm mx-auto">
+                    <img
+                      src={paymentMethods.qris.imageUrl}
+                      alt="QRIS KostKita"
+                      className="w-48 h-48 sm:w-56 sm:h-56 object-contain mx-auto rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <div className="p-6 bg-white rounded-2xl border border-dashed border-slate-300 text-center max-w-sm mx-auto">
+                    <span className="material-symbols-outlined text-4xl text-slate-400">qr_code_2</span>
+                    <p className="text-xs font-bold text-slate-700 mt-1">Kode QRIS Belum Diunggah oleh Admin</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Silakan pilih metode Transfer Bank atau hubungi Super Admin.
+                    </p>
+                  </div>
+                )}
+                <p className="text-xs font-bold text-slate-800 mt-2">
+                  Merchant: {paymentMethods?.qris?.merchantName || 'KostKita Indonesia'}
+                </p>
+                <div className="flex justify-center items-center gap-2 mt-1">
+                  <span className="text-xs text-slate-500">Nominal:</span>
+                  <span className="text-base font-black text-primary">
+                    {formatRupiah(selectedPlan?.price || 0)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(String(selectedPlan?.price || 0), 'nominal-qris')}
+                    className="px-2 py-0.5 text-[10px] font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded transition"
+                  >
+                    {copiedKey === 'nominal-qris' ? 'Disalin!' : 'Salin'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1.5">
+                  Mendukung m-Banking BCA, Mandiri, BRI, BNI, serta e-wallet GoPay, OVO, DANA, ShopeePay, LinkAja.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-              Upload Bukti Transfer (Foto/Struk/PDF) *
+              Upload Bukti Pembayaran (Foto/Struk/PDF) *
             </label>
             <input
               type="file"
@@ -426,13 +531,13 @@ export const SubscriptionPage: React.FC = () => {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-              Catatan Tambahan (Nama Pengirim / No. Ref)
+              Catatan Tambahan (Nama Pengirim / No. Rek / E-Wallet)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Contoh: Transfer atas nama Budi Santoso dari rekening BCA..."
+              placeholder="Contoh: Transfer atas nama Budi Santoso / Pembayaran QRIS via GoPay..."
               className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none text-slate-800"
             />
           </div>

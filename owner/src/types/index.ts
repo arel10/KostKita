@@ -96,6 +96,17 @@ export interface Room {
   stays?: TenantStay[];
 }
 
+export interface DueInfo {
+  nextDueDate: string;
+  nextDueDateFormatted: string;
+  daysRemaining: number;
+  dueStatus: 'paid' | 'due_today' | 'due_soon' | 'overdue' | 'upcoming';
+  dueText: string;
+  badgeColor: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+  suggestedPeriodStart: string;
+  suggestedPeriodEnd: string;
+}
+
 export interface TenantStay {
   id: string;
   tenantId: string;
@@ -111,6 +122,8 @@ export interface TenantStay {
   createdAt: string;
   tenant?: Tenant;
   room?: Room;
+  dueInfo?: DueInfo | null;
+  payments?: TenantPayment[];
 }
 
 export interface Tenant {
@@ -212,16 +225,68 @@ export interface SubscriptionPayment {
   plan?: SubscriptionPlan;
 }
 
+export interface OccupancyPropertyReport {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  type: string;
+  status: string;
+  totalRooms: number;
+  occupiedRooms: number;
+  availableRooms: number;
+  maintenanceRooms: number;
+  occupancyRate: number;
+  monthlyPotential: number;
+  monthlyActiveRent: number;
+  _count?: { rooms: number };
+  rooms?: Array<{
+    id: string;
+    roomNumber: string;
+    type: string;
+    price: number;
+    status: string;
+    activeStay?: {
+      id: string;
+      rentPrice: number;
+      checkInDate: string;
+      tenantName: string;
+      tenantPhone?: string;
+    } | null;
+  }>;
+}
+
+export interface RevenueReportData {
+  payments: any[];
+  totalAmount: number;
+  totalPaidAmount: number;
+  totalPaidCount: number;
+  breakdownByMethod: Record<string, { count: number; total: number }>;
+  breakdownByProperty: Array<{
+    propertyId: string;
+    propertyName: string;
+    count: number;
+    total: number;
+  }>;
+}
+
 export interface DashboardReport {
   totalProperties: number;
   totalRooms: number;
   occupiedRooms: number;
   availableRooms: number;
+  maintenanceRooms?: number;
   occupancyRate: number;
   revenueThisMonth: number;
+  revenueLastMonth?: number;
+  momGrowthPercent?: number;
   revenueTotal: number;
+  potentialMonthlyRevenue?: number;
+  activeTenantsCount?: number;
   pendingPayments: number;
+  pendingPaymentsAmount?: number;
   overduePayments: number;
+  overduePaymentsAmount?: number;
   subscription: {
     planName: string;
     status: string;

@@ -9,6 +9,144 @@ import { CreateTenantInput, UpdateTenantInput, CreateStayInput, EndStayInput } f
 // LIST TENANTS
 // ─────────────────────────────────────────────
 
+function addMonthsSafely(date: Date, months: number, originalDay: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  const maxDays = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate();
+  result.setDate(Math.min(originalDay, maxDays));
+  return result;
+}
+
+interface TenantMetadata {
+  idCardNumber?: string;
+  emergencyPhone?: string;
+  realNotes?: string;
+}
+
+function packTenantNotes(notes?: string | null, idCardNumber?: string | null, emergencyPhone?: string | null): string | null {
+  const hasMeta = (idCardNumber !== undefined && idCardNumber !== null && idCardNumber.trim() !== '') ||
+                  (emergencyPhone !== undefined && emergencyPhone !== null && emergencyPhone.trim() !== '');
+  if (!hasMeta) {
+    return notes || null;
+  }
+  const payload: TenantMetadata = {
+    idCardNumber: idCardNumber?.trim() || undefined,
+    emergencyPhone: emergencyPhone?.trim() || undefined,
+    realNotes: notes || undefined,
+  };
+  return JSON.stringify(payload);
+}
+
+function unpackTenantNotes(rawNotes?: string | null): { notes: string; idCardNumber: string; emergencyPhone: string } {
+  if (!rawNotes) {
+    return { notes: '', idCardNumber: '', emergencyPhone: '' };
+  }
+  if (rawNotes.startsWith('{') && rawNotes.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(rawNotes);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          notes: parsed.realNotes || '',
+          idCardNumber: parsed.idCardNumber || '',
+          emergencyPhone: parsed.emergencyPhone || '',
+        };
+      }
+    } catch {
+      // not JSON, fallback
+    }
+  }
+  return { notes: rawNotes, idCardNumber: '', emergencyPhone: '' };
+}
+
+export function calculateDueInfo(
+  checkInDate: Date | string,
+  payments: Array<{ status: string; periodEnd: Date | string; periodStart: Date | string; amount?: any }> = []
+) {
+  const cin = new Date(checkInDate);
+  const originalDay = cin.getDate();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // Find latest paid periodEnd
+  const paidPayments = payments
+    .filter((p) => p.status === 'paid')
+    .map((p) => new Date(p.periodEnd))
+    .sort((a, b) => b.getTime() - a.getTime());
+
+  const latestPaidEnd = paidPayments[0] || null;
+
+  // Next renewal target date: starts from 1 month after checkInDate
+  let targetDueDate = addMonthsSafely(cin, 1, originalDay);
+
+  // If latest paid period covers this target date, advance to next month
+  while (latestPaidEnd && latestPaidEnd >= targetDueDate) {
+    targetDueDate = addMonthsSafely(targetDueDate, 1, originalDay);
+  }
+
+  // Calculate diff in days
+  const targetDateOnly = new Date(targetDueDate.getFullYear(), targetDueDate.getMonth(), targetDueDate.getDate());
+  const diffTime = targetDateOnly.getTime() - today.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  let dueStatus: 'paid' | 'due_today' | 'due_soon' | 'overdue' | 'upcoming';
+  let dueText: string;
+  let badgeColor: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+
+  const dateFormatted = targetDateOnly.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  if (latestPaidEnd && latestPaidEnd > today && diffDays > 7) {
+    dueStatus = 'paid';
+    dueText = `Lunas (sd ${dateFormatted})`;
+    badgeColor = 'success';
+  } else if (diffDays < 0) {
+    dueStatus = 'overdue';
+    const lateDays = Math.abs(diffDays);
+    dueText = `Terlambat ${lateDays} hari (${dateFormatted})`;
+    badgeColor = 'danger';
+  } else if (diffDays === 0) {
+    dueStatus = 'due_today';
+    dueText = `Jatuh tempo hari ini! (${dateFormatted})`;
+    badgeColor = 'danger';
+  } else if (diffDays === 1) {
+    dueStatus = 'due_soon';
+    dueText = `Jatuh tempo besok (${dateFormatted})`;
+    badgeColor = 'warning';
+  } else if (diffDays <= 7) {
+    dueStatus = 'due_soon';
+    dueText = `Jatuh tempo ${diffDays} hari lagi (${dateFormatted})`;
+    badgeColor = 'warning';
+  } else {
+    dueStatus = 'upcoming';
+    dueText = `Jatuh tempo: ${dateFormatted}`;
+    badgeColor = 'neutral';
+  }
+
+  // Calculate periodStart for quick payment recording (1 month before targetDueDate)
+  const prevPeriodStart = addMonthsSafely(targetDueDate, -1, originalDay);
+
+  const formatYMD = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  return {
+    nextDueDate: formatYMD(targetDateOnly),
+    nextDueDateFormatted: dateFormatted,
+    daysRemaining: diffDays,
+    dueStatus,
+    dueText,
+    badgeColor,
+    suggestedPeriodStart: formatYMD(prevPeriodStart),
+    suggestedPeriodEnd: formatYMD(targetDateOnly),
+  };
+}
+
 export async function listTenants(ownerId: string, query: { page?: number; perPage?: number; search?: string }) {
   const { page, perPage, skip } = getPaginationParams(query);
 
@@ -40,6 +178,10 @@ export async function listTenants(ownerId: string, query: { page?: number; perPa
                 property: { select: { id: true, name: true, city: true } },
               },
             },
+            payments: {
+              orderBy: { periodEnd: 'desc' },
+              take: 5,
+            },
           },
           orderBy: { checkInDate: 'desc' },
         },
@@ -50,23 +192,37 @@ export async function listTenants(ownerId: string, query: { page?: number; perPa
     }),
   ]);
 
-  const mappedTenants = tenants.map((t) => ({
-    ...t,
-    phone: t.whatsapp || '',
-    whatsapp: t.whatsapp || '',
-    stays: t.stays.map((s) => ({
-      ...s,
-      startDate: s.checkInDate.toISOString(),
-      endDate: s.checkOutDate ? s.checkOutDate.toISOString() : null,
-      rentAmount: Number(s.rentPrice),
-      deposit: Number(s.deposit),
-      room: s.room ? {
-        ...s.room,
-        propertyId: s.room.propertyId,
-        property: s.room.property || { id: '', name: 'Properti', city: '' },
-      } : null,
-    })),
-  }));
+  const mappedTenants = tenants.map((t) => {
+    const meta = unpackTenantNotes(t.notes);
+    return {
+      ...t,
+      notes: meta.notes,
+      idCardNumber: meta.idCardNumber,
+      emergencyPhone: meta.emergencyPhone,
+      phone: t.whatsapp || '',
+      whatsapp: t.whatsapp || '',
+      stays: t.stays.map((s) => {
+        const dueInfo = s.status === 'active' ? calculateDueInfo(s.checkInDate, s.payments) : null;
+        return {
+        ...s,
+        startDate: s.checkInDate.toISOString(),
+        endDate: s.checkOutDate ? s.checkOutDate.toISOString() : null,
+        rentAmount: Number(s.rentPrice),
+        deposit: Number(s.deposit),
+        dueInfo,
+        payments: s.payments.map((p) => ({
+          ...p,
+          amount: Number(p.amount),
+        })),
+        room: s.room ? {
+          ...s.room,
+          propertyId: s.room.propertyId,
+          property: s.room.property || { id: '', name: 'Properti', city: '' },
+        } : null,
+      };
+    }),
+  };
+});
 
   return { data: mappedTenants, meta: buildPaginationMeta(total, page, perPage) };
 }
@@ -82,12 +238,14 @@ export async function createTenant(ownerId: string, input: CreateTenantInput, ip
     cleanPhone = '62' + cleanPhone.slice(1);
   }
 
+  const packedNotes = packTenantNotes(input.notes, input.idCardNumber, input.emergencyPhone);
+
   const tenant = await prisma.tenant.create({
     data: {
       ownerId,
       name: input.name,
       whatsapp: cleanPhone || null,
-      notes: input.notes,
+      notes: packedNotes,
     },
   });
 
@@ -172,8 +330,13 @@ export async function getTenantById(ownerId: string, tenantId: string) {
 
   if (!tenant) throw { code: 'NOT_FOUND', message: 'Penghuni tidak ditemukan.', status: 404 };
 
+  const meta = unpackTenantNotes(tenant.notes);
+
   return {
     ...tenant,
+    notes: meta.notes,
+    idCardNumber: meta.idCardNumber,
+    emergencyPhone: meta.emergencyPhone,
     phone: tenant.whatsapp || '',
     whatsapp: tenant.whatsapp || '',
     stays: tenant.stays.map((s) => ({
@@ -212,12 +375,18 @@ export async function updateTenant(ownerId: string, tenantId: string, input: Upd
     }
   }
 
+  const existingMeta = unpackTenantNotes(existing.notes);
+  const updatedIdCardNumber = input.idCardNumber !== undefined ? input.idCardNumber : existingMeta.idCardNumber;
+  const updatedEmergencyPhone = input.emergencyPhone !== undefined ? input.emergencyPhone : existingMeta.emergencyPhone;
+  const updatedNotes = input.notes !== undefined ? input.notes : existingMeta.notes;
+  const packedNotes = packTenantNotes(updatedNotes, updatedIdCardNumber, updatedEmergencyPhone);
+
   await prisma.tenant.update({
     where: { id: tenantId },
     data: {
       ...(input.name && { name: input.name }),
       ...(cleanPhone !== undefined && { whatsapp: cleanPhone || null }),
-      ...(input.notes !== undefined && { notes: input.notes }),
+      notes: packedNotes,
     },
   });
 

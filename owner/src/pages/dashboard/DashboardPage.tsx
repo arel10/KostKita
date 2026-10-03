@@ -155,9 +155,8 @@ export const DashboardPage: React.FC = () => {
               {/* Benefit Quota Pill Badges */}
               {usage && (
                 <div className="flex items-center gap-2 mt-3 flex-wrap text-xs">
-                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
-                    isPropertyBlocked ? 'bg-amber-400 text-slate-900 font-bold' : 'bg-white/15 text-white'
-                  }`}>
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${isPropertyBlocked ? 'bg-amber-400 text-slate-900 font-bold' : 'bg-white/15 text-white'
+                    }`}>
                     <span className="material-symbols-outlined text-[15px]">
                       {isPropertyBlocked ? 'lock' : 'apartment'}
                     </span>
@@ -165,16 +164,14 @@ export const DashboardPage: React.FC = () => {
                     {isPropertyBlocked && <span className="text-[10px] bg-slate-900 text-amber-300 px-1.5 py-0.2 rounded font-bold uppercase">Penuh</span>}
                   </div>
 
-                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
-                    usage.rooms.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
-                  }`}>
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${usage.rooms.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
+                    }`}>
                     <span className="material-symbols-outlined text-[15px]">meeting_room</span>
                     <span>Kamar: {usage.rooms.current}/{usage.rooms.limit ?? '∞'}</span>
                   </div>
 
-                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
-                    usage.tenants.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
-                  }`}>
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${usage.tenants.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
+                    }`}>
                     <span className="material-symbols-outlined text-[15px]">group</span>
                     <span>Penghuni: {usage.tenants.current}/{usage.tenants.limit ?? '∞'}</span>
                   </div>
@@ -286,11 +283,11 @@ export const DashboardPage: React.FC = () => {
                       {p.name}
                     </Link>
                     <p className="text-xs text-slate-500 truncate mt-0.5">
-                      📍 {p.address}, {p.city}
+                      {p.address}, {p.city}
                     </p>
                     <div className="flex items-center gap-3 sm:gap-4 mt-2 text-xs text-slate-600 flex-wrap">
-                      <span>🚪 {totalRooms} Kamar Total</span>
-                      <span>👥 {occupiedRooms} Terisi</span>
+                      <span>{totalRooms} Kamar Total</span>
+                      <span>{occupiedRooms} Terisi</span>
                       <span className="font-semibold text-primary">
                         Mulai {formatRupiah(p.priceStart || 0)}/bln
                       </span>
@@ -368,8 +365,8 @@ export const DashboardPage: React.FC = () => {
                         pay.status === 'paid'
                           ? 'success'
                           : pay.status === 'pending'
-                          ? 'warning'
-                          : 'danger'
+                            ? 'warning'
+                            : 'danger'
                       }
                       size="sm"
                     >

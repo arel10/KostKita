@@ -34,12 +34,16 @@ export const AdminLayout: React.FC = () => {
 
   const sidebar = (
     <aside className="w-64 h-full bg-ink-900 text-ink-200 flex flex-col">
-      <div className="px-5 py-5 flex items-center gap-3 border-b border-white/5">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-teal-600 flex items-center justify-center shadow-glow">
-          <span className="material-symbols-outlined fill text-white text-[22px]">shield_person</span>
-        </div>
+      <div className="px-5 py-4 flex items-center gap-3 border-b border-white/5 bg-ink-950/40">
+        <img
+          src="/logo.png"
+          alt="KostKita Logo"
+          className="h-10 w-auto object-contain bg-white rounded-xl p-1 shadow-sm shrink-0"
+        />
         <div>
-          <p className="text-white font-extrabold leading-tight">KostKita</p>
+          <p className="text-white font-extrabold leading-tight text-base tracking-tight">
+            Kost<span className="text-amber-400">Kita</span>
+          </p>
           <p className="text-[10px] font-bold tracking-widest text-brand-300 uppercase">Super Admin</p>
         </div>
       </div>

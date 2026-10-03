@@ -12,6 +12,7 @@ const router = Router();
 router.get('/current', authenticate, authorize('owner'), subController.getCurrent);
 router.get('/history', authenticate, authorize('owner'), subController.getHistory);
 router.get('/plans', subController.getPlans); // Public — listing plans
+router.get('/payment-methods', subController.getPaymentMethods); // Public/Owner — active payment info (bank & QRIS)
 router.post('/payments', authenticate, authorize('owner'), uploadProof.single('proof'), validate(submitPaymentSchema), subController.submitProof);
 router.get('/payments', authenticate, authorize('owner'), subController.getMyPayments);
 

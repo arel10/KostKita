@@ -6,13 +6,11 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
       <div class="h-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         <!-- Logo & Navigation -->
         <div class="flex items-center gap-8">
-          <a href="#/" class="flex items-center gap-2 group">
-            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
-              <span class="material-symbols-outlined text-[24px]">apartment</span>
-            </div>
+          <a href="#/" class="flex items-center gap-3 group">
+            <img src="/logo.png" alt="KostKita Logo" class="h-11 w-auto object-contain group-hover:scale-105 transition-transform" />
             <div class="flex flex-col">
-              <span class="text-xl font-bold tracking-tight text-primary font-sans leading-tight">KostKita</span>
-              <span class="text-[10px] font-medium text-outline uppercase tracking-wider">Discovery & SaaS</span>
+              <span class="text-xl font-extrabold tracking-tight text-slate-900 font-sans leading-tight">Kost<span class="text-amber-500">Kita</span></span>
+              <span class="text-[10px] font-semibold text-slate-400 tracking-wider">Cari Kost, Temukan Cerita</span>
             </div>
           </a>
 

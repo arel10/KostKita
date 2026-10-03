@@ -1,5 +1,8 @@
+import path from 'path';
+import fs from 'fs';
 import prisma from '../../config/database';
 import { cloudinary } from '../../config/storage';
+import { env } from '../../config/env';
 import { logAudit } from '../../utils/audit';
 import { createNotification } from '../../utils/notification';
 import { AuditAction, EntityType } from '../../types/constants';
@@ -110,17 +113,36 @@ export async function submitPaymentProof(
   let proofUrl: string | undefined;
 
   if (file) {
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: `kostkita/payment-proofs/${ownerId}`, resource_type: 'auto' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result as { secure_url: string });
-        }
-      ).end(file.buffer);
-    });
-    proofUrl = result.secure_url;
+    const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+    if (hasCloudinary) {
+      try {
+        const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            { folder: `kostkita/payment-proofs/${ownerId}`, resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result as { secure_url: string });
+            }
+          ).end(file.buffer);
+        });
+        proofUrl = result.secure_url;
+      } catch (cloudErr) {
+        console.warn('Cloudinary upload failed for payment proof, falling back to local:', cloudErr);
+      }
+    }
+
+    if (!proofUrl) {
+      const uploadDir = path.resolve(process.cwd(), 'uploads/payment-proofs', ownerId);
+      fs.mkdirSync(uploadDir, { recursive: true });
+      const ext = path.extname(file.originalname) || '.jpg';
+      const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+      const filePath = path.join(uploadDir, filename);
+      fs.writeFileSync(filePath, file.buffer);
+      proofUrl = `${env.APP_URL}/uploads/payment-proofs/${ownerId}/${filename}`;
+    }
   }
+
+  const paymentDate = input.paymentDate ? new Date(input.paymentDate) : new Date();
 
   const payment = await prisma.subscriptionPayment.create({
     data: {
@@ -128,7 +150,7 @@ export async function submitPaymentProof(
       planId: input.planId,
       referenceNo: generateReferenceNo(),
       amount: input.amount,
-      paymentDate: new Date(input.paymentDate),
+      paymentDate,
       paymentMethod: input.paymentMethod,
       proofUrl,
       notes: input.notes,
@@ -148,6 +170,40 @@ export async function submitPaymentProof(
   });
 
   return payment;
+}
+
+// ─────────────────────────────────────────────
+// GET PAYMENT METHODS (BANK & QRIS SETTINGS)
+// ─────────────────────────────────────────────
+
+export async function getPaymentMethods() {
+  const settings = await prisma.systemSetting.findMany({
+    where: {
+      key: {
+        in: [
+          'payment_bank_name',
+          'payment_account_number',
+          'payment_account_name',
+          'payment_qris_image_url',
+          'payment_qris_name',
+        ],
+      },
+    },
+  });
+
+  const map = Object.fromEntries(settings.map((s) => [s.key, s.value ?? '']));
+
+  return {
+    bank: {
+      bankName: map.payment_bank_name || 'Bank Central Asia (BCA)',
+      accountNumber: map.payment_account_number || '1234567890',
+      accountName: map.payment_account_name || 'PT KostKita Indonesia',
+    },
+    qris: {
+      imageUrl: map.payment_qris_image_url || '',
+      merchantName: map.payment_qris_name || 'KostKita Indonesia',
+    },
+  };
 }
 
 // ─────────────────────────────────────────────

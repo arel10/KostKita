@@ -30,10 +30,12 @@ export const LoginPage: React.FC = () => {
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand-500/20 blur-3xl" />
         <div className="absolute bottom-0 -left-20 w-80 h-80 rounded-full bg-teal-500/10 blur-3xl" />
         <div className="relative flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-400 to-teal-600 flex items-center justify-center shadow-glow">
-            <span className="material-symbols-outlined fill text-white">shield_person</span>
-          </div>
-          <span className="text-white text-xl font-extrabold">KostKita</span>
+          <img
+            src="/logo.png"
+            alt="KostKita Logo"
+            className="h-11 w-auto object-contain bg-white rounded-xl p-1 shadow-md"
+          />
+          <span className="text-white text-xl font-extrabold tracking-tight">Kost<span className="text-amber-400">Kita</span></span>
         </div>
         <div className="relative">
           <h2 className="text-4xl font-extrabold text-white leading-tight">Kendali penuh<br />atas seluruh platform.</h2>
@@ -52,11 +54,13 @@ export const LoginPage: React.FC = () => {
 
       <div className="flex items-center justify-center p-6 bg-ink-50">
         <form onSubmit={submit} className="w-full max-w-sm animate-fade-up">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-teal-600 flex items-center justify-center">
-              <span className="material-symbols-outlined fill text-white">shield_person</span>
-            </div>
-            <span className="font-extrabold text-xl text-ink-900">KostKita Admin</span>
+          <div className="lg:hidden flex items-center gap-2.5 mb-8">
+            <img
+              src="/logo.png"
+              alt="KostKita Logo"
+              className="h-10 w-auto object-contain"
+            />
+            <span className="font-extrabold text-xl text-ink-900">Kost<span className="text-amber-500">Kita</span> Admin</span>
           </div>
           <h1 className="text-3xl font-extrabold text-ink-900 tracking-tight">Masuk Super Admin</h1>
           <p className="text-sm text-ink-500 mt-1.5 mb-8">Gunakan akun administrator platform.</p>
