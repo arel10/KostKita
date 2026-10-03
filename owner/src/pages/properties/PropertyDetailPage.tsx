@@ -4,12 +4,14 @@ import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
+import { useSubscription } from '../../context/SubscriptionContext';
 import api from '../../lib/api';
 import { Property, Room } from '../../types';
 
 export const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const context = useOutletContext<{ refreshGlobal: () => void }>();
+  const { subscription, usage, isRoomBlocked, openQuotaModal, refreshSubscription } = useSubscription();
 
   const [property, setProperty] = useState<Property | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -60,6 +62,10 @@ export const PropertyDetailPage: React.FC = () => {
   }, [id]);
 
   const handleOpenAddRoom = () => {
+    if (isRoomBlocked) {
+      openQuotaModal('room');
+      return;
+    }
     setEditingRoomId(null);
     setRoomNumber('');
     setRoomName('');
@@ -85,6 +91,12 @@ export const PropertyDetailPage: React.FC = () => {
 
   const handleSaveRoom = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editingRoomId && isRoomBlocked) {
+      setRoomError(`Batas kuota kamar tercapai pada paket ${subscription?.plan?.name || 'Trial'}. Silakan upgrade paket.`);
+      openQuotaModal('room');
+      return;
+    }
+
     if (!roomNumber || !roomPrice) {
       setRoomError('Nomor kamar dan harga sewa wajib diisi.');
       return;
@@ -111,6 +123,7 @@ export const PropertyDetailPage: React.FC = () => {
       setIsRoomModalOpen(false);
       fetchPropertyData();
       context?.refreshGlobal?.();
+      refreshSubscription();
     } catch (err: any) {
       setRoomError(err.response?.data?.error?.message || 'Gagal menyimpan kamar.');
     } finally {
@@ -126,6 +139,7 @@ export const PropertyDetailPage: React.FC = () => {
       setDeleteRoomTarget(null);
       fetchPropertyData();
       context?.refreshGlobal?.();
+      refreshSubscription();
     } catch (err: any) {
       alert(err.response?.data?.error?.message || 'Gagal menghapus kamar.');
     } finally {
@@ -186,13 +200,26 @@ export const PropertyDetailPage: React.FC = () => {
             <span className="material-symbols-outlined text-[18px]">edit</span>
             <span>Ubah Profil</span>
           </Link>
-          <button
-            onClick={handleOpenAddRoom}
-            className="px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>+ Tambah Kamar</span>
-          </button>
+
+          {isRoomBlocked ? (
+            <button
+              type="button"
+              onClick={() => openQuotaModal('room')}
+              className="px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Batas kuota kamar tercapai untuk paket Anda. Klik untuk upgrade paket."
+            >
+              <span className="material-symbols-outlined text-[18px] text-amber-600">lock</span>
+              <span>+ Tambah Kamar ({usage?.rooms.current}/{usage?.rooms.limit})</span>
+            </button>
+          ) : (
+            <button
+              onClick={handleOpenAddRoom}
+              className="px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span>+ Tambah Kamar</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -390,6 +417,27 @@ export const PropertyDetailPage: React.FC = () => {
         description={`Properti: ${property.name}`}
       >
         <form onSubmit={handleSaveRoom} className="space-y-4">
+          {!editingRoomId && isRoomBlocked && (
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-amber-600">lock</span>
+                <span>
+                  Batas kuota kamar ({usage?.rooms.limit} kamar) pada paket <strong>{subscription?.plan?.name || 'Trial'}</strong> telah tercapai.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsRoomModalOpen(false);
+                  openQuotaModal('room');
+                }}
+                className="px-3 py-1 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container shrink-0 cursor-pointer"
+              >
+                Upgrade
+              </button>
+            </div>
+          )}
+
           {roomError && (
             <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200">
               {roomError}
@@ -490,8 +538,8 @@ export const PropertyDetailPage: React.FC = () => {
             </button>
             <button
               type="submit"
-              disabled={isSavingRoom}
-              className="px-5 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-container rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+              disabled={isSavingRoom || (!editingRoomId && isRoomBlocked)}
+              className="px-5 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-container rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSavingRoom && (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

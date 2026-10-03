@@ -4,12 +4,14 @@ import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
+import { useSubscription } from '../../context/SubscriptionContext';
 import api from '../../lib/api';
 import { Room, Property } from '../../types';
 
 export const RoomListPage: React.FC = () => {
   const location = useLocation();
   const searchParam = new URLSearchParams(location.search).get('search') || '';
+  const { subscription, usage, isRoomBlocked, openQuotaModal, refreshSubscription } = useSubscription();
 
   const [rooms, setRooms] = useState<Room[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -63,6 +65,10 @@ export const RoomListPage: React.FC = () => {
   }, []);
 
   const handleOpenAdd = () => {
+    if (isRoomBlocked) {
+      openQuotaModal('room');
+      return;
+    }
     setEditingRoomId(null);
     setSelectedPropertyId(properties[0]?.id || '');
     setRoomNumber('');
@@ -90,6 +96,12 @@ export const RoomListPage: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editingRoomId && isRoomBlocked) {
+      setFormError(`Batas kuota kamar tercapai pada paket ${subscription?.plan?.name || 'Trial'}. Silakan upgrade paket.`);
+      openQuotaModal('room');
+      return;
+    }
+
     if (!selectedPropertyId || !roomNumber || !roomPrice) {
       setFormError('Properti, nomor kamar, dan harga sewa wajib diisi.');
       return;
@@ -116,6 +128,7 @@ export const RoomListPage: React.FC = () => {
       }
       setIsModalOpen(false);
       fetchData();
+      refreshSubscription();
     } catch (err: any) {
       setFormError(err.response?.data?.error?.message || 'Gagal menyimpan kamar.');
     } finally {
@@ -130,6 +143,7 @@ export const RoomListPage: React.FC = () => {
       await api.delete(`/rooms/${deleteTarget.id}`);
       setDeleteTarget(null);
       fetchData();
+      refreshSubscription();
     } catch (err: any) {
       alert(err.response?.data?.error?.message || 'Gagal menghapus kamar.');
     } finally {
@@ -166,16 +180,47 @@ export const RoomListPage: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">
             Daftar lengkap unit kamar kost dari seluruh properti yang Anda kelola.
           </p>
+          {usage && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold ${
+                isRoomBlocked ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
+              }`}>
+                <span className="material-symbols-outlined text-[14px]">{isRoomBlocked ? 'lock' : 'verified'}</span>
+                <span>Batas Kamar Paket {subscription?.plan?.name || 'Trial'}: {usage.rooms.current} / {usage.rooms.limit ?? '∞'} Unit</span>
+              </span>
+              {isRoomBlocked && (
+                <button
+                  type="button"
+                  onClick={() => openQuotaModal('room')}
+                  className="text-[11px] text-primary hover:underline font-bold cursor-pointer"
+                >
+                  Upgrade Paket →
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          disabled={properties.length === 0}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start sm:self-auto disabled:opacity-50"
-        >
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          <span>+ Tambah Kamar Baru</span>
-        </button>
+        {isRoomBlocked ? (
+          <button
+            type="button"
+            onClick={() => openQuotaModal('room')}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl shadow-xs transition-all self-start sm:self-auto cursor-pointer"
+            title="Batas kuota kamar tercapai untuk paket Anda. Klik untuk upgrade paket."
+          >
+            <span className="material-symbols-outlined text-[18px] text-amber-600">lock</span>
+            <span>+ Tambah Kamar (Batas {usage?.rooms.current}/{usage?.rooms.limit})</span>
+          </button>
+        ) : (
+          <button
+            onClick={handleOpenAdd}
+            disabled={properties.length === 0}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start sm:self-auto disabled:opacity-50 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span>+ Tambah Kamar Baru</span>
+          </button>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
@@ -232,8 +277,14 @@ export const RoomListPage: React.FC = () => {
               ? 'Tidak ada kamar yang cocok dengan kriteria filter.'
               : 'Anda belum mendaftarkan unit kamar kost.'
           }
-          actionText={properties.length > 0 ? '+ Tambah Kamar Sekarang' : undefined}
-          onAction={handleOpenAdd}
+          actionText={
+            properties.length > 0
+              ? isRoomBlocked
+                ? 'Batas Kamar Penuh (Upgrade)'
+                : '+ Tambah Kamar Sekarang'
+              : undefined
+          }
+          onAction={isRoomBlocked ? () => openQuotaModal('room') : handleOpenAdd}
         />
       ) : (
         <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
@@ -337,6 +388,27 @@ export const RoomListPage: React.FC = () => {
         title={editingRoomId ? 'Edit Data Kamar' : 'Tambah Kamar Baru'}
       >
         <form onSubmit={handleSave} className="space-y-4">
+          {!editingRoomId && isRoomBlocked && (
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-amber-600">lock</span>
+                <span>
+                  Batas kuota kamar ({usage?.rooms.limit} kamar) pada paket <strong>{subscription?.plan?.name || 'Trial'}</strong> telah tercapai.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  openQuotaModal('room');
+                }}
+                className="px-3 py-1 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container shrink-0 cursor-pointer"
+              >
+                Upgrade
+              </button>
+            </div>
+          )}
+
           {formError && (
             <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200">
               {formError}
@@ -456,8 +528,8 @@ export const RoomListPage: React.FC = () => {
             </button>
             <button
               type="submit"
-              disabled={isSaving}
-              className="px-5 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-container rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+              disabled={isSaving || (!editingRoomId && isRoomBlocked)}
+              className="px-5 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-container rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving && (
                 <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

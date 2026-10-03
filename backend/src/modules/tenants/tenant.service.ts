@@ -96,6 +96,19 @@ export async function createTenant(ownerId: string, input: CreateTenantInput, ip
   const rentPrice = input.rentAmount !== undefined ? input.rentAmount : input.rentPrice;
 
   if (roomId) {
+    const subscription = await getActiveSubscription(ownerId);
+    if (!subscription) {
+      throw { code: 'SUBSCRIPTION_EXPIRED', message: 'Subscription Anda telah berakhir. Silakan perpanjang untuk menambah penyewa.', status: 403 };
+    }
+    const limitCheck = await checkTenantLimit(ownerId, subscription.planId);
+    if (!limitCheck.allowed) {
+      throw {
+        code: 'TENANT_LIMIT_EXCEEDED',
+        message: `Anda telah mencapai batas maksimum ${limitCheck.limit} penyewa aktif pada paket ini. Upgrade paket untuk menambah lebih banyak penyewa.`,
+        status: 403,
+      };
+    }
+
     const checkInDate = checkInDateStr ? new Date(checkInDateStr) : new Date();
     const finalRentPrice = rentPrice !== undefined ? Number(rentPrice) : 0;
     const deposit = input.deposit ? Number(input.deposit) : 0;
@@ -357,6 +370,18 @@ export async function deleteTenant(ownerId: string, tenantId: string, ip?: strin
 export async function createStay(ownerId: string, tenantId: string, input: CreateStayInput, ip?: string, userAgent?: string) {
   const tenant = await prisma.tenant.findFirst({ where: { id: tenantId, ownerId } });
   if (!tenant) throw { code: 'NOT_FOUND', message: 'Penghuni tidak ditemukan.', status: 404 };
+
+  const subscription = await getActiveSubscription(ownerId);
+  if (!subscription) throw { code: 'SUBSCRIPTION_EXPIRED', message: 'Subscription Anda telah berakhir.', status: 403 };
+
+  const limitCheck = await checkTenantLimit(ownerId, subscription.planId);
+  if (!limitCheck.allowed) {
+    throw {
+      code: 'TENANT_LIMIT_EXCEEDED',
+      message: `Anda telah mencapai batas maksimum ${limitCheck.limit} penyewa aktif pada paket ini. Upgrade paket untuk menambah lebih banyak penyewa.`,
+      status: 403,
+    };
+  }
 
   const room = await prisma.room.findFirst({ where: { id: input.roomId, ownerId } });
   if (!room) throw { code: 'NOT_FOUND', message: 'Kamar tidak ditemukan.', status: 404 };

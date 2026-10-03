@@ -4,6 +4,7 @@ import { Badge } from '../../components/ui/Badge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
 import { PropertyFormModal } from '../../components/properties/PropertyFormModal';
+import { useSubscription } from '../../context/SubscriptionContext';
 import api from '../../lib/api';
 import { Property } from '../../types';
 
@@ -17,8 +18,10 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
   const navigate = useNavigate();
   const { id: routeEditId } = useParams<{ id: string }>();
 
+  const { subscription, usage, isPropertyBlocked, openQuotaModal, refreshSubscription } = useSubscription();
+
   const isNewRoute = initialOpenModal || location.pathname.endsWith('/new');
-  const [isModalOpen, setIsModalOpen] = useState(isNewRoute || Boolean(routeEditId));
+  const [isModalOpen, setIsModalOpen] = useState((isNewRoute && !isPropertyBlocked) || Boolean(routeEditId));
   const [modalPropertyId, setModalPropertyId] = useState<string | null>(routeEditId || null);
 
   const [properties, setProperties] = useState<Property[]>([]);
@@ -31,13 +34,19 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
 
   useEffect(() => {
     if (initialOpenModal || location.pathname.endsWith('/new')) {
-      setIsModalOpen(true);
-      setModalPropertyId(null);
+      if (isPropertyBlocked) {
+        setIsModalOpen(false);
+        openQuotaModal('property');
+        navigate('/properties', { replace: true });
+      } else {
+        setIsModalOpen(true);
+        setModalPropertyId(null);
+      }
     } else if (routeEditId) {
       setIsModalOpen(true);
       setModalPropertyId(routeEditId);
     }
-  }, [initialOpenModal, location.pathname, routeEditId]);
+  }, [initialOpenModal, location.pathname, routeEditId, isPropertyBlocked]);
 
   const fetchProperties = async () => {
     setIsLoading(true);
@@ -115,6 +124,7 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
     handleModalClose();
     fetchProperties();
     context?.refreshGlobal?.();
+    refreshSubscription();
   };
 
   return (
@@ -127,9 +137,36 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
             <span>/</span>
             <span className="text-primary font-bold">Properti</span>
           </nav>
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Multi-Unit Management</span>
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Multi-Unit Management</span>
+            </div>
+
+            {/* Quota Usage Badge */}
+            {usage && (
+              <div className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold transition-all ${
+                isPropertyBlocked
+                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                  : 'bg-slate-100 text-slate-700 border border-slate-200'
+              }`}>
+                <span className="material-symbols-outlined text-[14px]">
+                  {isPropertyBlocked ? 'lock' : 'verified'}
+                </span>
+                <span>
+                  Batas Paket {subscription?.plan?.name || 'Trial'}: {usage.properties.current} / {usage.properties.limit ?? '∞'} Properti
+                </span>
+                {isPropertyBlocked && (
+                  <button
+                    type="button"
+                    onClick={() => openQuotaModal('property')}
+                    className="ml-1 underline text-amber-800 hover:text-amber-950 font-extrabold cursor-pointer"
+                  >
+                    Upgrade Paket
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
             Daftar Properti Kost
@@ -139,17 +176,30 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setModalPropertyId(null);
-            setIsModalOpen(true);
-          }}
-          className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start lg:self-auto cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[20px]">add_business</span>
-          <span>+ Tambah Properti Baru</span>
-        </button>
+        {/* Add Property Button: Blocked if limit is reached */}
+        {isPropertyBlocked ? (
+          <button
+            type="button"
+            onClick={() => openQuotaModal('property')}
+            className="inline-flex items-center gap-2 px-5 py-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border-2 border-amber-300 hover:border-amber-400 text-xs font-bold rounded-xl shadow-xs transition-all self-start lg:self-auto cursor-pointer group"
+            title="Batas kuota properti tercapai untuk paket Anda. Klik untuk upgrade ke paket Pro."
+          >
+            <span className="material-symbols-outlined text-[20px] text-amber-700 group-hover:scale-110 transition-transform">lock</span>
+            <span>+ Tambah Properti (Kuota Penuh {usage?.properties.current}/{usage?.properties.limit})</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setModalPropertyId(null);
+              setIsModalOpen(true);
+            }}
+            className="inline-flex items-center gap-2 px-5 py-3 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start lg:self-auto cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[20px]">add_business</span>
+            <span>+ Tambah Properti Baru</span>
+          </button>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
@@ -197,11 +247,23 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
               ? `Tidak ada properti yang cocok dengan kata kunci "${searchQuery}".`
               : 'Anda belum mendaftarkan properti kost. Mulai tambahkan kost Anda sekarang!'
           }
-          actionText={searchQuery ? undefined : 'Tambah Properti Sekarang'}
-          onAction={searchQuery ? undefined : () => {
-            setModalPropertyId(null);
-            setIsModalOpen(true);
-          }}
+          actionText={
+            searchQuery
+              ? undefined
+              : isPropertyBlocked
+              ? 'Batas Kuota Properti Penuh (Upgrade)'
+              : 'Tambah Properti Sekarang'
+          }
+          onAction={
+            searchQuery
+              ? undefined
+              : isPropertyBlocked
+              ? () => openQuotaModal('property')
+              : () => {
+                  setModalPropertyId(null);
+                  setIsModalOpen(true);
+                }
+          }
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

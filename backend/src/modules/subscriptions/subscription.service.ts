@@ -17,12 +17,47 @@ function generateReferenceNo(): string {
 // OWNER: GET CURRENT SUBSCRIPTION
 // ─────────────────────────────────────────────
 
+import { checkPropertyLimit, checkRoomLimit, checkTenantLimit } from '../../utils/subscription';
+
 export async function getCurrentSubscription(ownerId: string) {
-  return prisma.subscription.findFirst({
+  const subscription = await prisma.subscription.findFirst({
     where: { ownerId, status: { in: ['trial', 'active', 'expiring_soon'] } },
     include: { plan: { include: { features: true } } },
     orderBy: { endsAt: 'desc' },
   });
+
+  if (!subscription) {
+    const [propertyCount, roomCount, tenantCount] = await Promise.all([
+      prisma.property.count({ where: { ownerId, status: { not: 'inactive' } } }),
+      prisma.room.count({ where: { ownerId } }),
+      prisma.tenantStay.count({ where: { ownerId, status: 'active' } }),
+    ]);
+
+    return {
+      status: 'expired',
+      plan: null,
+      usage: {
+        properties: { allowed: false, current: propertyCount, limit: 0 },
+        rooms: { allowed: false, current: roomCount, limit: 0 },
+        tenants: { allowed: false, current: tenantCount, limit: 0 },
+      },
+    };
+  }
+
+  const [propLimit, roomLimit, tenantLimit] = await Promise.all([
+    checkPropertyLimit(ownerId, subscription.planId),
+    checkRoomLimit(ownerId, subscription.planId),
+    checkTenantLimit(ownerId, subscription.planId),
+  ]);
+
+  return {
+    ...subscription,
+    usage: {
+      properties: propLimit,
+      rooms: roomLimit,
+      tenants: tenantLimit,
+    },
+  };
 }
 
 // ─────────────────────────────────────────────

@@ -173,6 +173,18 @@ export interface SubscriptionPlan {
   features: SubscriptionPlanFeature[];
 }
 
+export interface QuotaLimit {
+  allowed: boolean;
+  current: number;
+  limit: number | null;
+}
+
+export interface SubscriptionUsage {
+  properties: QuotaLimit;
+  rooms: QuotaLimit;
+  tenants: QuotaLimit;
+}
+
 export interface Subscription {
   id: string;
   ownerId: string;
@@ -181,6 +193,7 @@ export interface Subscription {
   startsAt: string;
   endsAt: string;
   plan: SubscriptionPlan;
+  usage?: SubscriptionUsage;
 }
 
 export interface SubscriptionPayment {
@@ -215,6 +228,7 @@ export interface DashboardReport {
     startsAt: string;
     endsAt: string;
     daysLeft: number;
+    usage?: SubscriptionUsage;
   } | null;
 }
 

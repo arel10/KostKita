@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { SubscriptionProvider } from './context/SubscriptionContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 
@@ -21,37 +22,39 @@ import { SettingsPage } from './pages/settings/SettingsPage';
 
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <Routes>
+            {/* Public Auth Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 
-          {/* Protected Owner Dashboard Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<DashboardLayout />}>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/properties" element={<PropertyListPage />} />
-              <Route path="/properties/new" element={<PropertyListPage initialOpenModal={true} />} />
-              <Route path="/properties/:id/edit" element={<PropertyListPage />} />
-              <Route path="/properties/:id" element={<PropertyDetailPage />} />
-              <Route path="/rooms" element={<RoomListPage />} />
-              <Route path="/tenants" element={<TenantListPage />} />
-              <Route path="/payments" element={<PaymentListPage />} />
-              <Route path="/reports" element={<ReportPage />} />
-              <Route path="/subscription" element={<SubscriptionPage />} />
-              <Route path="/notifications" element={<NotificationPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+            {/* Protected Owner Dashboard Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<DashboardLayout />}>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/properties" element={<PropertyListPage />} />
+                <Route path="/properties/new" element={<PropertyListPage initialOpenModal={true} />} />
+                <Route path="/properties/:id/edit" element={<PropertyListPage />} />
+                <Route path="/properties/:id" element={<PropertyDetailPage />} />
+                <Route path="/rooms" element={<RoomListPage />} />
+                <Route path="/tenants" element={<TenantListPage />} />
+                <Route path="/payments" element={<PaymentListPage />} />
+                <Route path="/reports" element={<ReportPage />} />
+                <Route path="/subscription" element={<SubscriptionPage />} />
+                <Route path="/notifications" element={<NotificationPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
             </Route>
-          </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 

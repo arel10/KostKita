@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSubscription } from '../../context/SubscriptionContext';
 import { StatCard } from '../../components/ui/StatCard';
 import { Badge } from '../../components/ui/Badge';
 import { LoadingSpinner } from '../../components/ui/Feedback';
@@ -10,6 +11,7 @@ import { DashboardReport, Property, TenantPayment } from '../../types';
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const context = useOutletContext<{ properties: Property[]; refreshGlobal: () => void }>();
+  const { subscription, usage, isPropertyBlocked, isTenantBlocked, openQuotaModal } = useSubscription();
 
   const [report, setReport] = useState<DashboardReport | null>(null);
   const [recentPayments, setRecentPayments] = useState<TenantPayment[]>([]);
@@ -78,22 +80,48 @@ export const DashboardPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions (Quota Aware) */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-          <Link
-            to="/properties/new"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-[0.99] whitespace-nowrap"
-          >
-            <span className="material-symbols-outlined text-[18px]">add_business</span>
-            <span>+ Properti Baru</span>
-          </Link>
-          <Link
-            to="/tenants"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-xl border border-slate-200/80 shadow-sm transition-all whitespace-nowrap"
-          >
-            <span className="material-symbols-outlined text-[18px] text-primary">person_add</span>
-            <span>+ Penghuni</span>
-          </Link>
+          {isPropertyBlocked ? (
+            <button
+              type="button"
+              onClick={() => openQuotaModal('property')}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              title="Batas kuota properti tercapai untuk paket Anda. Klik untuk upgrade ke Pro."
+            >
+              <span className="material-symbols-outlined text-[18px] text-amber-600">lock</span>
+              <span>+ Properti ({usage?.properties.current}/{usage?.properties.limit})</span>
+            </button>
+          ) : (
+            <Link
+              to="/properties/new"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-sm transition-all active:scale-[0.99] whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined text-[18px]">add_business</span>
+              <span>+ Properti Baru</span>
+            </Link>
+          )}
+
+          {isTenantBlocked ? (
+            <button
+              type="button"
+              onClick={() => openQuotaModal('tenant')}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              title="Batas penyewa aktif tercapai untuk paket Anda. Klik untuk upgrade."
+            >
+              <span className="material-symbols-outlined text-[18px] text-amber-600">lock</span>
+              <span>+ Penghuni ({usage?.tenants.current}/{usage?.tenants.limit})</span>
+            </button>
+          ) : (
+            <Link
+              to="/tenants"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold rounded-xl border border-slate-200/80 shadow-sm transition-all whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined text-[18px] text-primary">person_add</span>
+              <span>+ Penghuni</span>
+            </Link>
+          )}
+
           <Link
             to="/payments"
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition-all whitespace-nowrap"
@@ -104,9 +132,9 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Subscription Alert Card if expiring or active */}
+      {/* Subscription Alert Card with Benefit Quota Overview */}
       {sub && (
-        <div className="bg-gradient-to-r from-emerald-900 via-primary-container to-teal-900 text-white rounded-3xl p-5 sm:p-6 shadow-md relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-emerald-900 via-primary-container to-teal-900 text-white rounded-3xl p-5 sm:p-6 shadow-md relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="relative z-10 flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 text-emerald-300">
               <span className="material-symbols-outlined text-[28px]">verified</span>
@@ -123,18 +151,44 @@ export const DashboardPage: React.FC = () => {
               <h3 className="text-base sm:text-lg font-bold mt-0.5">
                 Masa Aktif: Tersisa {sub.daysLeft} Hari Lagi
               </h3>
-              <p className="text-xs text-emerald-100/80 mt-1 max-w-xl leading-relaxed">
-                Nikmati fitur listing publikasi Google Maps discovery, pengingat WhatsApp tagihan, dan laporan multi-cabang tanpa batasan.
-              </p>
+
+              {/* Benefit Quota Pill Badges */}
+              {usage && (
+                <div className="flex items-center gap-2 mt-3 flex-wrap text-xs">
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
+                    isPropertyBlocked ? 'bg-amber-400 text-slate-900 font-bold' : 'bg-white/15 text-white'
+                  }`}>
+                    <span className="material-symbols-outlined text-[15px]">
+                      {isPropertyBlocked ? 'lock' : 'apartment'}
+                    </span>
+                    <span>Properti: {usage.properties.current}/{usage.properties.limit ?? '∞'}</span>
+                    {isPropertyBlocked && <span className="text-[10px] bg-slate-900 text-amber-300 px-1.5 py-0.2 rounded font-bold uppercase">Penuh</span>}
+                  </div>
+
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
+                    usage.rooms.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
+                  }`}>
+                    <span className="material-symbols-outlined text-[15px]">meeting_room</span>
+                    <span>Kamar: {usage.rooms.current}/{usage.rooms.limit ?? '∞'}</span>
+                  </div>
+
+                  <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold ${
+                    usage.tenants.allowed ? 'bg-white/15 text-white' : 'bg-amber-400 text-slate-900 font-bold'
+                  }`}>
+                    <span className="material-symbols-outlined text-[15px]">group</span>
+                    <span>Penghuni: {usage.tenants.current}/{usage.tenants.limit ?? '∞'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="relative z-10 flex items-center gap-3 shrink-0">
             <Link
               to="/subscription"
-              className="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-emerald-50 text-primary text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-emerald-50 text-primary text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <span>Upgrade / Perpanjang</span>
+              <span>Upgrade / Perpanjang Paket</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
             </Link>
           </div>

@@ -296,9 +296,33 @@ export async function renderSearchPage(queryParams: URLSearchParams): Promise<st
           </div>
         </div>
 
-        <!-- RIGHT COLUMN: Interactive Leaflet Map (45%) -->
-        <div id="mapContainerWrapper" class="hidden lg:block w-full lg:w-[45%] sticky top-44 h-[calc(100vh-200px)] rounded-2xl overflow-hidden border border-surface-container-high/60 shadow-card bg-surface-container">
-          <div id="leafletMapContainer" class="w-full h-full z-10"></div>
+        <!-- RIGHT COLUMN: Interactive Leaflet Map (45% default, expandable to full width or fullscreen modal) -->
+        <div 
+          id="mapContainerWrapper" 
+          class="hidden lg:flex flex-col w-full lg:w-[45%] sticky top-44 h-[calc(100vh-200px)] rounded-2xl overflow-hidden border border-surface-container-high/60 shadow-card bg-surface-container transition-all duration-300 relative z-20"
+        >
+          <!-- Floating Map Control Toolbar -->
+          <div class="absolute top-3 right-3 z-[1000] flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-xl shadow-md border border-surface-container-high">
+            <button 
+              id="btnExpandMap" 
+              type="button"
+              title="Perbesar Peta" 
+              class="flex items-center gap-1 text-xs font-semibold text-on-surface hover:text-primary px-2 py-1 rounded-lg hover:bg-surface-container transition-colors"
+            >
+              <span id="expandMapIcon" class="material-symbols-outlined text-[18px]">open_in_full</span>
+              <span id="expandMapText" class="hidden sm:inline">Perbesar Peta</span>
+            </button>
+            <button 
+              id="btnResetMapZoom" 
+              type="button"
+              title="Pusatkan Peta" 
+              class="flex items-center justify-center p-1.5 rounded-lg text-on-surface hover:text-primary hover:bg-surface-container transition-colors"
+            >
+              <span class="material-symbols-outlined text-[18px]">my_location</span>
+            </button>
+          </div>
+
+          <div id="leafletMapContainer" class="w-full h-full"></div>
         </div>
       </div>
     </div>
@@ -318,13 +342,13 @@ export function setupSearchPageEvents(propertiesData: PropertyListItem[]) {
       isMobileMapVisible = !isMobileMapVisible;
       if (isMobileMapVisible) {
         mapWrapper.classList.remove('hidden');
-        mapWrapper.classList.add('block');
+        mapWrapper.classList.add('flex');
         listContainer.classList.add('hidden');
         if (btnText) btnText.textContent = 'Lihat Daftar';
         setTimeout(() => leafletMap?.invalidateSize(), 200);
       } else {
         mapWrapper.classList.add('hidden');
-        mapWrapper.classList.remove('block');
+        mapWrapper.classList.remove('flex');
         listContainer.classList.remove('hidden');
         if (btnText) btnText.textContent = 'Lihat Peta';
       }
@@ -420,6 +444,54 @@ export function setupSearchPageEvents(propertiesData: PropertyListItem[]) {
 
   // 3. Initialize Leaflet Map
   initLeafletMap(propertiesData);
+
+  // 3b. Expand / Fullscreen Map Toggle
+  const btnExpandMap = document.getElementById('btnExpandMap');
+  const btnResetMapZoom = document.getElementById('btnResetMapZoom');
+  const expandMapIcon = document.getElementById('expandMapIcon');
+  const expandMapText = document.getElementById('expandMapText');
+  let isMapExpanded = false;
+
+  if (btnExpandMap && mapWrapper && listContainer) {
+    btnExpandMap.onclick = () => {
+      isMapExpanded = !isMapExpanded;
+      if (isMapExpanded) {
+        // Expand map: hide listing container or make map take 100%
+        listContainer.classList.add('hidden');
+        mapWrapper.classList.remove('lg:w-[45%]', 'sticky', 'top-44', 'h-[calc(100vh-200px)]');
+        mapWrapper.classList.add('w-full', 'h-[calc(100vh-140px)]', 'min-h-[500px]');
+        
+        if (expandMapIcon) expandMapIcon.textContent = 'close_fullscreen';
+        if (expandMapText) expandMapText.textContent = 'Kecilkan Peta';
+        btnExpandMap.classList.add('bg-primary/10', 'text-primary');
+      } else {
+        // Restore split view
+        listContainer.classList.remove('hidden');
+        mapWrapper.classList.add('lg:w-[45%]', 'sticky', 'top-44', 'h-[calc(100vh-200px)]');
+        mapWrapper.classList.remove('w-full', 'h-[calc(100vh-140px)]', 'min-h-[500px]');
+        
+        if (expandMapIcon) expandMapIcon.textContent = 'open_in_full';
+        if (expandMapText) expandMapText.textContent = 'Perbesar Peta';
+        btnExpandMap.classList.remove('bg-primary/10', 'text-primary');
+      }
+      setTimeout(() => {
+        leafletMap?.invalidateSize();
+      }, 300);
+    };
+  }
+
+  if (btnResetMapZoom) {
+    btnResetMapZoom.onclick = () => {
+      if (!leafletMap) return;
+      const validProps = propertiesData.filter((p) => p.latitude && p.longitude);
+      if (validProps.length > 1) {
+        const bounds = L.latLngBounds(validProps.map((p) => [Number(p.latitude), Number(p.longitude)]));
+        leafletMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      } else if (validProps.length === 1) {
+        leafletMap.setView([Number(validProps[0].latitude), Number(validProps[0].longitude)], 14);
+      }
+    };
+  }
 
   // 4. Card Click & Hover to Map Sync
   document.querySelectorAll('.property-card').forEach((card) => {

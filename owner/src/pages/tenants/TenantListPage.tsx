@@ -3,10 +3,13 @@ import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingSpinner, EmptyState } from '../../components/ui/Feedback';
+import { useSubscription } from '../../context/SubscriptionContext';
 import api from '../../lib/api';
 import { Tenant, Property, Room } from '../../types';
 
 export const TenantListPage: React.FC = () => {
+  const { subscription, usage, isTenantBlocked, openQuotaModal, refreshSubscription } = useSubscription();
+
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -81,6 +84,10 @@ export const TenantListPage: React.FC = () => {
   });
 
   const handleOpenAddModal = () => {
+    if (isTenantBlocked) {
+      openQuotaModal('tenant');
+      return;
+    }
     setEditingTenant(null);
     const initialPropId = properties[0]?.id || '';
     const initialRooms = rooms.filter((r) => r.propertyId === initialPropId && r.status === 'available');
@@ -175,6 +182,12 @@ export const TenantListPage: React.FC = () => {
     };
 
     try {
+      if (!editingTenant && selectedRoomId && isTenantBlocked) {
+        setFormError(`Batas kuota penghuni aktif tercapai pada paket ${subscription?.plan?.name || 'Trial'}. Silakan upgrade paket.`);
+        openQuotaModal('tenant');
+        return;
+      }
+
       if (editingTenant) {
         await api.patch(`/tenants/${editingTenant.id}`, payload);
       } else {
@@ -184,6 +197,7 @@ export const TenantListPage: React.FC = () => {
       setIsAddModalOpen(false);
       setEditingTenant(null);
       fetchTenants();
+      refreshSubscription();
     } catch (err: any) {
       setFormError(err.response?.data?.error?.message || 'Gagal menyimpan data penyewa.');
     } finally {
@@ -201,6 +215,7 @@ export const TenantListPage: React.FC = () => {
       });
       setEndStayTarget(null);
       fetchTenants();
+      refreshSubscription();
     } catch (err: any) {
       alert(err.response?.data?.error?.message || 'Gagal menyelesaikan masa sewa.');
     } finally {
@@ -215,6 +230,7 @@ export const TenantListPage: React.FC = () => {
       await api.delete(`/tenants/${deleteTarget.id}`);
       setDeleteTarget(null);
       fetchTenants();
+      refreshSubscription();
     } catch (err: any) {
       alert(err.response?.data?.error?.message || 'Gagal menghapus data penyewa.');
     } finally {
@@ -271,15 +287,45 @@ export const TenantListPage: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">
             Kelola data pribadi penyewa, masa sewa, status kamar, dan kontak WhatsApp.
           </p>
+          {usage && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold ${isTenantBlocked ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-700 border border-slate-200'
+                }`}>
+                <span className="material-symbols-outlined text-[14px]">{isTenantBlocked ? 'lock' : 'verified'}</span>
+                <span>Batas Penghuni Paket {subscription?.plan?.name || 'Trial'}: {usage.tenants.current} / {usage.tenants.limit ?? '∞'} Orang</span>
+              </span>
+              {isTenantBlocked && (
+                <button
+                  type="button"
+                  onClick={() => openQuotaModal('tenant')}
+                  className="text-[11px] text-primary hover:underline font-bold cursor-pointer"
+                >
+                  Upgrade Paket →
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
-        <button
-          onClick={handleOpenAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start sm:self-auto"
-        >
-          <span className="material-symbols-outlined text-[18px]">person_add</span>
-          <span>+ Tambah Penyewa Baru</span>
-        </button>
+        {isTenantBlocked ? (
+          <button
+            type="button"
+            onClick={() => openQuotaModal('tenant')}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl shadow-xs transition-all self-start sm:self-auto cursor-pointer"
+            title="Batas kuota penyewa aktif tercapai untuk paket Anda. Klik untuk upgrade paket."
+          >
+            <span className="material-symbols-outlined text-[18px] text-amber-600">lock</span>
+            <span>+ Tambah Penyewa (Batas {usage?.tenants.current}/{usage?.tenants.limit})</span>
+          </button>
+        ) : (
+          <button
+            onClick={handleOpenAddModal}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-container text-white text-xs font-bold rounded-xl shadow-md transition-all self-start sm:self-auto cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">person_add</span>
+            <span>+ Tambah Penyewa Baru</span>
+          </button>
+        )}
       </div>
 
       {/* KPI Cards */}
@@ -520,6 +566,25 @@ export const TenantListPage: React.FC = () => {
             </div>
           )}
 
+          {!editingTenant && isTenantBlocked && (
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex flex-col gap-2">
+              <div className="flex items-center gap-2 font-bold text-amber-800">
+                <span className="material-symbols-rounded text-sm">lock</span>
+                <span>Batas Kuota Penghuni Aktif Tercapai</span>
+              </div>
+              <p className="text-[11px] text-amber-700 leading-relaxed">
+                Paket Anda ({subscription?.plan?.name || 'Trial'}) telah mencapai kuota maksimal {usage?.tenants?.limit} penghuni aktif. Upgrade paket untuk mengalokasikan kamar ke penghuni baru.
+              </p>
+              <button
+                type="button"
+                onClick={() => openQuotaModal('tenant')}
+                className="self-start px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-[10px] shadow-sm transition-all"
+              >
+                Upgrade Paket
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
@@ -693,7 +758,7 @@ export const TenantListPage: React.FC = () => {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || (!editingTenant && isTenantBlocked)}
               className="px-5 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-container rounded-xl shadow-sm flex items-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting && (

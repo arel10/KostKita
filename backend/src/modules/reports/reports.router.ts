@@ -5,6 +5,7 @@ import { authenticate } from '../../middleware/authenticate';
 import { authorize } from '../../middleware/authorize';
 import { sendSuccess } from '../../utils/response';
 import { getPaginationParams, buildPaginationMeta } from '../../utils/response';
+import { checkPropertyLimit, checkRoomLimit, checkTenantLimit } from '../../utils/subscription';
 
 const router = Router();
 router.use(authenticate, authorize('owner'));
@@ -58,6 +59,18 @@ router.get('/dashboard', handle(async (req, res) => {
     ? Math.max(0, Math.ceil((activeSubscription.endsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
 
+  const [propLimit, roomLimit, tenantLimit] = activeSubscription
+    ? await Promise.all([
+        checkPropertyLimit(ownerId, activeSubscription.planId),
+        checkRoomLimit(ownerId, activeSubscription.planId),
+        checkTenantLimit(ownerId, activeSubscription.planId),
+      ])
+    : [
+        { allowed: false, current: totalProperties, limit: 0 },
+        { allowed: false, current: totalRooms, limit: 0 },
+        { allowed: false, current: 0, limit: 0 },
+      ];
+
   sendSuccess(res, {
     totalProperties,
     totalRooms,
@@ -75,6 +88,11 @@ router.get('/dashboard', handle(async (req, res) => {
           startsAt: activeSubscription.startsAt,
           endsAt: activeSubscription.endsAt,
           daysLeft,
+          usage: {
+            properties: propLimit,
+            rooms: roomLimit,
+            tenants: tenantLimit,
+          },
         }
       : null,
   });

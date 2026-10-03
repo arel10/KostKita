@@ -3,6 +3,7 @@ import L from 'leaflet';
 import api from '../../lib/api';
 import { Modal } from '../ui/Modal';
 import { LoadingSpinner } from '../ui/Feedback';
+import { useSubscription } from '../../context/SubscriptionContext';
 
 // Fix leaflet default marker icons in bundlers
 const DefaultIcon = L.icon({
@@ -58,6 +59,7 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
   onSuccess,
 }) => {
   const isEdit = Boolean(propertyId);
+  const { subscription, usage, isPropertyBlocked, openQuotaModal } = useSubscription();
   const [activeTab, setActiveTab] = useState<'info' | 'location' | 'facilities' | 'photos'>('info');
 
   const [isLoadingData, setIsLoadingData] = useState(false);
@@ -374,6 +376,12 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
 
   // Submit handler
   const handleSubmit = async (publishNow = false) => {
+    if (!isEdit && isPropertyBlocked) {
+      setError(`Batas kuota properti tercapai pada paket ${subscription?.plan?.name || 'Trial'}. Silakan upgrade paket langganan Anda.`);
+      openQuotaModal('property');
+      return;
+    }
+
     // Basic validation
     if (!name.trim()) {
       setError('Nama Properti Kost wajib diisi (minimal 3 karakter).');
@@ -494,6 +502,31 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
         </div>
       ) : (
         <div className="space-y-5">
+          {/* Quota Exceeded Alert if adding new property */}
+          {!isEdit && isPropertyBlocked && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-2.5">
+                <span className="material-symbols-outlined text-[24px] text-amber-600 shrink-0">lock</span>
+                <div>
+                  <span className="font-extrabold block">Batas Kuota Properti Tercapai</span>
+                  <span className="text-amber-800 text-[11px]">
+                    Paket <strong>{subscription?.plan?.name || 'Trial'}</strong> hanya mengizinkan maksimal {usage?.properties.limit} properti. Upgrade ke paket Pro untuk menambah properti tanpa batas.
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  openQuotaModal('property');
+                }}
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-container shrink-0 cursor-pointer shadow-xs"
+              >
+                Upgrade Paket Sekarang
+              </button>
+            </div>
+          )}
+
           {/* Error Alert */}
           {error && (
             <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 animate-in fade-in">
@@ -1091,18 +1124,18 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
 
               <button
                 type="button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!isEdit && isPropertyBlocked)}
                 onClick={() => handleSubmit(false)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Menyimpan...' : 'Simpan Draft'}
               </button>
 
               <button
                 type="button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!isEdit && isPropertyBlocked)}
                 onClick={() => handleSubmit(true)}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-container shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-primary hover:bg-primary-container shadow-sm transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

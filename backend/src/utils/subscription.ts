@@ -37,11 +37,11 @@ export async function checkPropertyLimit(
   planId: string
 ): Promise<{ allowed: boolean; current: number; limit: number | null }> {
   const limits = await getPlanLimits(planId);
-  if (limits.maxProperties === null) return { allowed: true, current: 0, limit: null };
-
   const current = await prisma.property.count({
     where: { ownerId, status: { not: 'inactive' } },
   });
+
+  if (limits.maxProperties === null) return { allowed: true, current, limit: null };
 
   return {
     allowed: current < limits.maxProperties,
@@ -58,9 +58,9 @@ export async function checkRoomLimit(
   planId: string
 ): Promise<{ allowed: boolean; current: number; limit: number | null }> {
   const limits = await getPlanLimits(planId);
-  if (limits.maxRooms === null) return { allowed: true, current: 0, limit: null };
-
   const current = await prisma.room.count({ where: { ownerId } });
+
+  if (limits.maxRooms === null) return { allowed: true, current, limit: null };
 
   return {
     allowed: current < limits.maxRooms,
@@ -77,11 +77,11 @@ export async function checkTenantLimit(
   planId: string
 ): Promise<{ allowed: boolean; current: number; limit: number | null }> {
   const limits = await getPlanLimits(planId);
-  if (limits.maxTenants === null) return { allowed: true, current: 0, limit: null };
-
   const current = await prisma.tenantStay.count({
     where: { ownerId, status: 'active' },
   });
+
+  if (limits.maxTenants === null) return { allowed: true, current, limit: null };
 
   return {
     allowed: current < limits.maxTenants,
