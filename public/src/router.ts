@@ -3,7 +3,6 @@ import { renderFooter } from './components/Footer';
 import { renderHomePage, setupHomePageEvents } from './pages/HomePage';
 import { renderSearchPage, setupSearchPageEvents } from './pages/SearchPage';
 import { renderDetailPage, setupDetailPageEvents } from './pages/DetailPage';
-import { fetchProperties } from './services/api';
 
 export async function navigate() {
   const app = document.getElementById('app');
@@ -57,13 +56,8 @@ export async function navigate() {
       setupEvents = setupHomePageEvents;
     } else if (routePath === '/search') {
       pageHtml = await renderSearchPage(queryParams);
-      setupEvents = async () => {
-        // Pre-fetch for map and list events
-        const search = queryParams.get('search') || queryParams.get('city') || undefined;
-        const type = queryParams.get('type') || undefined;
-        const res = await fetchProperties({ search, type: type as any, perPage: 20 });
-        setupSearchPageEvents(res.data);
-      };
+      // Reuses the properties fetched during render (same filters)
+      setupEvents = () => setupSearchPageEvents();
     } else if (routePath.startsWith('/kost/')) {
       const slug = routePath.replace('/kost/', '').trim();
       pageHtml = await renderDetailPage(slug);
