@@ -268,10 +268,12 @@ export const PropertyListPage: React.FC<PropertyListPageProps> = ({ initialOpenM
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProperties.map((p) => {
+            const rawPhoto =
+              p.photos?.find((ph) => ph.isPrimary)?.url || p.photos?.[0]?.url;
             const primaryPhoto =
-              p.photos?.find((ph) => ph.isPrimary)?.url ||
-              p.photos?.[0]?.url ||
-              'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600';
+              !rawPhoto || rawPhoto.includes('unsplash.com')
+                ? '/property-placeholder.svg'
+                : rawPhoto;
             const totalRooms = p.rooms?.length || p._count?.rooms || 0;
             const occupiedRooms = p.rooms?.filter((r) => r.status === 'occupied').length || 0;
             const availableRooms = p.rooms?.filter((r) => r.status === 'available').length || 0;

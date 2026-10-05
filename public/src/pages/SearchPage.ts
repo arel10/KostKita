@@ -18,8 +18,7 @@ let isImmersive = false;
 let mapStyle: 'osm' | 'hot' = 'osm';
 let globalListenersBound = false;
 
-const FALLBACK_PHOTO =
-  'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80';
+const FALLBACK_PHOTO = '/property-placeholder.svg';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
@@ -30,8 +29,10 @@ const esc = (s: string | undefined | null) =>
 
 const toNum = (v: number | string | null | undefined) => (typeof v === 'string' ? parseFloat(v) : Number(v ?? 0));
 
-const primaryPhotoOf = (p: PropertyListItem) =>
-  p.photos?.find((ph) => ph.isPrimary)?.url || p.photos?.[0]?.url || FALLBACK_PHOTO;
+const primaryPhotoOf = (p: PropertyListItem) => {
+  const raw = p.photos?.find((ph) => ph.isPrimary)?.url || p.photos?.[0]?.url;
+  return !raw || raw.includes('unsplash.com') ? FALLBACK_PHOTO : raw;
+};
 
 const cleanCity = (c?: string) => (c || '').replace(/^(Kota|Kabupaten|Kab\.)\s+/i, '').trim();
 

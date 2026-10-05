@@ -4,6 +4,7 @@ import api from '../../lib/api';
 import { Modal } from '../ui/Modal';
 import { LoadingSpinner } from '../ui/Feedback';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { compressImages } from '../../lib/imageCompressor';
 
 // Fix leaflet default marker icons in bundlers
 const DefaultIcon = L.icon({
@@ -64,6 +65,7 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
 
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   // Form states: Info Dasar
@@ -445,10 +447,16 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
         savedId = res.data.data.id;
       }
 
-      // Upload selected files from device
+      // Upload selected files from device with client-side compression
       if (selectedFiles.length > 0 && savedId) {
+        setSubmitProgress('Mengompresi foto...');
+        const compressedFiles = await compressImages(selectedFiles, (done, total) => {
+          setSubmitProgress(`Mengompresi foto (${done}/${total})...`);
+        });
+
+        setSubmitProgress(`Mengunggah ${compressedFiles.length} foto...`);
         const formData = new FormData();
-        selectedFiles.forEach((file) => {
+        compressedFiles.forEach((file) => {
           formData.append('photos', file);
         });
 
@@ -480,6 +488,7 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
       );
     } finally {
       setIsSubmitting(false);
+      setSubmitProgress('');
     }
   };
 
@@ -1128,7 +1137,7 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
                 onClick={() => handleSubmit(false)}
                 className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Menyimpan...' : 'Simpan Draft'}
+                {isSubmitting ? (submitProgress || 'Menyimpan...') : 'Simpan Draft'}
               </button>
 
               <button
@@ -1144,7 +1153,13 @@ export const PropertyFormModal: React.FC<PropertyFormModalProps> = ({
                     {currentStatus === 'active' ? 'save' : 'send'}
                   </span>
                 )}
-                <span>{currentStatus === 'active' ? 'Simpan Perubahan' : 'Simpan & Tayangkan'}</span>
+                <span>
+                  {isSubmitting
+                    ? (submitProgress || 'Menyimpan...')
+                    : currentStatus === 'active'
+                    ? 'Simpan Perubahan'
+                    : 'Simpan & Tayangkan'}
+                </span>
               </button>
             </div>
           </div>

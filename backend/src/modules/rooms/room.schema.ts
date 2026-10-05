@@ -16,7 +16,7 @@ export const updateRoomSchema = createRoomSchema.partial();
 export const roomQuerySchema = z.object({
   propertyId: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
-  perPage: z.coerce.number().int().positive().max(50).default(10),
+  perPage: z.coerce.number().int().positive().max(500).default(100),
   status: z.enum(['available', 'occupied', 'maintenance']).optional(),
   search: z.string().optional(),
 });

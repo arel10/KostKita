@@ -182,12 +182,7 @@ async function seedProperties() {
           description: 'Kamar ukuran 4x4.5 meter di lantai 2 dengan balkon pribadi pemandangan bukit Padang, AC, KM dalam, Smart TV 32 inch.',
           status: RoomStatus.available,
           facilities: ['AC', 'Balkon', 'KM Dalam', 'Water Heater', 'Smart TV', 'WiFi'],
-          photos: [
-            {
-              url: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80',
-              isPrimary: true,
-            }
-          ]
+          photos: []
         },
         {
           roomNumber: '103',
@@ -197,12 +192,7 @@ async function seedProperties() {
           description: 'Kamar ukuran 3x4 meter, single bed nyaman, AC, KM dalam, meja belajar compact, hemat listrik.',
           status: RoomStatus.available,
           facilities: ['AC', 'KM Dalam', 'Kasur Single', 'WiFi', 'Meja Belajar'],
-          photos: [
-            {
-              url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
-              isPrimary: true,
-            }
-          ]
+          photos: []
         },
         {
           roomNumber: '104',
@@ -233,18 +223,7 @@ async function seedProperties() {
       longitude: 110.37250000,
       priceStart: 1400000,
       status: PropertyStatus.active,
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80',
-          isPrimary: true,
-          order: 0,
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
-          isPrimary: false,
-          order: 1,
-        },
-      ],
+      photos: [],
       facilities: ['AC', 'WiFi Cepat', 'KM Dalam', 'Water Heater', 'Dapur Bersama', 'Kulkas Bersama', 'Parkir Motor Aman', 'CCTV 24 Jam'],
       rules: [
         'Khusus Putri Mahasiswi / Karyawati',
@@ -292,18 +271,7 @@ async function seedProperties() {
       longitude: 106.82450000,
       priceStart: 1100000,
       status: PropertyStatus.active,
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80',
-          isPrimary: true,
-          order: 0,
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
-          isPrimary: false,
-          order: 1,
-        }
-      ],
+      photos: [],
       facilities: ['AC', 'WiFi Cepat', 'KM Dalam', 'Dapur Bersama', 'Parkir Motor', 'Penjaga Kost'],
       rules: [
         'Akses gerbang bebas 24 jam',
@@ -350,18 +318,7 @@ async function seedProperties() {
       longitude: 106.85230000,
       priceStart: 2100000,
       status: PropertyStatus.active,
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80',
-          isPrimary: true,
-          order: 0,
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80',
-          isPrimary: false,
-          order: 1,
-        }
-      ],
+      photos: [],
       facilities: ['AC Inverter', 'WiFi Fiber Optic', 'KM Dalam', 'Water Heater', 'Smart Lock', 'Coworking Space', 'Dapur Bersama', 'Parkir Mobil'],
       rules: [
         'Akses pintu utama kartu RFID smart lock 24 jam',
@@ -408,18 +365,7 @@ async function seedProperties() {
       longitude: 107.61890000,
       priceStart: 1600000,
       status: PropertyStatus.active,
-      photos: [
-        {
-          url: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80',
-          isPrimary: true,
-          order: 0,
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=80',
-          isPrimary: false,
-          order: 1,
-        }
-      ],
+      photos: [],
       facilities: ['AC', 'WiFi Cepat', 'KM Dalam', 'Water Heater', 'Taman Santai', 'Dapur Bersama', 'Parkir Mobil & Motor'],
       rules: [
         'Khusus Putra Mahasiswa / Profesional',

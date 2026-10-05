@@ -51,7 +51,7 @@ export const TenantListPage: React.FC = () => {
       const [tenantsRes, propsRes, roomsRes] = await Promise.allSettled([
         api.get('/tenants'),
         api.get('/properties'),
-        api.get('/rooms'),
+        api.get('/rooms', { params: { perPage: 100 } }),
       ]);
 
       if (tenantsRes.status === 'fulfilled' && tenantsRes.value.data?.data) {

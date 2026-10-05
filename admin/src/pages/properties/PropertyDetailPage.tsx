@@ -61,7 +61,7 @@ export const PropertyDetailPage: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="card overflow-hidden">
             <div className="aspect-[16/8] bg-ink-100 flex items-center justify-center">
-              {photos[active] ? <img src={assetUrl(photos[active].url)} alt={p.name} className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-5xl text-ink-300">image</span>}
+              {photos[active] ? <img src={assetUrl(photos[active].url)} alt={p.name} className="w-full h-full object-cover" /> : <img src="/property-placeholder.svg" alt={p.name} className="w-full h-full object-cover" />}
             </div>
             {photos.length > 1 && (
               <div className="flex gap-2 p-3 overflow-x-auto">

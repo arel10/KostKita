@@ -69,9 +69,11 @@ export const buildPaginationMeta = (
 });
 
 export const getPaginationParams = (
-  query: Record<string, unknown>
+  query: Record<string, unknown>,
+  defaultPerPage = 10,
+  maxPerPage = 100
 ): { page: number; perPage: number; skip: number } => {
   const page = Math.max(1, parseInt(String(query.page ?? '1'), 10));
-  const perPage = Math.min(100, Math.max(1, parseInt(String(query.perPage ?? '10'), 10)));
+  const perPage = Math.min(maxPerPage, Math.max(1, parseInt(String(query.perPage ?? defaultPerPage), 10)));
   return { page, perPage, skip: (page - 1) * perPage };
 };

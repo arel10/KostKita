@@ -24,7 +24,7 @@ export async function listRooms(
     if (!property) throw { code: 'NOT_FOUND', message: 'Properti tidak ditemukan.', status: 404 };
   }
 
-  const { page, perPage, skip } = getPaginationParams(query || {});
+  const { page, perPage, skip } = getPaginationParams(query || {}, 100, 500);
 
   const where = {
     ownerId,
@@ -225,13 +225,20 @@ export async function uploadRoomPhotos(ownerId: string, propertyId: string | und
       if (hasCloudinary) {
         try {
           const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
-              { folder: `kostkita/rooms/${roomId}`, resource_type: 'image', transformation: [{ quality: 'auto' }] },
+            const uploadTimeout = setTimeout(() => {
+              reject(new Error('Cloudinary upload timed out after 12s'));
+            }, 12000);
+
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: `kostkita/rooms/${roomId}`, resource_type: 'image' },
               (error, result) => {
+                clearTimeout(uploadTimeout);
                 if (error) reject(error);
                 else resolve(result as { secure_url: string });
               }
-            ).end(file.buffer);
+            );
+
+            stream.end(file.buffer);
           });
           photoUrl = result.secure_url;
         } catch (cloudErr) {

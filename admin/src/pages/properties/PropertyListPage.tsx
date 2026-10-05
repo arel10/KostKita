@@ -45,7 +45,7 @@ export const PropertyListPage: React.FC = () => {
                     <td className="td">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-ink-100 overflow-hidden shrink-0 flex items-center justify-center">
-                          {p.photos?.[0] ? <img src={assetUrl(p.photos[0].url)} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-ink-300">image</span>}
+                          {p.photos?.[0] ? <img src={assetUrl(p.photos[0].url)} alt="" className="w-full h-full object-cover" /> : <img src="/property-placeholder.svg" alt="" className="w-full h-full object-cover" />}
                         </div>
                         <div><p className="font-bold text-ink-900">{p.name}</p><p className="text-xs text-ink-400 capitalize">Kost {p.type}</p></div>
                       </div>

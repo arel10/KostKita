@@ -248,10 +248,12 @@ export const DashboardPage: React.FC = () => {
 
           <div className="space-y-3">
             {properties.slice(0, 3).map((p) => {
+              const rawPhoto =
+                p.photos?.find((ph) => ph.isPrimary)?.url || p.photos?.[0]?.url;
               const primaryPhoto =
-                p.photos?.find((ph) => ph.isPrimary)?.url ||
-                p.photos?.[0]?.url ||
-                'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500';
+                !rawPhoto || rawPhoto.includes('unsplash.com')
+                  ? '/property-placeholder.svg'
+                  : rawPhoto;
               const totalRooms = p.rooms?.length || p._count?.rooms || 0;
               const occupiedRooms = p.rooms?.filter((r) => r.status === 'occupied').length || 0;
 

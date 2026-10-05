@@ -292,4 +292,32 @@ body.kk-no-scroll {
   animation: softPageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Micro-float animations for hero cards */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+}
+
+
 

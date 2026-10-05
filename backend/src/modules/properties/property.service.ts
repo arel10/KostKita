@@ -441,17 +441,23 @@ export async function uploadPropertyPhotos(
       if (hasCloudinary) {
         try {
           const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
+            const uploadTimeout = setTimeout(() => {
+              reject(new Error('Cloudinary upload timed out after 12s'));
+            }, 12000);
+
+            const stream = cloudinary.uploader.upload_stream(
               {
                 folder: `kostkita/properties/${propertyId}`,
                 resource_type: 'image',
-                transformation: [{ quality: 'auto', fetch_format: 'auto' }],
               },
               (error, result) => {
+                clearTimeout(uploadTimeout);
                 if (error) reject(error);
                 else resolve(result as { secure_url: string });
               }
-            ).end(file.buffer);
+            );
+
+            stream.end(file.buffer);
           });
           photoUrl = result.secure_url;
         } catch (cloudErr) {

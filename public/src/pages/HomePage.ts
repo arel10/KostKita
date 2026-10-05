@@ -156,33 +156,46 @@ export async function renderHomePage(): Promise<string> {
               </div>
             </div>
 
-            <!-- Right Column: Organic Curved Bedroom Frame -->
+            <!-- Right Column: Premium Room Showcase -->
             <div class="lg:col-span-5 relative flex items-center justify-center lg:justify-end">
-              <div class="relative w-full max-w-[460px]">
+              <div class="relative w-full max-w-[480px]">
                 
-                <!-- Organic Solid Green Line Curve -->
-                <svg class="absolute -right-6 -bottom-6 w-[115%] h-[115%] pointer-events-none text-[#004337] z-0" viewBox="0 0 460 380" fill="none">
-                  <path d="M 60 40 C -10 120, -5 260, 70 330 C 180 390, 360 380, 440 330" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                <!-- Ambient Glow Backdrop -->
+                <div class="absolute -inset-4 sm:-inset-6 bg-gradient-to-tr from-emerald-400/25 via-[#004337]/15 to-amber-300/25 rounded-[44px] blur-2xl -z-10 pointer-events-none"></div>
+
+                <!-- Organic Solid Decorative Rings -->
+                <svg class="absolute -right-8 -bottom-8 w-[125%] h-[125%] pointer-events-none text-emerald-900/10 z-0" viewBox="0 0 460 380" fill="none">
+                  <path d="M 60 40 C -10 120, -5 260, 70 330 C 180 390, 360 380, 440 330" stroke="currentColor" stroke-width="2" stroke-dasharray="6 6" stroke-linecap="round" />
                 </svg>
 
-                <!-- Floating House Circle Token -->
-                <div class="absolute -top-4 left-6 sm:left-10 z-20 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white shadow-[0_8px_20px_rgba(0,0,0,0.08)] border border-slate-100 flex items-center justify-center text-[#004337]">
-                  <span class="material-symbols-outlined text-[26px] sm:text-[30px]">home</span>
+                <!-- Floating Top-Right Badge: Platform Verification -->
+                <div class="absolute -top-4 -right-2 sm:-right-4 z-30 animate-float-slow flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_10px_24px_rgba(0,0,0,0.08)] transition-transform hover:scale-105 cursor-default">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span class="text-xs font-bold text-slate-800">Pilihan Terverifikasi</span>
                 </div>
 
-                <!-- Main Photo Container -->
-                <div class="relative z-10 rounded-[32px] overflow-hidden shadow-2xl border-4 border-white aspect-[4/3] bg-surface-container">
+                <!-- Main Photo Card Container -->
+                <div class="relative z-10 rounded-[32px] sm:rounded-[38px] overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,67,55,0.22)] border-[5px] border-white aspect-[4/3] bg-slate-100 group">
                   <img 
-                    src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=80" 
-                    alt="Kamar Kost Nyaman" 
-                    class="w-full h-full object-cover"
+                    src="/hero-room.jpg" 
+                    alt="Kamar Kost Nyaman KostKita" 
+                    class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
+                  <!-- Inner subtle vignette gradient overlay -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-black/5 pointer-events-none"></div>
                 </div>
 
-                <!-- Golden Accent Wave at Bottom Right -->
-                <svg class="absolute -right-4 -bottom-4 w-28 h-16 text-[#f59e0b] pointer-events-none z-20" viewBox="0 0 100 50" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
-                  <path d="M10 35 Q 30 10, 50 35 T 90 20" />
-                </svg>
+                <!-- Floating Bottom-Left Card: Platform Discovery -->
+                <div class="absolute -bottom-5 -left-2 sm:-left-5 z-30 animate-float-reverse flex items-center gap-3 px-4 sm:px-5 py-2.5 rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-[0_14px_30px_rgba(0,67,55,0.14)] transition-transform hover:scale-105 cursor-default">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-[#004337] shrink-0 shadow-inner">
+                    <span class="material-symbols-outlined text-[20px]">explore</span>
+                  </div>
+                  <div class="flex flex-col text-left">
+                    <span class="text-xs font-bold text-slate-900">Eksplorasi Ribuan Kost</span>
+                    <span class="text-[10px] text-slate-500 font-medium">Banyak pilihan di sekitar lokasimu</span>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -282,10 +295,13 @@ export async function renderHomePage(): Promise<string> {
             ${featured.length > 0
       ? featured
         .map((item) => {
-          const primaryPhoto =
+          const rawPhoto =
             item.photos?.find((p) => p.isPrimary)?.url ||
-            item.photos?.[0]?.url ||
-            'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80';
+            item.photos?.[0]?.url;
+          const primaryPhoto =
+            !rawPhoto || rawPhoto.includes('unsplash.com')
+              ? '/property-placeholder.svg'
+              : rawPhoto;
 
           const typeLabel =
             item.type === 'putri'

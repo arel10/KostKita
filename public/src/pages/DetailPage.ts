@@ -6,6 +6,22 @@ let selectedRoom: Room | null = null;
 let currentProperty: PropertyDetail | null = null;
 let detailMiniMap: L.Map | null = null;
 
+export function formatRoomTitle(room: Room | null | undefined): string {
+  if (!room) return 'Pilih Kamar Terlebih Dahulu';
+  const num = room.roomNumber ? `No. ${room.roomNumber}` : '';
+  const name = room.name?.trim();
+
+  if (name && num) {
+    if (name.toLowerCase().includes(room.roomNumber.toLowerCase())) {
+      return name;
+    }
+    return `${name} — ${num}`;
+  }
+  if (name) return name;
+  if (num) return `Kamar ${num}`;
+  return 'Kamar Kost';
+}
+
 export async function renderDetailPage(slug: string): Promise<string> {
   let property: PropertyDetail | null = null;
   let errorMsg = '';
@@ -35,12 +51,13 @@ export async function renderDetailPage(slug: string): Promise<string> {
     `;
   }
 
+  const validPhotos = (property.photos || []).filter((p) => p.url && !p.url.includes('unsplash.com'));
   const primaryPhoto =
-    property.photos?.find((p) => p.isPrimary)?.url ||
-    property.photos?.[0]?.url ||
-    'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80';
+    validPhotos.find((p) => p.isPrimary)?.url ||
+    validPhotos[0]?.url ||
+    '/property-placeholder.svg';
 
-  const secondaryPhotos = property.photos.filter((p) => p.url !== primaryPhoto).slice(0, 4);
+  const secondaryPhotos = validPhotos.filter((p) => p.url !== primaryPhoto).slice(0, 4);
 
   const typeLabel =
     property.type === 'putri'
@@ -225,8 +242,8 @@ export async function renderDetailPage(slug: string): Promise<string> {
                           <img src="${roomPhoto}" alt="${room.name}" class="w-full h-full object-cover"/>
                         </div>
                         <div>
-                          <div class="flex items-center gap-2">
-                            <h4 class="font-bold text-base text-on-surface">${room.name || `Kamar ${room.roomNumber}`}</h4>
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="font-bold text-base text-on-surface">${formatRoomTitle(room)}</h4>
                             <span class="text-[11px] px-2 py-0.5 rounded font-bold ${isAvailable ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-outline'
           }">
                               ${isAvailable ? 'Tersedia' : 'Terisi'}
@@ -299,7 +316,7 @@ export async function renderDetailPage(slug: string): Promise<string> {
             <div>
               <span class="text-xs text-outline font-medium block">Kamar yang Dipilih:</span>
               <h3 id="stickyRoomTitle" class="text-lg font-bold text-on-surface mt-0.5">
-                ${selectedRoom ? selectedRoom.name || `Kamar ${selectedRoom.roomNumber}` : 'Pilih Kamar Terlebih Dahulu'}
+                ${formatRoomTitle(selectedRoom)}
               </h3>
               <div class="flex items-baseline gap-1 mt-2">
                 <span id="stickyRoomPrice" class="text-2xl font-extrabold text-primary font-sans">
@@ -318,7 +335,7 @@ export async function renderDetailPage(slug: string): Promise<string> {
                 href="${buildWhatsAppLink(
       property.whatsapp,
       property.name,
-      selectedRoom?.name || `Kamar ${selectedRoom?.roomNumber || ''}`,
+      formatRoomTitle(selectedRoom),
       selectedRoom?.price || property.priceStart
     )}"
                 target="_blank"
@@ -471,13 +488,13 @@ export function setupDetailPageEvents() {
       const priceEl = document.getElementById('stickyRoomPrice');
       const waBtn = document.getElementById('btnDirectWhatsapp') as HTMLAnchorElement;
 
-      if (titleEl) titleEl.textContent = room.name || `Kamar ${room.roomNumber}`;
+      if (titleEl) titleEl.textContent = formatRoomTitle(room);
       if (priceEl) priceEl.textContent = formatRupiah(room.price);
       if (waBtn) {
         waBtn.href = buildWhatsAppLink(
           prop.whatsapp,
           prop.name,
-          room.name || `Kamar ${room.roomNumber}`,
+          formatRoomTitle(room),
           room.price
         );
       }

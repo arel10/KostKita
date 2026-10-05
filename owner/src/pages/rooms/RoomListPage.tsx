@@ -43,7 +43,7 @@ export const RoomListPage: React.FC = () => {
     setIsLoading(true);
     try {
       const [roomsRes, propsRes] = await Promise.allSettled([
-        api.get('/rooms'),
+        api.get('/rooms', { params: { perPage: 100 } }),
         api.get('/properties'),
       ]);
 
