@@ -8,6 +8,7 @@ import { logAudit } from '../../utils/audit';
 import { getActiveSubscription, checkPropertyLimit } from '../../utils/subscription';
 import { AuditAction, EntityType } from '../../types/constants';
 import { getPaginationParams, buildPaginationMeta } from '../../utils/response';
+import { deleteCache } from '../../config/redis';
 import {
   CreatePropertyInput,
   UpdatePropertyInput,
@@ -156,6 +157,8 @@ export async function createProperty(
     userAgent,
   });
 
+  await deleteCache('cache:public:*');
+
   return getPropertyById(ownerId, property.id);
 }
 
@@ -266,6 +269,8 @@ export async function updateProperty(
     userAgent,
   });
 
+  await deleteCache('cache:public:*');
+
   return getPropertyById(ownerId, propertyId);
 }
 
@@ -324,6 +329,8 @@ export async function publishProperty(
     userAgent,
   });
 
+  await deleteCache('cache:public:*');
+
   return getPropertyById(ownerId, propertyId);
 }
 
@@ -349,6 +356,8 @@ export async function unpublishProperty(
     ipAddress: ip,
     userAgent,
   });
+
+  await deleteCache('cache:public:*');
 
   return getPropertyById(ownerId, propertyId);
 }
@@ -400,6 +409,8 @@ export async function deleteProperty(
     ipAddress: ip,
     userAgent,
   });
+
+  await deleteCache('cache:public:*');
 }
 
 // ─────────────────────────────────────────────

@@ -11,6 +11,7 @@ import { validate } from '../../middleware/validate';
 import { uploadImages } from '../../middleware/upload';
 import { cloudinary } from '../../config/storage';
 import { env } from '../../config/env';
+import { blacklistUser, unblacklistUser, getRedisHealth } from '../../config/redis';
 import { sendSuccess, sendError, getPaginationParams, buildPaginationMeta } from '../../utils/response';
 import { logAudit } from '../../utils/audit';
 import { createNotification } from '../../utils/notification';
@@ -155,6 +156,9 @@ router.post('/owners/:id/suspend', validate(suspendSchema), handle(async (req, r
     await tx.property.updateMany({ where: { ownerId: req.params.id }, data: { status: 'inactive' } });
   });
 
+  // Blacklist owner in Redis immediately for instant revocation across all sessions
+  await blacklistUser(req.params.id);
+
   await createNotification({ userId: req.params.id, type: 'owner_suspended', title: 'Akun Disuspend', message: `Akun Anda telah disuspend. Alasan: ${req.body.reason}` });
   await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: AuditAction.OWNER_SUSPEND, entityType: EntityType.USER, entityId: req.params.id, newValue: { reason: req.body.reason }, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
 
@@ -166,6 +170,10 @@ router.post('/owners/:id/activate', handle(async (req, res) => {
   if (!owner) { sendError(res, 'NOT_FOUND', 'Owner tidak ditemukan.', 404); return; }
 
   await prisma.user.update({ where: { id: req.params.id }, data: { status: 'active' } });
+
+  // Unblacklist owner in Redis
+  await unblacklistUser(req.params.id);
+
   await logAudit({ actorId: req.user!.sub, actorRole: 'super_admin', action: AuditAction.OWNER_ACTIVATE, entityType: EntityType.USER, entityId: req.params.id, ipAddress: req.ip, userAgent: req.headers['user-agent'] });
 
   sendSuccess(res, null, { message: 'Owner berhasil diaktifkan.' });
@@ -583,6 +591,17 @@ router.get('/notifications', handle(async (req, res) => {
   sendSuccess(res, grouped.slice(0, 50));
 }));
 
+// Cache for Cloudinary usage metrics (60 seconds TTL)
+let cloudinaryUsageCache: {
+  timestamp: number;
+  data: {
+    objectsCount: number;
+    storageMb: number;
+    plan: string;
+    creditsUsed: number;
+  } | null;
+} = { timestamp: 0, data: null };
+
 // ── System Health & Monitoring ─────────────────
 router.get('/system-health', handle(async (req, res) => {
   const dbStart = Date.now();
@@ -630,7 +649,17 @@ router.get('/system-health', handle(async (req, res) => {
   const uploadDir = path.resolve(process.cwd(), 'uploads');
   const uploadStats = getDirInfo(uploadDir);
 
-  const [usersCount, propertiesCount, roomsCount, tenantsCount, subsCount, paymentsCount, auditLogsCount] = await Promise.all([
+  const [
+    usersCount,
+    propertiesCount,
+    roomsCount,
+    tenantsCount,
+    subsCount,
+    paymentsCount,
+    auditLogsCount,
+    propertyPhotosCount,
+    roomPhotosCount,
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.property.count(),
     prisma.room.count(),
@@ -638,9 +667,30 @@ router.get('/system-health', handle(async (req, res) => {
     prisma.subscription.count(),
     prisma.subscriptionPayment.count(),
     prisma.auditLog.count(),
+    prisma.propertyPhoto.count(),
+    prisma.roomPhoto.count(),
   ]);
 
+  const hasCloudinary = Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
+  let cloudinaryStats = cloudinaryUsageCache.data;
+
+  if (hasCloudinary && (Date.now() - cloudinaryUsageCache.timestamp > 60_000 || !cloudinaryUsageCache.data)) {
+    try {
+      const usageRes = await cloudinary.api.usage();
+      cloudinaryStats = {
+        objectsCount: usageRes.objects?.usage || 0,
+        storageMb: Math.round(((usageRes.storage?.usage || 0) / 1024 / 1024) * 100) / 100,
+        plan: usageRes.plan || 'Free',
+        creditsUsed: usageRes.credits?.usage || 0,
+      };
+      cloudinaryUsageCache = { timestamp: Date.now(), data: cloudinaryStats };
+    } catch (cloudErr) {
+      console.warn('Failed to fetch Cloudinary usage stats:', cloudErr);
+    }
+  }
+
   const uptimeSeconds = Math.floor(process.uptime());
+  const redisHealth = await getRedisHealth();
 
   sendSuccess(res, {
     status: dbStatus === 'healthy' ? 'operational' : 'degraded',
@@ -671,8 +721,13 @@ router.get('/system-health', handle(async (req, res) => {
     },
     memory,
     storage: {
-      cloudinaryConfigured: Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET),
+      cloudinaryConfigured: hasCloudinary,
       cloudinaryCloudName: env.CLOUDINARY_CLOUD_NAME || null,
+      cloudinaryObjectsCount: cloudinaryStats?.objectsCount ?? null,
+      cloudinaryStorageMb: cloudinaryStats?.storageMb ?? null,
+      cloudinaryPlan: cloudinaryStats?.plan ?? null,
+      cloudinaryCreditsUsed: cloudinaryStats?.creditsUsed ?? null,
+      dbMediaCount: propertyPhotosCount + roomPhotosCount,
       localUploadsCount: uploadStats.count,
       localUploadsSizeMb: Math.round((uploadStats.size / 1024 / 1024) * 100) / 100,
     },
@@ -680,6 +735,10 @@ router.get('/system-health', handle(async (req, res) => {
       googleAuth: Boolean(env.GOOGLE_CLIENT_ID),
       rateLimiter: true,
       jwtAuth: true,
+      redis: redisHealth.connected,
+      redisLatencyMs: redisHealth.latencyMs,
+      redisVersion: redisHealth.version || null,
+      redisMemory: redisHealth.usedMemoryHuman || null,
     },
   });
 }));

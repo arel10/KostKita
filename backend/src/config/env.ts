@@ -39,6 +39,8 @@ export const env = {
 
   ALLOWED_ORIGINS: getEnv('ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:5174').split(','),
 
+  REDIS_URL: getEnv('REDIS_URL', 'redis://localhost:6379'),
+
   isDev: () => env.NODE_ENV === 'development',
   isProd: () => env.NODE_ENV === 'production',
 };

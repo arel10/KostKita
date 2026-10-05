@@ -16,6 +16,23 @@ async function bootstrap() {
     scheduleSubscriptionExpiryJob();
     schedulePaymentOverdueJob();
 
+    // Sync active suspended users to Redis blacklist
+    try {
+      const { blacklistUser } = await import('./config/redis');
+      const suspendedUsers = await prisma.user.findMany({
+        where: { status: 'suspended' },
+        select: { id: true },
+      });
+      for (const u of suspendedUsers) {
+        await blacklistUser(u.id);
+      }
+      if (suspendedUsers.length > 0) {
+        logger.info(`🔒 Synced ${suspendedUsers.length} suspended user(s) to Redis blacklist`);
+      }
+    } catch {
+      // Non-fatal if Redis is loading
+    }
+
     app.listen(env.PORT, () => {
       logger.info(`🚀 ${env.APP_NAME} backend running on port ${env.PORT}`);
       logger.info(`   Environment: ${env.NODE_ENV}`);

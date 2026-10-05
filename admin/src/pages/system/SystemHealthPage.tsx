@@ -40,6 +40,11 @@ interface SystemHealthData {
   storage: {
     cloudinaryConfigured: boolean;
     cloudinaryCloudName: string | null;
+    cloudinaryObjectsCount?: number | null;
+    cloudinaryStorageMb?: number | null;
+    cloudinaryPlan?: string | null;
+    cloudinaryCreditsUsed?: number | null;
+    dbMediaCount?: number;
     localUploadsCount: number;
     localUploadsSizeMb: number;
   };
@@ -47,6 +52,10 @@ interface SystemHealthData {
     googleAuth: boolean;
     rateLimiter: boolean;
     jwtAuth: boolean;
+    redis?: boolean;
+    redisLatencyMs?: number;
+    redisVersion?: string | null;
+    redisMemory?: string | null;
   };
 }
 
@@ -219,15 +228,35 @@ export const SystemHealthPage: React.FC = () => {
               <span className="material-symbols-outlined text-[18px]">cloud_sync</span>
             </span>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline justify-between gap-2">
             <span className="text-2xl font-black text-slate-900">
               {data?.storage.cloudinaryConfigured ? 'Cloudinary' : 'Lokal Disk'}
             </span>
+            {data?.storage.cloudinaryConfigured && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                CDN AKTIF
+              </span>
+            )}
           </div>
-          <p className="text-[11px] text-slate-500 mt-2 flex items-center justify-between">
-            <span>Berkas tersimpan:</span>
-            <span className="font-bold text-slate-700">{data?.storage.localUploadsCount} file ({data?.storage.localUploadsSizeMb} MB)</span>
-          </p>
+          {data?.storage.cloudinaryConfigured ? (
+            <div className="mt-2 space-y-1">
+              <p className="text-[11px] text-slate-500 flex items-center justify-between">
+                <span>Aset Cloudinary:</span>
+                <span className="font-bold text-slate-700">
+                  {data?.storage.cloudinaryObjectsCount ?? 0} file ({data?.storage.cloudinaryStorageMb ?? 0} MB)
+                </span>
+              </p>
+              <p className="text-[10px] text-slate-400 flex items-center justify-between">
+                <span>Foto di database:</span>
+                <span className="font-semibold text-slate-600">{data?.storage.dbMediaCount ?? 0} terindeks</span>
+              </p>
+            </div>
+          ) : (
+            <p className="text-[11px] text-slate-500 mt-2 flex items-center justify-between">
+              <span>Berkas tersimpan:</span>
+              <span className="font-bold text-slate-700">{data?.storage.localUploadsCount} file ({data?.storage.localUploadsSizeMb} MB)</span>
+            </p>
+          )}
         </div>
 
         {/* Card 4: Runtime Specs */}
@@ -368,13 +397,32 @@ export const SystemHealthPage: React.FC = () => {
                 <div>
                   <span className="text-xs font-bold text-slate-800 block">Cloudinary Media CDN</span>
                   <span className="text-[10px] text-slate-400">
-                    {data?.storage.cloudinaryCloudName ? `Cloud: ${data.storage.cloudinaryCloudName}` : 'Penyimpanan lokal disk aktif'}
+                    {data?.storage.cloudinaryCloudName
+                      ? `Cloud: ${data.storage.cloudinaryCloudName}${data?.storage.cloudinaryObjectsCount !== undefined ? ` • ${data.storage.cloudinaryObjectsCount} aset (${data.storage.cloudinaryStorageMb ?? 0} MB)` : ''}`
+                      : 'Penyimpanan lokal disk aktif'}
                   </span>
                 </div>
               </div>
               <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${data?.storage.cloudinaryConfigured ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                 }`}>
                 {data?.storage.cloudinaryConfigured ? 'CLOUD' : 'LOCAL'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <span className="material-symbols-outlined text-rose-600 text-[20px]">database</span>
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">Redis In-Memory Engine</span>
+                  <span className="text-[10px] text-slate-400">
+                    {data?.services.redis
+                      ? `v${data.services.redisVersion || '7'} • Latency: ${data.services.redisLatencyMs ?? 0}ms • RAM: ${data.services.redisMemory || 'OK'}`
+                      : 'Layanan Redis tidak aktif'}
+                  </span>
+                </div>
+              </div>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${data?.services.redis ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}`}>
+                {data?.services.redis ? 'TERHUBUNG' : 'OFFLINE'}
               </span>
             </div>
           </div>
