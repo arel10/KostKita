@@ -53,12 +53,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       category: 'Akun & Sistem',
       items: [
         { label: 'Langganan', path: '/subscription', icon: 'loyalty' },
-        {
-          label: 'Notifikasi',
-          path: '/notifications',
-          icon: 'notifications',
-          badge: unreadNotificationCount > 0 ? unreadNotificationCount : undefined,
-        },
         { label: 'Pengaturan', path: '/settings', icon: 'settings' },
       ],
     },

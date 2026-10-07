@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Property, DashboardReport } from '../../types';
+import { NotificationDropdown } from '../notifications/NotificationDropdown';
 
 interface HeaderProps {
   properties?: Property[];
@@ -9,6 +10,7 @@ interface HeaderProps {
   onSelectProperty?: (id: string) => void;
   dashboardReport?: DashboardReport | null;
   unreadCount?: number;
+  onUnreadCountChange?: (count: number) => void;
   onToggleMobileSidebar?: () => void;
 }
 
@@ -18,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectProperty,
   dashboardReport,
   unreadCount = 0,
+  onUnreadCountChange,
   onToggleMobileSidebar,
 }) => {
   const { user, logout } = useAuth();
@@ -102,17 +105,11 @@ export const Header: React.FC<HeaderProps> = ({
           </Link>
         )}
 
-        {/* Notification Bell */}
-        <Link
-          to="/notifications"
-          className="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
-          title="Notifikasi"
-        >
-          <span className="material-symbols-outlined text-[22px]">notifications</span>
-          {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white"></span>
-          )}
-        </Link>
+        {/* Notification Popover Dropdown */}
+        <NotificationDropdown
+          initialUnreadCount={unreadCount}
+          onUnreadCountChange={onUnreadCountChange}
+        />
 
         {/* User dropdown */}
         <div className="relative">

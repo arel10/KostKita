@@ -57,6 +57,7 @@ export const DashboardLayout: React.FC = () => {
           onSelectProperty={setSelectedPropertyId}
           dashboardReport={dashboardReport}
           unreadCount={unreadCount}
+          onUnreadCountChange={setUnreadCount}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         />
 
