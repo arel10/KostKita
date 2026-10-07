@@ -204,7 +204,7 @@ export async function renderHomePage(): Promise<string> {
           <!-- Bottom Row: Elevated Pill Search Bar & Quick Categories (Integrated inside the soft gradient flow) -->
           <div class="w-full relative z-20">
             <!-- Elevated Pill Search Bar -->
-            <div class="w-full max-w-5xl mx-auto bg-white rounded-3xl sm:rounded-full shadow-[0_12px_36px_rgba(0,67,55,0.08)] border border-slate-200/80 p-2 sm:p-2.5">
+            <div id="heroSearchContainer" class="w-full max-w-5xl mx-auto bg-white rounded-3xl sm:rounded-full shadow-[0_12px_36px_rgba(0,67,55,0.08)] border border-slate-200/80 p-2 sm:p-2.5">
               <form id="heroSearchForm" class="flex flex-col md:flex-row items-center gap-2 sm:gap-3">
                 
                 <!-- Location Input -->
@@ -276,7 +276,7 @@ export async function renderHomePage(): Promise<string> {
 
       <!-- FEATURED REAL PROPERTIES (REKOMENDASI KOST TERVERIFIKASI) -->
       <section id="featuredSection" class="relative z-10 w-full bg-transparent py-10">
-        <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div id="featuredSectionContainer" class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
               <div class="flex items-center gap-2 text-xs font-bold text-[#004337] uppercase tracking-widest mb-1.5">
@@ -291,7 +291,7 @@ export async function renderHomePage(): Promise<string> {
           </div>
 
           <!-- Cards Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div id="featuredCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             ${featured.length > 0
       ? featured
         .map((item) => {

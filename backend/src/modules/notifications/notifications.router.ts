@@ -54,4 +54,18 @@ router.patch('/read-all', handle(async (req, res) => {
   sendSuccess(res, null, { message: 'Semua notifikasi ditandai sudah dibaca.' });
 }));
 
+router.delete('/:id', handle(async (req, res) => {
+  await prisma.notification.deleteMany({
+    where: { id: req.params.id, userId: req.user!.sub },
+  });
+  sendSuccess(res, null, { message: 'Notifikasi berhasil dihapus.' });
+}));
+
+router.delete('/clear-all', handle(async (req, res) => {
+  await prisma.notification.deleteMany({
+    where: { userId: req.user!.sub },
+  });
+  sendSuccess(res, null, { message: 'Semua notifikasi berhasil dihapus.' });
+}));
+
 export default router;
