@@ -76,7 +76,7 @@ export async function renderHomePage(): Promise<string> {
   return `
     <div class="flex flex-col w-full bg-white">
       <!-- HERO SECTION: LAYERED CURVED SHAPES (BULAT BERLAPIS) + SOFT FADE -->
-      <section class="relative z-0 w-full pt-8 sm:pt-12 pb-14 sm:pb-18">
+      <section id="heroSection" class="relative z-0 w-full pt-8 sm:pt-12 pb-14 sm:pb-18">
 
         <!-- Background layer: extends 200px below the hero and fades out via mask (no hard edge) -->
         <div
@@ -275,7 +275,7 @@ export async function renderHomePage(): Promise<string> {
       </section>
 
       <!-- FEATURED REAL PROPERTIES (REKOMENDASI KOST TERVERIFIKASI) -->
-      <section class="relative z-10 w-full bg-transparent py-10">
+      <section id="featuredSection" class="relative z-10 w-full bg-transparent py-10">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>

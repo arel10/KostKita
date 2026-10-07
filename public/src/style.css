@@ -319,5 +319,19 @@ body.kk-no-scroll {
   animation: floatReverse 6s ease-in-out infinite;
 }
 
+/* Onboarding Tour Spotlight & Card Animations */
+@keyframes tourGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.68), 0 0 35px rgba(52, 211, 153, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.68), 0 0 55px rgba(52, 211, 153, 0.85);
+  }
+}
+
+#tourSpotlight {
+  animation: tourGlowPulse 2.4s ease-in-out infinite;
+}
+
 
 

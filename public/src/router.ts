@@ -3,6 +3,7 @@ import { renderFooter } from './components/Footer';
 import { renderHomePage, setupHomePageEvents } from './pages/HomePage';
 import { renderSearchPage, setupSearchPageEvents } from './pages/SearchPage';
 import { renderDetailPage, setupDetailPageEvents } from './pages/DetailPage';
+import { renderTourFloatingButton, initOnboardingTour } from './components/OnboardingTour';
 
 export async function navigate() {
   const app = document.getElementById('app');
@@ -81,10 +82,12 @@ export async function navigate() {
       ${renderNavbar(activeNav)}
       <main class="flex-1 w-full page-soft-enter">${pageHtml}</main>
       ${renderFooter()}
+      ${renderTourFloatingButton()}
     `;
 
     setupNavbarEvents();
     setupEvents();
+    initOnboardingTour();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err: any) {
     console.error('Navigation error:', err);

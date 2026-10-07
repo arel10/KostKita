@@ -7,7 +7,7 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
         
         <!-- Sisi Kiri: Logo & Navigasi Utama -->
         <div class="flex items-center gap-6 xl:gap-8">
-          <a href="#/" class="flex items-center gap-3 group shrink-0">
+          <a href="#/" id="navLogoLink" class="flex items-center gap-3 group shrink-0">
             <img src="/logo.png" alt="KostKita Logo" class="h-10 w-auto object-contain group-hover:scale-105 transition-transform" />
             <div class="flex flex-col">
               <span class="text-xl font-extrabold tracking-tight text-slate-900 font-sans leading-tight">Kost<span class="text-amber-500">Kita</span></span>
@@ -20,6 +20,7 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
             <!-- Link Semua Kost -->
             <a 
               href="#/search" 
+              id="navExploreLink"
               class="px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 ${
                 activePage === 'search'
                   ? 'bg-primary/10 text-primary'
@@ -103,6 +104,7 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
             <!-- Link Peta Kost Interaktif -->
             <a 
               href="#/search" 
+              id="navMapLink"
               class="px-3 py-2 rounded-xl text-xs font-bold text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors flex items-center gap-1.5"
             >
               <span class="material-symbols-outlined text-[18px] text-emerald-600">map</span>
@@ -129,6 +131,17 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
 
         <!-- Sisi Kanan: Action Buttons & Pemilik Kost -->
         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <!-- Button Panduan / Tutorial Tour -->
+          <button
+            type="button"
+            id="btnNavStartTour"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#004337] bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/60 transition-all cursor-pointer shadow-2xs"
+            title="Buka Tutorial & Panduan KostKita"
+          >
+            <span class="material-symbols-outlined text-[17px] text-amber-500">help</span>
+            <span class="hidden sm:inline">Panduan</span>
+          </button>
+
           <a 
             href="${OWNER_ROUTES.login}" 
             class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-primary hover:bg-surface-container-low transition-colors"
@@ -139,6 +152,7 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
 
           <a 
             href="${OWNER_ROUTES.register}" 
+            id="navOwnerRegisterBtn"
             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-container text-white text-xs font-bold shadow-xs hover:shadow transition-all"
           >
             <span class="material-symbols-outlined text-[17px]">add_business</span>
@@ -207,6 +221,16 @@ export function renderNavbar(activePage: 'home' | 'search' | 'detail' = 'home'):
         </div>
 
         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <!-- Button Panduan Mobile -->
+          <button
+            type="button"
+            id="btnMobileStartTour"
+            class="px-4 py-2.5 rounded-xl bg-emerald-50 text-[#004337] border border-emerald-200/60 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-[18px] text-amber-500">help</span>
+            <span>Panduan & Tutorial KostKita</span>
+          </button>
+
           <a 
             href="${OWNER_ROUTES.login}" 
             class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 text-center hover:bg-surface-container-low"
