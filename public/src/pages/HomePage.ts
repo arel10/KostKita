@@ -380,8 +380,90 @@ export async function renderHomePage(): Promise<string> {
         })
         .join('')
       : `
-                  <div class="col-span-full py-12 text-center text-slate-500">
-                    <p>Sedang memuat rekomendasi kost terbaru...</p>
+                  <div class="col-span-full">
+                    <div class="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-[#f8faf9] via-white to-[#f4f7f5] p-8 sm:p-12 md:p-14 text-center shadow-[0_10px_30px_rgba(0,67,55,0.04)]">
+                      <!-- Ambient Glow -->
+                      <div class="absolute -top-12 -right-12 w-48 h-48 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none"></div>
+                      <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-teal-100/40 rounded-full blur-3xl pointer-events-none"></div>
+
+                      <div class="relative z-10 max-w-xl mx-auto flex flex-col items-center">
+                        <!-- Icon with layered container & status pin -->
+                        <div class="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5 flex items-center justify-center">
+                          <div class="absolute inset-0 rounded-3xl bg-[#004337]/5 rotate-6 scale-105 pointer-events-none"></div>
+                          <div class="relative w-full h-full rounded-3xl bg-white border border-emerald-100 shadow-[0_8px_24px_rgba(0,67,55,0.06)] flex items-center justify-center text-[#004337]">
+                            <span class="material-symbols-outlined text-[42px] sm:text-[48px] text-[#004337]" style="font-variation-settings: 'FILL' 1;">holiday_village</span>
+                          </div>
+                          <span class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-md ring-4 ring-white" title="Belum ada data kost">
+                            <span class="material-symbols-outlined text-[17px]">hourglass_empty</span>
+                          </span>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-50 text-[#004337] border border-emerald-200/60 mb-3 shadow-2xs">
+                          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                          Informasi Ketersediaan
+                        </span>
+
+                        <!-- Title & Description -->
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight mb-2.5">
+                          Belum Ada Kost Terverifikasi
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-8 max-w-md">
+                          Saat ini belum ada listing kost yang aktif atau terverifikasi di sistem. Kami selalu memvalidasi data kamar, fasilitas riil, serta kontak pemilik sebelum ditampilkan ke publik.
+                        </p>
+
+                        <!-- Informative Mini Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full mb-8 text-left">
+                          <div class="p-3.5 rounded-2xl bg-white border border-slate-100/90 shadow-2xs flex items-start gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#004337] flex items-center justify-center shrink-0">
+                              <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                            </div>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800">Verifikasi Ketat</div>
+                              <div class="text-[11px] text-slate-500 mt-0.5 leading-snug">Foto & fasilitas dicek secara akurat</div>
+                            </div>
+                          </div>
+
+                          <div class="p-3.5 rounded-2xl bg-white border border-slate-100/90 shadow-2xs flex items-start gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#004337] flex items-center justify-center shrink-0">
+                              <span class="material-symbols-outlined text-[18px]">support_agent</span>
+                            </div>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800">Bebas Calo</div>
+                              <div class="text-[11px] text-slate-500 mt-0.5 leading-snug">Kontak pemilik kost terpercaya</div>
+                            </div>
+                          </div>
+
+                          <div class="p-3.5 rounded-2xl bg-white border border-slate-100/90 shadow-2xs flex items-start gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#004337] flex items-center justify-center shrink-0">
+                              <span class="material-symbols-outlined text-[18px]">add_business</span>
+                            </div>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800">Mitra Pemilik</div>
+                              <div class="text-[11px] text-slate-500 mt-0.5 leading-snug">Listing baru segera tersedia</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap items-center justify-center gap-3 w-full">
+                          <a 
+                            href="${OWNER_ROUTES.register}" 
+                            class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#004337] hover:bg-[#00342b] text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all"
+                          >
+                            <span class="material-symbols-outlined text-[18px]">add_home</span>
+                            <span>Daftarkan Kost Anda</span>
+                          </a>
+                          <a 
+                            href="#/search" 
+                            class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold border border-slate-200 transition-all"
+                          >
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                            <span>Jelajahi Pencarian</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 `
     }
