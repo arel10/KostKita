@@ -354,7 +354,12 @@ export const DashboardPage: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5">
-                      {new Date(pay.paymentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} • {pay.paymentMethod.replace('_', ' ')}
+                      {pay.paymentDate
+                        ? new Date(pay.paymentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                        : pay.periodStart
+                          ? `Periode ${new Date(pay.periodStart).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`
+                          : 'Belum dibayar'}{' '}
+                      • {pay.paymentMethod ? pay.paymentMethod.replace('_', ' ') : 'Belum dibayar'}
                     </p>
                   </div>
 
